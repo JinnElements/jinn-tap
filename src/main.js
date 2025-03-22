@@ -6,9 +6,14 @@ import { serializeToTEI } from './serialize.js';
 
 let editor;
 
+// Custom document extension that requires tei-div
+const TeiDocument = Document.extend({
+  content: 'teiDiv+'
+});
+
 // Custom division node
 const TeiDivision = Node.create({
-  name: 'tei-div',
+  name: 'teiDiv',
   group: 'block',
   content: 'block+',
   defining: true,
@@ -34,7 +39,7 @@ const TeiDivision = Node.create({
 
 // Custom hi mark for highlighting
 const TeiHi = Mark.create({
-  name: 'tei-hi',
+  name: 'teiHi',
   inclusive: true,
   spanning: true,
 
@@ -84,7 +89,6 @@ const TeiHi = Mark.create({
   addKeyboardShortcuts() {
     return {
       'Mod-b': () => {
-        console.log('BOLD');
         return this.editor.commands.toggleHighlight({ rend: 'b' })
       },
       'Mod-i': () => this.editor.commands.toggleHighlight({ rend: 'i' })
@@ -94,7 +98,7 @@ const TeiHi = Mark.create({
 
 // Custom page break node
 const TeiPageBreak = Node.create({
-  name: 'pageBreak',
+  name: 'teiPb',
   group: 'inline',
   inline: true,
   selectable: false,
@@ -155,7 +159,7 @@ const TeiPageBreak = Node.create({
 
 // Custom paragraph node for TEI
 const TeiParagraph = Node.create({
-  name: 'tei-p',
+  name: 'teiP',
   group: 'block',
   content: 'inline*',
 
@@ -202,14 +206,14 @@ const TeiParagraph = Node.create({
 });
 
 const TeiHead = Node.create({
-    name: 'tei-head',
+    name: 'teiHead',
     group: 'block',
     content: 'inline*',
   
     parseHTML() {
       return [
         {
-          tag: 'tei-p',
+          tag: 'tei-head',
         },
       ]
     },
@@ -221,7 +225,7 @@ const TeiHead = Node.create({
     addCommands() {
       return {
         toggleHead: () => ({ commands }) => {
-          return commands.toggleNode('tei-p', 'tei-head')
+          return commands.toggleNode('teiP', 'teiHead')
         },
       }
     },
@@ -247,7 +251,7 @@ const TEIExtension = Extension.create({
 editor = new Editor({
   element: document.querySelector('#editor'),
   extensions: [
-    Document,
+    TeiDocument,
     Text,
     TeiParagraph,
     TeiDivision,
@@ -290,7 +294,7 @@ function hideDialog() {
 function insertPageBreak() {
   const pageNumber = pageNumberInput.value.trim();
   editor.chain().focus().insertContent({
-    type: 'pageBreak',
+    type: 'teiPb',
     attrs: { n: pageNumber || null }
   }).run();
   hideDialog();
