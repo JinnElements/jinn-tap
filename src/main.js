@@ -95,8 +95,8 @@ const TeiHi = Mark.create({
 // Custom page break node
 const TeiPageBreak = Node.create({
   name: 'pageBreak',
-  group: 'block',
-  inline: false,
+  group: 'inline',
+  inline: true,
   selectable: false,
   draggable: false,
 

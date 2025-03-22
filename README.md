@@ -10,10 +10,9 @@ A web-based WYSIWYG editor built with Tiptap.
 
 ## Keyboard Shortcuts
 
-- `Ctrl + B`: Toggle bold
-- `Ctrl + I`: Toggle italic
-- `Ctrl + Alt + 1`: Heading 1
-- `Ctrl + Alt + 2`: Heading 2
+- `Mod + B`: Toggle bold
+- `Mod + I`: Toggle italic
+- `Shift + Mod + 1`: Heading
 
 ## Setup
 
