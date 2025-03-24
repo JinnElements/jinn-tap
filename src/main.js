@@ -4,14 +4,17 @@ import Text from '@tiptap/extension-text';
 import Placeholder from '@tiptap/extension-placeholder';
 import { serializeToTEI } from './serialize.js';
 import { createFromSchema } from './extensions.js';
+import { TeiPageBreak } from './pb.js';
 
 const schemaDef = {
     hi: {
         type: 'inline',
         attributes: {
-            rend: 'rend',
-            type: 'type',
-            n: 'n'
+            rend: {
+                type: 'string',
+                default: 'i',
+                enum: ['i', 'b', 'u']
+            }
         },
         keyboard: {
             'Cmd-b': { rend: 'b' },
@@ -22,7 +25,10 @@ const schemaDef = {
     title: {
         type: 'inline',
         attributes: {
-            level: 'level',
+            level: {
+                type: 'string',
+                enum: ['m', 's', 'a']
+            }
         },
         keyboard: {
             'Mod-Alt-t': { level: 'm' }
@@ -40,8 +46,16 @@ const schemaDef = {
     },
     head: {
         type: 'block',
+        attributes: {
+            type: {
+                type: 'string'
+            },
+            n: {
+                type: 'string'
+            }
+        },
         keyboard: {
-            'Shift-Mod-1': { type: 'main' }
+            'Shift-Mod-1': {}
         }
     },
     div: {
@@ -57,67 +71,6 @@ let editor;
 const TeiDocument = Document.extend({
   content: 'div+'
 });
-
-// Custom page break node
-const TeiPageBreak = Node.create({
-  name: 'teiPb',
-  group: 'inline',
-  inline: true,
-  selectable: false,
-  draggable: false,
-
-  addAttributes() {
-    return {
-      n: {
-        default: null,
-        parseHTML: element => element.getAttribute('n'),
-        renderHTML: attributes => {
-          if (!attributes.n) {
-            return {}
-          }
-          return {
-            'data-n': attributes.n,
-          }
-        },
-      },
-    }
-  },
-
-  parseHTML() {
-    return [
-      {
-        tag: 'pb',
-      },
-    ]
-  },
-
-  renderHTML({ HTMLAttributes }) {
-    return ['pb', HTMLAttributes]
-  },
-
-  addNodeView() {
-    return ({ node }) => {
-      const dom = document.createElement('div')
-      dom.classList.add('page-break')
-      dom.innerHTML = `——— Page ${node.attrs.n || ''} ———`
-      if (node.attrs.n) {
-        dom.setAttribute('data-n', node.attrs.n)
-      }
-      return {
-        dom,
-        update: (updatedNode) => {
-          if (updatedNode.type !== node.type) {
-            return false
-          }
-          if (updatedNode.attrs.n !== node.attrs.n) {
-            dom.setAttribute('data-n', updatedNode.attrs.n)
-          }
-          return true
-        },
-      }
-    }
-  },
-})
 
 // Custom TEI extension
 const TEIExtension = Extension.create({

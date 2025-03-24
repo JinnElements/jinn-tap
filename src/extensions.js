@@ -18,6 +18,7 @@ export function createFromSchema(schemaDef) {
                 name: name,
                 defining: def.defining,
                 priority: def.priority,
+                inline: def.inline,
                 content: def.content
             });
         }
@@ -56,8 +57,8 @@ export const TeiInline = Mark.create({
         const attributes = {};
         if (this.options.attributes) {
             Object.entries(this.options.attributes).forEach(([attrName, attrDef]) => {
-                return attributes[attrName] = {
-                    default: null,
+                attributes[attrName] = {
+                    default: attrDef.default || null,
                     parseHTML: element => element.getAttribute(attrName),
                     renderHTML: attributes => {
                         if (!attributes[attrName]) {
@@ -123,8 +124,8 @@ export const TeiBlock = Node.create({
         const attributes = {};
         if (this.options.attributes) {
             Object.entries(this.options.attributes).forEach(([attrName, attrDef]) => {
-                return attributes[attrName] = {
-                    default: null,
+                attributes[attrName] = {
+                    default: attrDef.default || null,
                     parseHTML: element => element.getAttribute(attrName),
                     renderHTML: attributes => {
                         if (!attributes[attrName]) {
