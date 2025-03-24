@@ -32,21 +32,25 @@ export function serializeToTEI(editor) {
       content = node.content.map(serializeNode).join('');
     }
 
-    switch (node.type) {
-      case 'doc':
-        return content;
-      case 'p':
-        return `<p>${content}</p>`;
-      case 'teiPb':
-        const n = node.attrs.n ? ` n="${node.attrs.n}"` : '';
-        return `<pb${n}/>`;
-      case 'div':
-        return `<div>${content}</div>`;
-      case 'head':
-        return `<head>${content}</head>`;
-      default:
-        return content;
+    // Handle any attributes the node may have
+    let attrs = '';
+    if (node.attrs) {
+      attrs = Object.entries(node.attrs)
+        .filter(([_, value]) => value !== null)
+        .map(([key, value]) => ` ${key}="${value}"`)
+        .join('');
     }
+
+    // Special case for page breaks which are self-closing
+    if (node.type === 'teiPb') {
+      return `<pb${attrs}/>`;
+    }
+
+    // For all other nodes, use the node type as the tag name
+    if (node.type !== 'doc') {
+      return `<${node.type}${attrs}>${content}</${node.type}>`;
+    }
+    return content;
   }
 
   teiContent = serializeNode(json);
