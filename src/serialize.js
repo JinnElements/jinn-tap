@@ -18,7 +18,7 @@ export function serializeToTEI(editor) {
       // Handle marks on text nodes
       if (node.marks) {
         node.marks.forEach(mark => {
-          if (mark.type === 'teiHi') {
+          if (mark.type === 'hi') {
             const rend = mark.attrs.rend;
             text = `<hi rend="${rend}">${text}</hi>`;
           }
@@ -35,14 +35,14 @@ export function serializeToTEI(editor) {
     switch (node.type) {
       case 'doc':
         return content;
-      case 'teiP':
+      case 'p':
         return `<p>${content}</p>`;
       case 'teiPb':
         const n = node.attrs.n ? ` n="${node.attrs.n}"` : '';
         return `<pb${n}/>`;
-      case 'teiDiv':
+      case 'div':
         return `<div>${content}</div>`;
-      case 'teiHead':
+      case 'head':
         return `<head>${content}</head>`;
       default:
         return content;

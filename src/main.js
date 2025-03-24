@@ -3,98 +3,60 @@ import Document from '@tiptap/extension-document';
 import Text from '@tiptap/extension-text';
 import Placeholder from '@tiptap/extension-placeholder';
 import { serializeToTEI } from './serialize.js';
+import { createFromSchema } from './extensions.js';
+
+const schemaDef = {
+    hi: {
+        type: 'inline',
+        attributes: {
+            rend: 'rend',
+            type: 'type',
+            n: 'n'
+        },
+        keyboard: {
+            'Cmd-b': { rend: 'b' },
+            'Cmd-i': { rend: 'i' },
+            'Cmd-u': { rend: 'u' }
+        }
+    },
+    title: {
+        type: 'inline',
+        attributes: {
+            level: 'level',
+        },
+        keyboard: {
+            'Mod-Alt-t': { level: 'm' }
+        }
+    },
+    persName: {
+        type: 'inline',
+        keyboard: {
+            'Mod-Shift-p': {}
+        }
+    },
+    p: {
+        type: 'block',
+        priority: 100
+    },
+    head: {
+        type: 'block',
+        keyboard: {
+            'Shift-Mod-1': { type: 'main' }
+        }
+    },
+    div: {
+        type: 'block',
+        defining: true,
+        content: 'block+'
+    }
+};
 
 let editor;
 
 // Custom document extension that requires tei-div
 const TeiDocument = Document.extend({
-  content: 'teiDiv+'
+  content: 'div+'
 });
-
-// Custom division node
-const TeiDivision = Node.create({
-  name: 'teiDiv',
-  group: 'block',
-  content: 'block+',
-  defining: true,
-
-  addOptions() {
-    return {
-      HTMLAttributes: {},
-    }
-  },
-
-  parseHTML() {
-    return [
-      {
-        tag: 'tei-div',
-      },
-    ]
-  },
-
-  renderHTML({ HTMLAttributes }) {
-    return ['tei-div', HTMLAttributes, 0];
-  }
-});
-
-// Custom hi mark for highlighting
-const TeiHi = Mark.create({
-  name: 'teiHi',
-  inclusive: true,
-  spanning: true,
-
-  addAttributes() {
-    return {
-      rend: {
-        default: null,
-        parseHTML: element => element.getAttribute('rend'),
-        renderHTML: attributes => {
-          if (!attributes.rend) {
-            return {}
-          }
-          return {
-            'rend': attributes.rend,
-          }
-        },
-      },
-    }
-  },
-
-  parseHTML() {
-    return [
-      {
-        tag: 'tei-hi'
-      },
-    ]
-  },
-
-  renderHTML({ HTMLAttributes }) {
-    return ['tei-hi', HTMLAttributes]
-  },
-
-  addCommands() {
-    return {
-      setHighlight: attributes => ({ commands }) => {
-        return commands.setMark(this.name, attributes)
-      },
-      toggleHighlight: attributes => ({ commands }) => {
-        return commands.toggleMark(this.name, attributes)
-      },
-      unsetHighlight: () => ({ commands }) => {
-        return commands.unsetMark(this.name)
-      },
-    }
-  },
-
-  addKeyboardShortcuts() {
-    return {
-      'Mod-b': () => {
-        return this.editor.commands.toggleHighlight({ rend: 'b' })
-      },
-      'Mod-i': () => this.editor.commands.toggleHighlight({ rend: 'i' })
-    }
-  }
-})
 
 // Custom page break node
 const TeiPageBreak = Node.create({
@@ -157,86 +119,6 @@ const TeiPageBreak = Node.create({
   },
 })
 
-// Custom paragraph node for TEI
-const TeiParagraph = Node.create({
-  name: 'teiP',
-  group: 'block',
-  content: 'inline*',
-
-  addAttributes() {
-    return {
-      n: {
-        default: null,
-        parseHTML: element => element.getAttribute('n'),
-        renderHTML: attributes => {
-          if (!attributes.n) {
-            return {}
-          }
-          return {
-            'n': attributes.n,
-          }
-        },
-      },
-      rend: {
-        default: null,
-        parseHTML: element => element.getAttribute('rend'),
-        renderHTML: attributes => {
-          if (!attributes.rend) {
-            return {}
-          }
-          return {
-            'rend': attributes.rend,
-          }
-        },
-      },
-    }
-  },
-
-  parseHTML() {
-    return [
-      {
-        tag: 'tei-p',
-      },
-    ]
-  },
-
-  renderHTML({ HTMLAttributes, node }) {
-    return ['tei-p', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0]
-  },
-});
-
-const TeiHead = Node.create({
-    name: 'teiHead',
-    group: 'block',
-    content: 'inline*',
-  
-    parseHTML() {
-      return [
-        {
-          tag: 'tei-head',
-        },
-      ]
-    },
-  
-    renderHTML({ HTMLAttributes, node }) {
-      return ['tei-head', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0]
-    },
-
-    addCommands() {
-      return {
-        toggleHead: () => ({ commands }) => {
-          return commands.toggleNode('teiP', 'teiHead')
-        },
-      }
-    },
-
-    addKeyboardShortcuts() {
-        return {
-        'Shift-Mod-1': () => this.editor.commands.toggleHead(),
-        }
-    },
-  })
-
 // Custom TEI extension
 const TEIExtension = Extension.create({
   name: 'tei',
@@ -247,17 +129,16 @@ const TEIExtension = Extension.create({
   }
 });
 
+const extensions = createFromSchema(schemaDef);
+
 // Initialize the editor
 editor = new Editor({
   element: document.querySelector('#editor'),
   extensions: [
     TeiDocument,
     Text,
-    TeiParagraph,
-    TeiDivision,
+    ...extensions,
     TeiPageBreak,
-    TeiHead,
-    TeiHi,
     TEIExtension,
     Placeholder.configure({
       placeholder: 'Insert text here',
