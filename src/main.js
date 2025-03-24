@@ -1,4 +1,4 @@
-import { Editor, Extension, Node, Mark, mergeAttributes } from '@tiptap/core'
+import { Editor, Extension } from '@tiptap/core'
 import Document from '@tiptap/extension-document';
 import Text from '@tiptap/extension-text';
 import Placeholder from '@tiptap/extension-placeholder';
