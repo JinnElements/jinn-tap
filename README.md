@@ -1,41 +1,69 @@
 # TEI Editor
 
-A web-based WYSIWYG editor built with Tiptap.
-
-[Demo](https://wolfgangmm.github.io/editor-test/) (based on current main branch).
+A rich text editor for creating and editing TEI XML documents. This editor provides a user-friendly interface for working with TEI markup while maintaining the structural integrity of the document.
 
 ## Features
 
-- Rich text editing with basic formatting
-- Keyboard shortcuts for common operations
-- Clean and modern interface
+- Rich text editing with TEI XML support
+- Real-time XML preview
+- Support for common TEI elements (paragraphs, lists, page breaks)
+- Support for TEI inline elements (highlighting, additions, deletions)
+- Attribute editing through a side panel
+- Copy to clipboard functionality
+- Responsive design
 
 ## Keyboard Shortcuts
 
-- `Mod + B`: Toggle bold
-- `Mod + I`: Toggle italic
-- `Shift + Mod + 1`: Heading
+The editor supports the following keyboard shortcuts:
 
-## Setup
+### Text Formatting
+- `Ctrl/Cmd + B` - Toggle bold text (hi with rend="bold")
+- `Ctrl/Cmd + I` - Toggle italic text (hi with rend="italic")
+- `Ctrl/Cmd + U` - Toggle underline text (hi with rend="underline")
+- `Ctrl/Cmd + Shift + S` - Toggle strikethrough text (del with rend="strikethrough")
 
-1. Install dependencies:
-```bash
-npm install
-```
+### TEI Elements
+- `Ctrl/Cmd + Shift + P` - Insert page break
+- `Ctrl/Cmd + Shift + L` - Toggle list
+- `Tab` - Indent list item
+- `Shift + Tab` - Outdent list item
+- `Enter` - Create new list item
+- `Backspace` at start of list item - Convert to paragraph
 
-2. Start the development server:
-```bash
-npm run dev
-```
+### General
+- `Ctrl/Cmd + C` - Copy selected text
+- `Ctrl/Cmd + V` - Paste text
+- `Ctrl/Cmd + X` - Cut text
+- `Ctrl/Cmd + Z` - Undo
+- `Ctrl/Cmd + Shift + Z` - Redo
 
-3. Open your browser and navigate to the URL shown in the terminal (typically http://localhost:5173)
+## Getting Started
 
-## Building for Production
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+4. Open your browser and navigate to `http://localhost:5173`
 
-To create a production build:
+## Usage
 
-```bash
-npm run build
-```
+1. Start typing in the editor to create content
+2. Use the toolbar or keyboard shortcuts to apply formatting
+3. Use the side panel to edit attributes of selected elements
+4. Click the "Copy TEI" button to copy the current content as TEI XML
 
-The built files will be in the `dist` directory. 
+## Development
+
+The project uses:
+- Vite for build tooling
+- Tiptap for the rich text editor
+- ProseMirror for the underlying editor engine
+
+## License
+
+MIT 

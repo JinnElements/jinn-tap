@@ -69,6 +69,18 @@ const schemaDef = {
         type: 'block',
         defining: true,
         content: 'block+'
+    },
+    item: {
+        type: 'listItem',
+        content: 'p block*',
+        defining: true
+    },
+    list: {
+        type: 'list',
+        content: 'item+',
+        keyboard: {
+            'Mod-Shift-l': {}
+        }
     }
 };
 

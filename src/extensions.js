@@ -13,9 +13,18 @@ export function createFromSchema(schemaDef) {
             NodeOrMark = TeiInline.extend({
                 name: name
             });
+        } else if (def.type === 'list') {
+            NodeOrMark = TeiList.extend({
+                name: name
+            });
+        } else if (def.type === 'listItem') {
+            NodeOrMark = TeiItem.extend({
+                name: name
+            });
         } else if (def.type === 'block') {
             NodeOrMark = TeiBlock.extend({
                 name: name,
+                group: def.group || 'block',
                 defining: def.defining,
                 priority: def.priority,
                 inline: def.inline,
@@ -159,5 +168,42 @@ export const TeiBlock = Node.create({
                 return commands.setNode(this.name, attributes);
             }
         }
+    }
+});
+
+export const TeiList = TeiBlock.extend({
+    name: 'list',
+    content: 'item+',
+    group: 'block',
+    defining: true,
+    inline: false,
+    
+    addCommands() {
+        return {}
+    },
+
+    addKeyboardShortcuts() {
+        const shortcuts = {};
+        if (this.options.shortcuts) {
+            Object.entries(this.options.shortcuts).forEach(([shortcut, attributes]) => {
+                shortcuts[shortcut] = () => {
+                    return this.editor.commands.toggleList(this.name, 'item', attributes);
+                }
+            });
+        }
+        return shortcuts;
+    }
+});
+
+export const TeiItem = TeiBlock.extend({
+    name: 'item',
+    content: 'block*',
+    group: 'item',
+    addKeyboardShortcuts() {
+        return {
+            Enter: () => this.editor.commands.splitListItem(this.name),
+            Tab: () => this.editor.commands.sinkListItem(this.name),
+            'Shift-Tab': () => this.editor.commands.liftListItem(this.name)
+        };
     }
 });

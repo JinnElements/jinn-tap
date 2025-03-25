@@ -9,7 +9,7 @@ body {
 
 .editor-container {
     display: grid;
-    grid-template-rows: min-content 1fr min-content minmax(20vh, auto);
+    grid-template-rows: min-content 1fr min-content auto;
     grid-template-columns: 1fr minmax(30vw, 460px);
     grid-template-areas:
         "toolbar toolbar"
@@ -34,6 +34,7 @@ body {
 
 #output {
     grid-area: output;
+    max-height: 25vh;
     margin-top: 20px;
     padding: 10px;
     border: 1px solid #ccc;
@@ -222,53 +223,4 @@ pre {
     float: left;
     height: 0;
     pointer-events: none;
-}
-
-tei-head {
-    font-size: 1.5em;
-    font-weight: bold;
-}
-
-tei-title[level="m"] {
-    font-style: italic;
-}
-
-tei-div {
-    display: block;
-    border: 1px solid #ccc;
-    padding: 1em;
-    margin: 1em;
-}
-
-tei-p {
-    display: block;
-    margin: 0.5em 0;
-    padding: 0.5em;
-    border: 1px dashed #eee;
-    border-radius: 4px;
-    position: relative;
-}
-
-tei-p[rend="center"] {
-    text-align: center;
-}
-
-tei-p[rend="right"] {
-    text-align: right;
-}
-
-tei-p[rend="justify"] {
-    text-align: justify;
-}
-
-tei-hi[rend="b"] {
-    font-weight: bold;
-}
-
-tei-hi[rend="i"] {
-    font-style: italic;
-}
-
-tei-persname {
-    font-variant: small-caps;
 }
