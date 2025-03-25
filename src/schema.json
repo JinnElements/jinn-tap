@@ -1,0 +1,120 @@
+{
+    "hi": {
+        "type": "inline",
+        "attributes": {
+            "rend": {
+                "type": "string",
+                "default": "i",
+                "enum": ["i", "b", "u"]
+            }
+        },
+        "keyboard": {
+            "Cmd-b": { "rend": "b" },
+            "Cmd-i": { "rend": "i" },
+            "Cmd-u": { "rend": "u" }
+        },
+        "toolbar": {
+            "Bold": {
+                "attributes": { "rend": "b" },
+                "icon": "bi-type-bold"
+            },
+            "Italic": {
+                "attributes": { "rend": "i" },
+                "icon": "bi-type-italic"
+            }
+        }
+    },
+    "title": {
+        "type": "inline",
+        "attributes": {
+            "level": {
+                "type": "string",
+                "enum": ["m", "s", "a"]
+            }
+        },
+        "keyboard": {
+            "Mod-Alt-t": { "level": "m" }
+        },
+        "toolbar": {
+            "Title": {
+                "attributes": { "level": "m" },
+                "icon": "bi-quote"
+            }
+        }
+    },
+    "persName": {
+        "type": "inline",
+        "attributes": {
+            "key": {
+                "type": "string"
+            }
+        },
+        "keyboard": {
+            "Mod-Shift-p": {}
+        },
+        "toolbar": {
+            "Person": {
+                "attributes": {},
+                "icon": "bi-person"
+            }
+        }
+    },
+    "p": {
+        "type": "block",
+        "priority": 100
+    },
+    "head": {
+        "type": "block",
+        "attributes": {
+            "type": {
+                "type": "string"
+            },
+            "n": {
+                "type": "string"
+            }
+        },
+        "keyboard": {
+            "Shift-Mod-1": {}
+        },
+        "toolbar": {
+            "Head": {
+                "attributes": {},
+                "icon": "bi-type-h1"
+            }
+        }
+    },
+    "div": {
+        "type": "block",
+        "defining": true,
+        "content": "block+"
+    },
+    "item": {
+        "type": "listItem",
+        "content": "p block*",
+        "defining": true
+    },
+    "list": {
+        "type": "list",
+        "content": "item+",
+        "keyboard": {
+            "Mod-Shift-l": {}
+        },
+        "toolbar": {
+            "List": {
+                "attributes": {},
+                "icon": "bi-list-ul"
+            }
+        }
+    },
+    "pb": {
+        "type": "inline",
+        "attributes": {
+            "n": {
+                "type": "string"
+            }
+        },
+        "keyboard": {
+            "Mod-Shift-p": {}
+        }
+    }
+} 

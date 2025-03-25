@@ -164,7 +164,7 @@ export const TeiBlock = Node.create({
 
     addCommands() {
         return {
-            [`toggle${this.name.charAt(0).toUpperCase() + this.name.slice(1)}`]: () => ({ commands, attributes }) => {
+            [`set${this.name.charAt(0).toUpperCase() + this.name.slice(1)}`]: () => ({ commands, attributes }) => {
                 return commands.setNode(this.name, attributes);
             }
         }

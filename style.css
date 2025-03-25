@@ -1,5 +1,6 @@
 html {
     font-size: 16px;
+    line-height: 1.5;
 }
 
 body {
@@ -12,19 +13,28 @@ body {
     grid-template-rows: min-content 1fr min-content auto;
     grid-template-columns: 1fr minmax(30vw, 460px);
     grid-template-areas:
-        "toolbar toolbar"
+        "toolbar attribute-panel"
         "editor attribute-panel"
         "controls controls"
         "output output";
-    gap: 20px;
+    column-gap: 20px;
     height: 100vh;
     margin: 0 20px;
+    padding: 1rem;
 }
 
 #editor {
     grid-area: editor;
     flex: 1;
     overflow: auto;
+}
+
+.toolbar {
+    grid-area: toolbar;
+}
+
+.toolbar-button i {
+    font-size: 1.2rem;
 }
 
 #attribute-panel {
@@ -135,15 +145,6 @@ body {
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
-.toolbar {
-    grid-area: toolbar;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-    margin-bottom: 10px;
-    display: flex;
-    gap: 5px;
-}
-
 .ProseMirror {
     outline: none;
 }
@@ -153,6 +154,7 @@ body {
 }
 
 .controls {
+    grid-area: controls;
     margin-top: 20px;
     display: flex;
     gap: 10px;
