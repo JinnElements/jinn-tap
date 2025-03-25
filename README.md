@@ -1,6 +1,8 @@
 # TEI Editor
 
-A rich text editor for creating and editing TEI XML documents. This editor provides a user-friendly interface for working with TEI markup while maintaining the structural integrity of the document.
+A rich text editor for creating and editing TEI XML documents. This editor provides a user-friendly interface for working with TEI markup while maintaining the structural integrity of the document. 
+
+[Demo](https://wolfgangmm.github.io/editor-test/)
 
 ## Features
 
@@ -20,10 +22,9 @@ The editor supports the following keyboard shortcuts:
 - `Ctrl/Cmd + B` - Toggle bold text (hi with rend="bold")
 - `Ctrl/Cmd + I` - Toggle italic text (hi with rend="italic")
 - `Ctrl/Cmd + U` - Toggle underline text (hi with rend="underline")
-- `Ctrl/Cmd + Shift + S` - Toggle strikethrough text (del with rend="strikethrough")
 
 ### TEI Elements
-- `Ctrl/Cmd + Shift + P` - Insert page break
+- `Ctrl/Cmd + Shift + P` - Insert TEI persName
 - `Ctrl/Cmd + Shift + L` - Toggle list
 - `Tab` - Indent list item
 - `Shift + Tab` - Outdent list item
