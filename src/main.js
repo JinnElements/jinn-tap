@@ -1,10 +1,12 @@
-import { Editor, Extension } from '@tiptap/core'
+import { Editor, Extension } from '@tiptap/core';
 import Document from '@tiptap/extension-document';
+import History from '@tiptap/extension-history';
 import Text from '@tiptap/extension-text';
 import Placeholder from '@tiptap/extension-placeholder';
 import { serializeToTEI } from './serialize.js';
 import { createFromSchema } from './extensions.js';
 import { TeiPageBreak } from './pb.js';
+import { AttributePanel } from './attribute-panel.js';
 
 const schemaDef = {
     hi: {
@@ -36,6 +38,11 @@ const schemaDef = {
     },
     persName: {
         type: 'inline',
+        attributes: {
+            key: {
+                type: 'string'
+            }
+        },
         keyboard: {
             'Mod-Shift-p': {}
         }
@@ -93,6 +100,7 @@ editor = new Editor({
     ...extensions,
     TeiPageBreak,
     TEIExtension,
+    History,
     Placeholder.configure({
       placeholder: 'Insert text here',
     })
@@ -104,6 +112,9 @@ editor = new Editor({
   `,
   autofocus: true,
 });
+
+// Initialize the attribute panel
+new AttributePanel(editor, schemaDef);
 
 // Dialog handling
 const dialog = document.getElementById('pageBreakDialog');

@@ -2,6 +2,8 @@
 
 A web-based WYSIWYG editor built with Tiptap.
 
+[Demo](https://wolfgangmm.github.io/editor-test/) (based on current main branch).
+
 ## Features
 
 - Rich text editing with basic formatting
