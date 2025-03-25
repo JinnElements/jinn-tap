@@ -91,16 +91,6 @@ const TeiDocument = Document.extend({
   content: 'div+'
 });
 
-// Custom TEI extension
-const TEIExtension = Extension.create({
-  name: 'tei',
-  addStorage() {
-    return {
-      serializeToTEI: () => serializeToTEI(editor)
-    };
-  }
-});
-
 const extensions = createFromSchema(schemaDef);
 
 // Initialize the editor
@@ -111,7 +101,6 @@ editor = new Editor({
     Text,
     ...extensions,
     TeiPageBreak,
-    TEIExtension,
     History,
     Placeholder.configure({
       placeholder: 'Insert text here',
@@ -175,6 +164,6 @@ const copyButton = document.querySelector('#copyButton');
 const output = document.querySelector('#output');
 
 copyButton.addEventListener('click', () => {
-  const teiXml = editor.storage.tei.serializeToTEI();
+  const teiXml = serializeToTEI(editor);
   output.textContent = teiXml;
 });

@@ -106,7 +106,7 @@ export class AttributePanel {
         }
 
         const title = document.createElement('h3');
-        title.textContent = `${element.type.name} Attributes`;
+        title.textContent = `Attributes`;
         this.panel.appendChild(title);
 
         Object.entries(def.attributes).forEach(([attrName, attrDef]) => {
