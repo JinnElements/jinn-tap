@@ -13,6 +13,10 @@ export function createFromSchema(schemaDef) {
             NodeOrMark = TeiInline.extend({
                 name: name
             });
+        } else if (def.type === 'empty') {
+            NodeOrMark = TeiEmptyElement.extend({
+                name: name
+            });
         } else if (def.type === 'list') {
             NodeOrMark = TeiList.extend({
                 name: name
@@ -33,7 +37,8 @@ export function createFromSchema(schemaDef) {
         }
         return NodeOrMark.configure({
             shortcuts: def.keyboard,
-            attributes: def.attributes
+            attributes: def.attributes,
+            label: def.label
         });
     });
 }
@@ -205,5 +210,50 @@ export const TeiItem = TeiBlock.extend({
             Tab: () => this.editor.commands.sinkListItem(this.name),
             'Shift-Tab': () => this.editor.commands.liftListItem(this.name)
         };
+    }
+});
+
+export const TeiEmptyElement = TeiBlock.extend({
+    name: 'emptyElement',
+    group: 'inline',
+    content: '',
+    inline: true,
+
+    addOptions() {
+        return {
+            label: 'Empty Element'
+        }
+    },
+
+    addNodeView() {
+        return ({ node }) => {
+            const dom = document.createElement(`tei-${this.name}`);
+            dom.classList.add('empty-element');
+            dom.innerHTML = this.options.label;
+            return {
+                dom,
+                update: (updatedNode) => {
+                    if (updatedNode.type !== node.type) {
+                        return false;
+                    }
+                    return true;
+                }
+            }
+        }
+    },
+
+    addKeyboardShortcuts() {
+        const shortcuts = {};
+        if (this.options.shortcuts) {
+            Object.entries(this.options.shortcuts).forEach(([shortcut, attributes]) => {
+                shortcuts[shortcut] = () => {
+                    return this.editor.commands.insertContent({
+                        type: this.name,
+                        attrs: attributes
+                    });
+                }
+            });
+        }
+        return shortcuts;
     }
 });

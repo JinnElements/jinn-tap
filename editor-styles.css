@@ -59,3 +59,10 @@ tei-item {
     list-style-position: outside;
     margin: 0.5em 0;
 }
+
+tei-pb {
+    display: inline-block;
+    background-color: #ffa500;
+    border-radius: 4px;
+    padding: 2px 6px;
+}

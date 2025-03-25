@@ -53,14 +53,6 @@ body {
     overflow-y: auto;
 }
 
-.page-break {
-    border-top: 1px dashed #ccc;
-    margin: 20px 0;
-    padding: 10px;
-    text-align: center;
-    color: #666;
-}
-
 .dialog {
     display: none;
     position: fixed;
@@ -167,15 +159,6 @@ pre {
     overflow-x: auto;
     white-space: pre-wrap;
     word-wrap: break-word;
-}
-
-.page-break {
-    margin: 1em 0;
-    padding: 0.5em;
-    text-align: center;
-    color: #666;
-    border-radius: 4px;
-    border: 1px dashed #ccc;
 }
 
 .dialog {

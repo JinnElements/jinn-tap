@@ -10,7 +10,7 @@ export class Toolbar {
         const sortedEntries = Object.entries(schemaDef).sort(([, a], [, b]) => {
             // Define type order: blocks/lists first, then inline
             const getTypeOrder = (type) => {
-                if (type === 'block' || type === 'list') return 0;
+                if (type === 'block' || type === 'list' || type === 'empty') return 0;
                 if (type === 'inline') return 1;
                 return 2; // Other types
             };
@@ -25,6 +25,11 @@ export class Toolbar {
                         this.editor.chain().focus().toggleMark(name, toolbarDef.attributes).run();
                     } else if (def.type === 'list') {
                         this.editor.chain().focus().toggleList(name, toolbarDef.attributes).run();
+                    } else if (def.type === 'empty') {
+                        this.editor.chain().focus().insertContent({
+                            type: name,
+                            attrs: toolbarDef.attributes
+                        }).run();
                     } else {
                         this.editor.chain().focus().setNode(name, toolbarDef.attributes).run();
                     }
