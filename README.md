@@ -1,4 +1,4 @@
-# TEI Editor
+# jinn-tap
 
 A rich text editor for creating and editing TEI XML documents. This editor provides a user-friendly interface for working with TEI markup while maintaining the structural integrity of the document. 
 
@@ -67,4 +67,4 @@ The project uses:
 
 ## License
 
-MIT 
+[GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
