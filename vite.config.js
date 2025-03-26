@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  base: '/editor-test/',  // Replace with your repository name
+  base: '/jinn-tap/',  // Replace with your repository name
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
