@@ -1,4 +1,6 @@
 import { Mark, Node } from '@tiptap/core'
+import Document from '@tiptap/extension-document';
+import Text from '@tiptap/extension-text';
 
 /**
  * Create nodes and marks from a schema definition.
@@ -7,7 +9,11 @@ import { Mark, Node } from '@tiptap/core'
  * @returns {Array} - nodes and marks
  */
 export function createFromSchema(schemaDef) {
-    return Object.entries(schemaDef).map(([name, def]) => {
+    const extensions = [
+        TeiDocument,
+        Text,
+    ];
+    Object.entries(schemaDef).forEach(([name, def]) => {
         let NodeOrMark; 
         if (def.type === 'inline') {
             NodeOrMark = TeiInline.extend({
@@ -35,13 +41,19 @@ export function createFromSchema(schemaDef) {
                 content: def.content
             });
         }
-        return NodeOrMark.configure({
+        extensions.push(NodeOrMark.configure({
             shortcuts: def.keyboard,
             attributes: def.attributes,
             label: def.label
-        });
+        }));
     });
+    return extensions;
 }
+
+// Custom document extension that requires tei-div
+const TeiDocument = Document.extend({
+    content: 'div+'
+});
 
 // Base inline mark for TEI
 export const TeiInline = Mark.create({

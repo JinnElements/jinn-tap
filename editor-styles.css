@@ -17,9 +17,6 @@ tei-div {
 tei-p {
     display: block;
     margin: 0.5em 0;
-    padding: 0.5em;
-    border: 1px dashed #eee;
-    border-radius: 4px;
     position: relative;
 }
 

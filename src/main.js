@@ -1,8 +1,6 @@
-import { Editor, Extension } from '@tiptap/core';
-import Document from '@tiptap/extension-document';
+import { Editor } from '@tiptap/core';
 import History from '@tiptap/extension-history';
-import Text from '@tiptap/extension-text';
-import Placeholder from '@tiptap/extension-placeholder';
+// import Placeholder from '@tiptap/extension-placeholder';
 import { serializeToTEI } from './serialize.js';
 import { createFromSchema } from './extensions.js';
 import { AttributePanel } from './attribute-panel.js';
@@ -13,24 +11,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let editor;
 
-    // Custom document extension that requires tei-div
-    const TeiDocument = Document.extend({
-        content: 'div+'
-    });
-
     const extensions = createFromSchema(schema);
 
     // Initialize the editor
     editor = new Editor({
         element: document.querySelector('#editor'),
         extensions: [
-            TeiDocument,
-            Text,
+            // Placeholder.configure({
+            //     placeholder: 'Insert text here',
+            //     includeChildren: true
+            // }),
             ...extensions,
-            History,
-            Placeholder.configure({
-                placeholder: 'Insert text here',
-            })
+            History
         ],
         content: `
     <tei-div>
@@ -41,10 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Initialize toolbar
-    const toolbar = new Toolbar(editor, schema);
+    new Toolbar(editor, schema);
 
     // Initialize attribute panel
-    const attributePanel = new AttributePanel(editor, schema);
+    new AttributePanel(editor, schema);
 
     // Add copy functionality
     const copyButton = document.querySelector('#copyButton');
