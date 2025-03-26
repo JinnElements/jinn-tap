@@ -48,7 +48,11 @@ tei-hi[rend="u"] {
 }
 
 tei-persname {
-    font-variant: small-caps;
+    color: #A83410;
+}
+
+tei-placeName {
+    color: #E48500;
 }
 
 tei-list {

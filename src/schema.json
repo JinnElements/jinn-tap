@@ -63,6 +63,23 @@
             }
         }
     },
+    "placeName": {
+        "type": "inline",
+        "attributes": {
+            "key": {
+                "type": "string"
+            }
+        },
+        "keyboard": {
+            "Mod-Shift-h": {}
+        },
+        "toolbar": {
+            "Person": {
+                "attributes": {},
+                "icon": "bi-geo-alt"
+            }
+        }
+    },
     "p": {
         "type": "block",
         "priority": 100,
@@ -75,6 +92,7 @@
     },
     "head": {
         "type": "block",
+        "group": "heading",
         "attributes": {
             "type": {
                 "type": "string"
@@ -96,7 +114,7 @@
     "div": {
         "type": "block",
         "defining": true,
-        "content": "block+"
+        "content": "heading? block+"
     },
     "item": {
         "type": "listItem",
