@@ -1,4 +1,5 @@
 export class AttributePanel {
+
     constructor(editor, schemaDef) {
         this.editor = editor;
         this.schemaDef = schemaDef;
@@ -6,10 +7,11 @@ export class AttributePanel {
         this.currentMark = null;
         this.panel = this.createPanel();
         this.setupEventListeners();
+        this.pendingChanges = {};
     }
 
     createPanel() {
-        const panel = document.getElementById('attribute-panel');
+        const panel = document.querySelector('#attribute-panel form');
         if (!panel) {
             console.error('Could not find element with id "attribute-panel"');
             return;
@@ -24,8 +26,12 @@ export class AttributePanel {
         });
 
         // Listen for content changes
-        this.editor.on('transaction', ({ editor }) => {
+        this.editor.on('update', ({ editor }) => {
             this.updatePanelForCurrentPosition(editor);
+        });
+
+        this.editor.options.element.addEventListener('empty-element-clicked', ({ detail }) => {
+            this.showNodeAttributes(detail.node);
         });
     }
 
@@ -91,6 +97,7 @@ export class AttributePanel {
         if (!this.panel) return;
         
         this.panel.innerHTML = '';
+        this.pendingChanges = {};
         
         if (!this.currentNode && !this.currentMark) {
             this.panel.innerHTML = '<p>Select text or a node to edit attributes</p>';
@@ -105,19 +112,10 @@ export class AttributePanel {
             return;
         }
 
-        const title = document.createElement('h3');
-        title.textContent = `Attributes`;
-        this.panel.appendChild(title);
-
         Object.entries(def.attributes).forEach(([attrName, attrDef]) => {
-            const container = document.createElement('div');
-            container.style.marginBottom = '15px';
-
             const label = document.createElement('label');
             label.textContent = attrName;
-            label.style.display = 'block';
-            label.style.marginBottom = '5px';
-            container.appendChild(label);
+            this.panel.appendChild(label);
 
             let input;
             if (attrDef.enum) {
@@ -132,30 +130,39 @@ export class AttributePanel {
                 input = document.createElement('input');
                 input.type = 'text';
             }
-
             input.value = element.attrs[attrName] || attrDef.default || '';
-            input.style.width = '100%';
-            input.style.padding = '5px';
-            input.style.border = '1px solid #ccc';
-            input.style.borderRadius = '4px';
 
             input.addEventListener('change', () => {
-                const value = input.value;
-                if (this.currentNode) {
-                    this.editor.chain()
-                        .focus()
-                        .updateAttributes(this.currentNode.type.name, { [attrName]: value })
-                        .run();
-                } else if (this.currentMark) {
-                    this.editor.chain()
-                        .focus()
-                        .updateAttributes(this.currentMark.type.name, { [attrName]: value })
-                        .run();
-                }
+                this.pendingChanges[attrName] = input.value;
             });
 
-            container.appendChild(input);
-            this.panel.appendChild(container);
+            label.appendChild(input);
         });
+
+        // Add Apply button if there are attributes
+        if (Object.keys(def.attributes).length > 0) {
+            const applyButton = document.createElement('button');
+            applyButton.dataset.tooltip = 'Apply Changes';
+            applyButton.type = 'submit';
+            applyButton.innerHTML = '<i class="bi bi-check-all"></i>';
+            applyButton.addEventListener('click', (ev) => {
+                ev.preventDefault();
+                if (Object.keys(this.pendingChanges).length > 0) {
+                    if (this.currentNode) {
+                        this.editor.chain()
+                            .focus()
+                            .updateAttributes(this.currentNode.type.name, this.pendingChanges)
+                            .run();
+                    } else if (this.currentMark) {
+                        this.editor.chain()
+                            .focus()
+                            .updateAttributes(this.currentMark.type.name, this.pendingChanges)
+                            .run();
+                    }
+                    this.pendingChanges = {};
+                }
+            });
+            this.panel.appendChild(applyButton);
+        }
     }
 } 

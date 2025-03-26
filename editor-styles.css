@@ -43,6 +43,10 @@ tei-hi[rend="i"] {
     font-style: italic;
 }
 
+tei-hi[rend="u"] {
+    text-decoration: underline;
+}
+
 tei-persname {
     font-variant: small-caps;
 }

@@ -230,11 +230,23 @@ export const TeiEmptyElement = TeiBlock.extend({
             const dom = document.createElement(`tei-${this.name}`);
             dom.classList.add('empty-element');
             dom.innerHTML = this.options.label;
+            const attrString = getAttributeString(node.attrs);
+            if (attrString) {
+                dom.setAttribute('data-tooltip', attrString);
+            }
+            dom.addEventListener('click', () => {
+                this.editor.options.element.dispatchEvent(new CustomEvent('empty-element-clicked', { detail: { node } }));
+            });
             return {
                 dom,
                 update: (updatedNode) => {
                     if (updatedNode.type !== node.type) {
                         return false;
+                    }
+                    node.attrs = updatedNode.attrs;
+                    const attrString = getAttributeString(updatedNode.attrs);
+                    if (attrString) {
+                        dom.setAttribute('data-tooltip', attrString);
                     }
                     return true;
                 }
@@ -257,3 +269,9 @@ export const TeiEmptyElement = TeiBlock.extend({
         return shortcuts;
     }
 });
+
+function getAttributeString(attrs) {
+    return Object.entries(attrs || {})
+        .map(([key, value]) => `${key}="${value}"`)
+        .join(' ');
+}

@@ -21,6 +21,10 @@
             "Italic": {
                 "attributes": { "rend": "i" },
                 "icon": "bi-type-italic"
+            },
+            "Underline": {
+                "attributes": { "rend": "u" },
+                "icon": "bi-type-underline"
             }
         }
     },
@@ -61,7 +65,13 @@
     },
     "p": {
         "type": "block",
-        "priority": 100
+        "priority": 100,
+        "toolbar": {
+            "Paragraph": {
+                "attributes": {},
+                "icon": "bi-paragraph"
+            }
+        }
     },
     "head": {
         "type": "block",
@@ -119,7 +129,7 @@
         },
         "toolbar": {
             "PageBreak": {
-                "attributes": {},
+                "attributes": { "n": "22" },
                 "icon": "bi-file-earmark-break"
             }
         }
