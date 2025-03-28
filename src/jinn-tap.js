@@ -121,6 +121,8 @@ export class JinnTap extends HTMLElement {
                 </tei-div>
             `,
             autofocus: true,
+            onCreate: () => this.dispatchContentChange(),
+            onUpdate: () => this.dispatchContentChange()
         });
 
         // Initialize toolbar
@@ -128,12 +130,6 @@ export class JinnTap extends HTMLElement {
 
         // Initialize attribute panel
         this.attributePanel = new AttributePanel(this, schema);
-
-        // Dispatch event when content changes
-        this.editor.on('update', () => this.dispatchContentChange());
-
-        // Dispatch initial content-change event
-        this.dispatchContentChange();
     }
 
     dispatchContentChange() {
