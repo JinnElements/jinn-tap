@@ -13,11 +13,14 @@
     }
   },
   "files": [
-    "dist"
+    "dist/jinn-tap.es.js",
+    "dist/jinn-tap.umd.js",
+    "dist/jinn-tap.d.ts"
   ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:demo": "vite build --config vite.demo.config.js",
     "preview": "vite preview"
   },
   "dependencies": {

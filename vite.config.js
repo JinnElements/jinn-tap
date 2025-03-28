@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
+  base: '/jinn-tap/',
   build: {
     lib: {
       entry: 'src/jinn-tap.js',
@@ -10,6 +11,6 @@ export default defineConfig({
     },
     sourcemap: true,
     outDir: 'dist',
-    emptyOutDir: true
+    emptyOutDir: false
   }
 })
