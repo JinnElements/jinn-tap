@@ -1,7 +1,7 @@
 export class Toolbar {
     constructor(editor, schemaDef) {
-        this.editor = editor;
-        this.toolbar = document.querySelector('.toolbar');
+        this.editor = editor.tiptap;
+        this.toolbar = editor.querySelector('.toolbar');
         this.schemaDef = schemaDef;
         this.addButtons(schemaDef);
     }
@@ -43,7 +43,7 @@ export class Toolbar {
     createButton(name, label, def) {
         const button = document.createElement('button');
         button.type = 'button';
-        button.className = 'outline';
+        button.className = 'outline toolbar-button';
         
         // Add icon if specified in schema
         const icon = document.createElement('i');

@@ -8,123 +8,16 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
-.editor-container {
-    display: grid;
-    grid-template-rows: min-content 1fr min-content auto;
-    grid-template-columns: 1fr minmax(30vw, 460px);
-    grid-template-areas:
-        "toolbar attribute-panel"
-        "editor attribute-panel"
-        "controls controls"
-        "output output";
-    column-gap: 20px;
+main {
+    display: flex;
+    flex-direction: column;
     height: 100vh;
     margin: 0 20px;
     padding: 1rem;
 }
 
-#editor {
-    grid-area: editor;
-    flex: 1;
-    overflow: auto;
-}
-
-.toolbar {
-    grid-area: toolbar;
-}
-
-.toolbar-button i {
-    font-size: 1.2rem;
-}
-
-#attribute-panel {
-    grid-area: attribute-panel;
-}
-
-#output {
-    grid-area: output;
-    max-height: 25vh;
-    margin-top: 20px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-family: monospace;
-    white-space: pre-wrap;
-    overflow-y: auto;
-}
-
-.dialog {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-}
-
-.dialog-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-}
-
-.dialog input {
-    width: 100%;
-    padding: 8px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.dialog button {
-    margin: 5px;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.dialog button:first-of-type {
-    background: #007bff;
-    color: white;
-}
-
-.dialog button:last-of-type {
-    background: #6c757d;
-    color: white;
-}
-
-/* Attribute Panel Styles */
-#attribute-panel {
-    background: white;
-    padding: 20px;
-    overflow-y: auto;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-}
-
-.ProseMirror {
-    outline: none;
-}
-
-.ProseMirror p {
-    margin: 0;
-}
-
-.controls {
-    grid-area: controls;
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
+jinn-tap {
+    flex: 2;
 }
 
 pre {
@@ -134,13 +27,4 @@ pre {
     overflow-x: auto;
     white-space: pre-wrap;
     word-wrap: break-word;
-}
-  
-.tiptap tei-p.is-empty::before {
-    color: #adb5bd;
-    content: attr(data-placeholder);
-    float: left;
-    height: 0;
-    pointer-events: none;
-    padding: 0.5em 0;
 }

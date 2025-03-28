@@ -1,22 +1,13 @@
 export class AttributePanel {
 
     constructor(editor, schemaDef) {
-        this.editor = editor;
+        this.editor = editor.tiptap;
         this.schemaDef = schemaDef;
         this.currentNode = null;
         this.currentMark = null;
-        this.panel = this.createPanel();
+        this.panel = editor.querySelector('.attribute-panel form');
         this.setupEventListeners();
         this.pendingChanges = {};
-    }
-
-    createPanel() {
-        const panel = document.querySelector('#attribute-panel form');
-        if (!panel) {
-            console.error('Could not find element with id "attribute-panel"');
-            return;
-        }
-        return panel;
     }
 
     setupEventListeners() {
