@@ -1,10 +1,15 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  base: '/jinn-tap/',  // Replace with your repository name
   build: {
+    lib: {
+      entry: 'src/jinn-tap.js',
+      name: 'JinnTap',
+      fileName: (format) => `jinn-tap.${format}.js`,
+      formats: ['es', 'umd']
+    },
+    sourcemap: true,
     outDir: 'dist',
-    assetsDir: 'assets',
-    sourcemap: true
+    emptyOutDir: true
   }
 })

@@ -1,8 +1,66 @@
 # JinnTap
 
-A rich text editor for creating and editing TEI XML documents. This editor provides a user-friendly interface for working with TEI markup while maintaining the structural integrity of the document. 
+A rich text editor for creating and editing TEI XML documents. This editor provides a user-friendly interface for working with TEI markup while maintaining the structural integrity of the document.
 
-[Demo](https://jinnelements.github.io/jinn-tap/)
+## Installation
+
+```bash
+npm install jinn-tap
+```
+
+## Usage
+
+### Basic Usage
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script type="module" src="node_modules/jinn-tap/dist/jinn-tap.es.js"></script>
+</head>
+<body>
+    <jinn-tap></jinn-tap>
+    <pre id="output"></pre>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const editor = document.querySelector('jinn-tap');
+            const output = document.querySelector('#output');
+            
+            editor.addEventListener('content-change', (event) => {
+                output.textContent = event.detail.teiXml;
+            });
+        });
+    </script>
+</body>
+</html>
+```
+
+### With Initial Content
+
+```html
+<jinn-tap content="<tei-div><tei-p>Initial content</tei-p></tei-div>"></jinn-tap>
+```
+
+### JavaScript API
+
+```javascript
+// Get the editor instance
+const editor = document.querySelector('jinn-tap').tiptap;
+
+// Set content programmatically
+editor.commands.setContent('<tei-div><tei-p>New content</tei-p></tei-div>');
+
+// Get content as HTML
+const htmlContent = editor.getHTML();
+
+// Get content as TEI XML
+const teiXml = editor.teiXml;
+
+// Focus the editor
+editor.focus();
+```
 
 ## Features
 
@@ -38,32 +96,20 @@ The editor supports the following keyboard shortcuts:
 - `Ctrl/Cmd + Z` - Undo
 - `Ctrl/Cmd + Shift + Z` - Redo
 
-## Getting Started
+## Events
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
-4. Open your browser and navigate to `http://localhost:5173`
+The component dispatches the following events:
 
-## Usage
+### content-change
+Fired when the editor content changes.
 
-1. Start typing in the editor to create content
-2. Use the toolbar or keyboard shortcuts to apply formatting
-3. Use the side panel to edit attributes of selected elements
-4. Click the "Copy TEI" button to copy the current content as TEI XML
-
-## Development
-
-The project uses:
-- Vite for build tooling
-- Tiptap for the rich text editor
-- ProseMirror for the underlying editor engine
+```javascript
+editor.addEventListener('content-change', (event) => {
+    const { content, teiXml } = event.detail;
+    // content: HTML content
+    // teiXml: TEI XML content
+});
+```
 
 ## License
 

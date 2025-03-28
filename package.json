@@ -1,10 +1,20 @@
 {
   "name": "jinn-tap",
-  "main": "dist/jinn-tap.js",
-  "private": true,
   "version": "0.1.0",
   "type": "module",
-  "license": "GPL-3.0-or-later",
+  "main": "./dist/jinn-tap.umd.js",
+  "module": "./dist/jinn-tap.es.js",
+  "types": "./dist/jinn-tap.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/jinn-tap.es.js",
+      "require": "./dist/jinn-tap.umd.js",
+      "types": "./dist/jinn-tap.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -12,11 +22,25 @@
   },
   "dependencies": {
     "@tiptap/core": "^2.1.13",
+    "@tiptap/extension-history": "^2.1.13",
     "@tiptap/extension-placeholder": "^2.11.5",
     "@tiptap/pm": "^2.1.13",
     "@tiptap/starter-kit": "^2.1.13"
   },
   "devDependencies": {
     "vite": "^5.1.0"
+  },
+  "keywords": [
+    "tei",
+    "xml",
+    "editor",
+    "tiptap",
+    "web-component"
+  ],
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/jinn-tap.git"
   }
 }
