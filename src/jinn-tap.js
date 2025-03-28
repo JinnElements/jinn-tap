@@ -95,6 +95,8 @@ export class JinnTap extends HTMLElement {
     }
 
     setupEditor() {
+        const initialContent = this.innerHTML;
+
         // Create the editor container structure
         this.innerHTML = `
             <div class="editor-container">
@@ -115,9 +117,9 @@ export class JinnTap extends HTMLElement {
                 ...extensions,
                 History
             ],
-            content: this.getAttribute('content') || `
+            content: initialContent || `
                 <tei-div>
-                    <tei-p>This is a TEI paragraph.</tei-p>
+                    <tei-p></tei-p>
                 </tei-div>
             `,
             autofocus: true,

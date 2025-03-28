@@ -16,15 +16,15 @@
         "toolbar": {
             "Bold": {
                 "attributes": { "rend": "b" },
-                "icon": "bi-type-bold"
+                "label": "<i class='bi bi-type-bold'></i>"
             },
             "Italic": {
                 "attributes": { "rend": "i" },
-                "icon": "bi-type-italic"
+                "label": "<i class='bi bi-type-italic'></i>"
             },
             "Underline": {
                 "attributes": { "rend": "u" },
-                "icon": "bi-type-underline"
+                "label": "<i class='bi bi-type-underline'></i>"
             }
         }
     },
@@ -42,7 +42,7 @@
         "toolbar": {
             "Title": {
                 "attributes": { "level": "m" },
-                "icon": "bi-quote"
+                "label": "<i class='bi bi-quote'></i>"
             }
         }
     },
@@ -59,7 +59,7 @@
         "toolbar": {
             "Person": {
                 "attributes": {},
-                "icon": "bi-person"
+                "label": "<i class='bi bi-person'></i>"
             }
         }
     },
@@ -76,7 +76,7 @@
         "toolbar": {
             "Person": {
                 "attributes": {},
-                "icon": "bi-geo-alt"
+                "label": "<i class='bi bi-geo-alt'></i>"
             }
         }
     },
@@ -86,7 +86,7 @@
         "toolbar": {
             "Paragraph": {
                 "attributes": {},
-                "icon": "bi-paragraph"
+                "label": "<i class='bi bi-paragraph'></i>"
             }
         }
     },
@@ -107,7 +107,7 @@
         "toolbar": {
             "Head": {
                 "attributes": {},
-                "icon": "bi-type-h1"
+                "label": "<i class='bi bi-type-h1'></i>"
             }
         }
     },
@@ -130,7 +130,7 @@
         "toolbar": {
             "List": {
                 "attributes": {},
-                "icon": "bi-list-ul"
+                "label": "<i class='bi bi-list-ul'></i>"
             }
         }
     },
@@ -148,7 +148,7 @@
         "toolbar": {
             "PageBreak": {
                 "attributes": { "n": "22" },
-                "icon": "bi-file-earmark-break"
+                "label": "<i class='bi bi-file-earmark-break'></i>"
             }
         }
     }

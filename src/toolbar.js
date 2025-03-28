@@ -46,9 +46,9 @@ export class Toolbar {
         button.className = 'outline toolbar-button';
         
         // Add icon if specified in schema
-        const icon = document.createElement('i');
-        icon.className = `bi ${def.icon}`;
-        button.appendChild(icon);
+        if (def.label) {
+            button.innerHTML = def.label;
+        }
         
         // Add tooltip
         button.title = label.charAt(0).toUpperCase() + label.slice(1);
