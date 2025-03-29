@@ -52,6 +52,10 @@ tei-placeName {
     color: #E48500;
 }
 
+tei-term {
+    color: #9236A4;
+}
+
 tei-list {
     display: block;
     list-style-type: disc;

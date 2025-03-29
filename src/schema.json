@@ -9,9 +9,15 @@
             }
         },
         "keyboard": {
-            "Cmd-b": { "rend": "b" },
-            "Cmd-i": { "rend": "i" },
-            "Cmd-u": { "rend": "u" }
+            "Cmd-b": { 
+                "attributes": { "rend": "b" }
+            },
+            "Cmd-i": { 
+                "attributes": { "rend": "i" }
+            },
+            "Cmd-u": { 
+                "attributes": { "rend": "u" }
+            }
         },
         "toolbar": {
             "Bold": {
@@ -37,7 +43,9 @@
             }
         },
         "keyboard": {
-            "Mod-Alt-t": { "level": "m" }
+            "Mod-Alt-t": { 
+                "attributes": { "level": "m" }
+            }
         },
         "toolbar": {
             "Title": {
@@ -54,7 +62,9 @@
             }
         },
         "keyboard": {
-            "Mod-Shift-p": {}
+            "Mod-Shift-p": {
+                "attributes": {}
+            }
         },
         "toolbar": {
             "Person": {
@@ -71,12 +81,33 @@
             }
         },
         "keyboard": {
-            "Mod-Shift-h": {}
+            "Mod-Shift-h": {
+                "attributes": {}
+            }
         },
         "toolbar": {
-            "Person": {
+            "Place": {
                 "attributes": {},
                 "label": "<i class='bi bi-geo-alt'></i>"
+            }
+        }
+    },
+    "term": {
+        "type": "inline",
+        "attributes": {
+            "key": {
+                "type": "string"
+            }
+        },
+        "keyboard": {
+            "Mod-Shift-t": {
+                "attributes": {}
+            }
+        },
+        "toolbar": {
+            "Term": {
+                "attributes": {},
+                "label": "<i class='bi bi-bookmark'></i>"
             }
         }
     },
@@ -102,7 +133,12 @@
             }
         },
         "keyboard": {
-            "Shift-Mod-1": {}
+            "Shift-Mod-1": {
+                "attributes": {
+                    "type": "h1",
+                    "n": "1"
+                }
+            }
         },
         "toolbar": {
             "Head": {
@@ -114,7 +150,20 @@
     "div": {
         "type": "block",
         "defining": true,
-        "content": "heading? block+"
+        "content": "heading? block+",
+        "defaultContent": {
+            "type": "p",
+            "content": [{
+                "type": "text",
+                "text": "Hello, world!"
+            }]
+        },
+        "keyboard": {
+            "Mod-Shift-i": {
+                "attributes": {},
+                "command": "addDiv"
+            }
+        }
     },
     "item": {
         "type": "listItem",
@@ -125,7 +174,9 @@
         "type": "list",
         "content": "item+",
         "keyboard": {
-            "Mod-Shift-l": {}
+            "Mod-Shift-l": {
+                "attributes": {}
+            }
         },
         "toolbar": {
             "List": {
@@ -143,7 +194,11 @@
             }
         },
         "keyboard": {
-            "Mod-Shift-p": {}
+            "Mod-Shift-p": {
+                "attributes": {
+                    "n": "22"
+                }
+            }
         },
         "toolbar": {
             "PageBreak": {

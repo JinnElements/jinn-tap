@@ -12,10 +12,21 @@
 </head>
 
 <body>
-    <main>
-        <jinn-tap><tei-div><tei-p>My name is <tei-persName><tei-hi rend="i">Rudi <tei-hi rend="b">Rüssel</tei-hi></tei-hi></tei-persName>.</tei-p></tei-div></jinn-tap>
+    <div class="container">
+        <div class="header">
+            <h1>JinnTap</h1>
+            <div class="file-upload">
+                <input type="file" id="xmlFile" accept=".xml">
+                <label for="xmlFile">
+                    <i class="bi bi-upload"></i>
+                    Upload XML
+                </label>
+            </div>
+        </div>
+        <jinn-tap></jinn-tap>
         <pre id="output"></pre>
-    </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/xml-formatter@3.6.5/dist/browser/xml-formatter-singleton.js"></script>
     <script type="module" src="/src/demo.js"></script>
 </body>
 

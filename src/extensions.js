@@ -1,4 +1,4 @@
-import { Mark, Node } from '@tiptap/core'
+import { findParentNodeClosestToPos, Mark, Node, NodePos } from '@tiptap/core'
 import Document from '@tiptap/extension-document';
 import Text from '@tiptap/extension-text';
 
@@ -44,7 +44,8 @@ export function createFromSchema(schemaDef) {
         extensions.push(NodeOrMark.configure({
             shortcuts: def.keyboard,
             attributes: def.attributes,
-            label: def.label
+            label: def.label,
+            defaultContent: def.defaultContent
         }));
     });
     return extensions;
@@ -103,9 +104,9 @@ export const TeiInline = Mark.create({
     addKeyboardShortcuts() {
         const shortcuts = {};
         if (this.options.shortcuts) {
-            Object.entries(this.options.shortcuts).forEach(([shortcut, attributes]) => {
+            Object.entries(this.options.shortcuts).forEach(([shortcut, config]) => {
                 shortcuts[shortcut] = () => {
-                    return this.editor.commands.toggleMark(this.name, attributes);
+                    return this.editor.commands.toggleMark(this.name, config.attributes);
                 }
             });
         }
@@ -130,7 +131,8 @@ export const TeiBlock = Node.create({
         return {
             tag: `tei-${this.name}`,
             shortcuts: {},
-            attributes: {}
+            attributes: {},
+            defaultContent: []
         }
     },
 
@@ -138,7 +140,7 @@ export const TeiBlock = Node.create({
         return [
             {
                 tag: this.options.tag
-            },
+            }
         ]
     },
 
@@ -170,9 +172,15 @@ export const TeiBlock = Node.create({
     addKeyboardShortcuts() {
         const shortcuts = {};
         if (this.options.shortcuts) {
-            Object.entries(this.options.shortcuts).forEach(([shortcut, attributes]) => {
-                shortcuts[shortcut] = () => {
-                    return this.editor.commands.setNode(this.name, attributes);
+            Object.entries(this.options.shortcuts).forEach(([shortcut, config]) => {
+                if (!config.command) {
+                    shortcuts[shortcut] = () => {
+                        return this.editor.commands.setNode(this.name, config.attributes);
+                    };
+                } else {
+                    shortcuts[shortcut] = () => {
+                        return this.editor.commands[config.command](this.name, config.attributes);
+                    };
                 }
             });
         }
@@ -180,9 +188,26 @@ export const TeiBlock = Node.create({
     },
 
     addCommands() {
+        const ucName = this.name.charAt(0).toUpperCase() + this.name.slice(1);
         return {
-            [`set${this.name.charAt(0).toUpperCase() + this.name.slice(1)}`]: () => ({ commands, attributes }) => {
+            [`set${ucName}`]: () => ({ commands, attributes }) => {
                 return commands.setNode(this.name, attributes);
+            },
+            [`add${ucName}`]: () => ({ commands, attributes }) => {
+                const { state } = this.editor;
+                const $pos = state.selection.$to;
+                const div = findParentNodeClosestToPos($pos, node => node.type.name === this.name);
+                console.log(div);
+                return this.editor.chain().insertContentAt(div.pos + 1, {
+                    type: this.name,
+                    attrs: attributes,
+                    content: [
+                        {
+                            type: 'p',
+                            content: []
+                        }
+                    ]
+                }).run();
             }
         }
     }
@@ -202,9 +227,9 @@ export const TeiList = TeiBlock.extend({
     addKeyboardShortcuts() {
         const shortcuts = {};
         if (this.options.shortcuts) {
-            Object.entries(this.options.shortcuts).forEach(([shortcut, attributes]) => {
+            Object.entries(this.options.shortcuts).forEach(([shortcut, config]) => {
                 shortcuts[shortcut] = () => {
-                    return this.editor.commands.toggleList(this.name, 'item', attributes);
+                    return this.editor.commands.toggleList(this.name, 'item', config.attributes);
                 }
             });
         }
@@ -269,11 +294,11 @@ export const TeiEmptyElement = TeiBlock.extend({
     addKeyboardShortcuts() {
         const shortcuts = {};
         if (this.options.shortcuts) {
-            Object.entries(this.options.shortcuts).forEach(([shortcut, attributes]) => {
+            Object.entries(this.options.shortcuts).forEach(([shortcut, config]) => {
                 shortcuts[shortcut] = () => {
                     return this.editor.commands.insertContent({
                         type: this.name,
-                        attrs: attributes
+                        attrs: config.attributes
                     });
                 }
             });

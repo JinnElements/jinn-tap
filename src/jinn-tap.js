@@ -151,6 +151,7 @@ export class JinnTap extends HTMLElement {
     // Setter for the editor's content
     set content(value) {
         this.editor.commands.setContent(value);
+        this.dispatchContentChange();
     }
 
     // Getter for the TEI XML content
