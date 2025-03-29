@@ -1,6 +1,18 @@
 tei-head {
-    font-size: 1.5em;
+    font-size: 2rem;
     font-weight: bold;
+}
+
+tei-div > tei-div > tei-head {
+    font-size: 1.75rem;
+}
+
+tei-div > tei-div > tei-div > tei-head {
+    font-size: 1.5rem;
+}
+
+tei-div > tei-div > tei-div > tei-div > tei-head {
+    font-size: 1.25rem;
 }
 
 tei-title[level="m"] {
@@ -9,11 +21,15 @@ tei-title[level="m"] {
 
 tei-div {
     display: block;
-    border: 1px solid #ccc;
-    padding: 1em;
-    margin: 1em;
+    border-right: 2px solid #525F7A;
+    padding-right: 4px;
+    margin-right: 4px;
+    margin-bottom: 1rem;
 }
 
+tei-div > tei-div {
+    border-right: 2px solid #F748B7;
+}
 tei-p {
     display: block;
     margin: 0.5em 0;
