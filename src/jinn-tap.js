@@ -137,15 +137,15 @@ export class JinnTap extends HTMLElement {
     dispatchContentChange() {
         this.dispatchEvent(new CustomEvent('content-change', {
             detail: {
-                content: this.editor.getHTML(),
-                teiXml: serializeToTEI(this.editor)
+                content: this.editor.getText(),
+                xml: serializeToTEI(this.editor)
             }
         }));
     }
 
     // Getter for the editor's content
     get content() {
-        return this.editor.getHTML();
+        return this.editor.getText();
     }
 
     // Setter for the editor's content
@@ -154,7 +154,7 @@ export class JinnTap extends HTMLElement {
     }
 
     // Getter for the TEI XML content
-    get teiXml() {
+    get xml() {
         return serializeToTEI(this.editor);
     }
 
