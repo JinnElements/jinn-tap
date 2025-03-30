@@ -81,6 +81,7 @@ if (!document.querySelector('#jinn-tap-styles')) {
  * @fires {CustomEvent} content-change - Fired when the editor content changes.
  *                                      The event detail contains:
  *                                      {string} teiXml - The current editor content as TEI XML
+ * @fires {CustomEvent} ready - Fired when the component and the editor are ready.
  */
 export class JinnTap extends HTMLElement {
     constructor() {
@@ -123,7 +124,10 @@ export class JinnTap extends HTMLElement {
                 </tei-div>
             `,
             autofocus: true,
-            onCreate: () => this.dispatchContentChange(),
+            onCreate: () => {
+                this.dispatchContentChange();
+                this.dispatchEvent(new CustomEvent('ready'));
+            },
             onUpdate: () => this.dispatchContentChange()
         });
 
