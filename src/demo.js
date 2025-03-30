@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle content changes
     editor.addEventListener('content-change', (event) => {
-        output.textContent = xmlFormatter(event.detail.xml);
+        output.textContent = xmlFormatter(event.detail.xml, { collapseContent: true });
     });
 
     // Handle file upload
