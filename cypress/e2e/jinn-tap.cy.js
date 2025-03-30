@@ -57,6 +57,35 @@ describe('JinnTap Component', () => {
             })
     })
 
+    it('handle nested marks', () => {
+        const testContent = '<tei-div><tei-p><tei-persName><tei-hi rend="b">Rudi</tei-hi> <tei-hi rend="i">Rüssel</tei-hi></tei-hi></tei-persName></tei-p></tei-div>'
+
+        // Get the component instance
+        cy.get('jinn-tap')
+            .then(($component) => {
+                // Create a spy for the content-change event
+                const contentChangeSpy = cy.spy().as('contentChangeSpy')
+
+                // Add event listener for content-change event
+                $component[0].addEventListener('content-change', contentChangeSpy)
+
+                // Set the content
+                $component[0].content = testContent
+
+                // Wait for the content-change event
+                cy.get('@contentChangeSpy')
+                    .should('have.been.called')
+                    .then((spy) => {
+                        // Get the event detail from the spy
+                        const eventDetail = spy.getCall(0).args[0].detail
+
+                        // Compare XML using chai-xml
+                        expect(eventDetail.xml).to.be.xml
+                        expect(eventDetail.xml).to.equal('<div><p><persName><hi rend="b">Rudi</hi> <hi rend="i">Rüssel</hi></persName></p></div>')
+                    })
+            })
+    })
+
     it('should apply bold formatting to selected text', () => {
         const testContent = '<tei-div><tei-p>Hello world!</tei-p></tei-div>'
 
@@ -69,37 +98,30 @@ describe('JinnTap Component', () => {
                 // Add event listener for content-change event
                 $component[0].addEventListener('content-change', contentChangeSpy)
 
-                // Get the editor instance
-                const editor = $component[0].editor
-
-                // Select the word "world" using proper TipTap commands
-                editor.chain()
-                    .setContent(testContent)
-                    .setTextSelection({ from: 8, to: 13 })
-                    .focus()
-                    .run()
-
-                // Log the selection state
-                cy.log('Selection:', editor.state.selection)
-
-                // Click the bold button
-                cy.get('jinn-tap .toolbar-button[title="Bold"]').click()
-
-                // Wait for the content-change event to be called twice
+                // Wait for the content-change event
                 cy.get('@contentChangeSpy')
-                    .should('have.been.calledTwice')
-                    .then((spy) => {
-                        // Get the event detail from the second call
-                        const eventDetail = spy.getCall(1).args[0].detail
+                    .should('have.been.called')
+                    .then(() => {
+                        const editor = $component[0].editor
+                        editor.chain().focus().setContent(testContent).setTextSelection({ from: 8, to: 13 }).run()
+                        cy.wait(500)
+                        cy.get('jinn-tap .toolbar-button[title="Bold"]').click()
+                        cy.wait(500)
+                        cy.get('@contentChangeSpy')
+                        .should('have.been.calledTwice')
+                        .then((spy) => {
+                            // Get the event detail from the second call
+                            const eventDetail = spy.getCall(1).args[0].detail
 
-                        // Log the XML after formatting
-                        cy.log('XML after formatting:', eventDetail.xml)
+                            // Log the XML after formatting
+                            cy.log('XML after formatting:', eventDetail.xml)
 
-                        // Compare XML using chai-xml
-                        expect(eventDetail.xml).to.be.xml
-                        expect(eventDetail.xml).to.equal('<div><p>Hello <hi rend="b">world</hi>!</p></div>')
+                            // Compare XML using chai-xml
+                            expect(eventDetail.xml).to.be.xml
+                            expect(eventDetail.xml).to.equal('<div><p>Hello <hi rend="b">world</hi>!</p></div>')
+                        })
                     })
             })
-
+        // Select the word "world" using proper TipTap commands
     })
-}) 
+})
