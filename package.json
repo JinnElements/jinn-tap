@@ -21,7 +21,10 @@
     "dev": "vite",
     "build": "vite build",
     "build:demo": "vite build --config vite.demo.config.js",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test": "cypress run"
   },
   "dependencies": {
     "@tiptap/core": "^2.1.13",
@@ -31,6 +34,8 @@
     "@tiptap/starter-kit": "^2.1.13"
   },
   "devDependencies": {
+    "chai-xml": "^0.4.1",
+    "cypress": "^14.2.1",
     "vite": "^5.1.0"
   },
   "keywords": [
