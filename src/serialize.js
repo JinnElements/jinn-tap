@@ -31,7 +31,7 @@ class Serializer {
 
   serialize(node) {
     if (node.type === 'text') {
-      let text = node.text;
+      let text = '';
       // Close any marks that are no longer active
       this.openMarks.forEach((openMark, index) => {
         let isStillActive = false;
@@ -44,6 +44,7 @@ class Serializer {
           this.openMarks.splice(index, 1);
         }
       });
+      text += node.text;
       // Handle marks on text nodes
       if (node.marks && node.marks.length > 0) {
         // Apply marks from innermost to outermost
