@@ -1,4 +1,38 @@
 {
+    "div": {
+        "type": "block",
+        "defining": false,
+        "content": "heading? block*",
+        "defaultContent": {
+            "type": "p",
+            "content": [{
+                "type": "text",
+                "text": "Hello, world!"
+            }]
+        },
+        "keyboard": {
+            "Mod-Shift-e": {
+                "attributes": {},
+                "command": "wrapDiv"
+            },
+            "Mod-Alt-e": {
+                "attributes": {},
+                "command": "liftDiv"
+            }
+        },
+        "toolbar": {
+            "Division": {
+                "attributes": {},
+                "command": "wrapDiv",
+                "label": "<i class='bi bi-body-text'></i>"
+            },
+            "Unwrap nodes in division": {
+                "attributes": {},
+                "command": "liftDiv",
+                "label": "<i class='bi bi-arrow-up-left'></i>"
+            }
+        }
+    },
     "hi": {
         "type": "inline",
         "attributes": {
@@ -135,7 +169,6 @@
         "keyboard": {
             "Shift-Mod-1": {
                 "attributes": {
-                    "type": "h1",
                     "n": "1"
                 }
             }
@@ -144,24 +177,6 @@
             "Head": {
                 "attributes": {},
                 "label": "<i class='bi bi-type-h1'></i>"
-            }
-        }
-    },
-    "div": {
-        "type": "block",
-        "defining": true,
-        "content": "heading? block+",
-        "defaultContent": {
-            "type": "p",
-            "content": [{
-                "type": "text",
-                "text": "Hello, world!"
-            }]
-        },
-        "keyboard": {
-            "Mod-Shift-i": {
-                "attributes": {},
-                "command": "addDiv"
             }
         }
     },

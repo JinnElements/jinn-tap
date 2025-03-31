@@ -193,21 +193,11 @@ export const TeiBlock = Node.create({
             [`set${ucName}`]: () => ({ commands, attributes }) => {
                 return commands.setNode(this.name, attributes);
             },
-            [`add${ucName}`]: () => ({ commands, attributes }) => {
-                const { state } = this.editor;
-                const $pos = state.selection.$to;
-                const div = findParentNodeClosestToPos($pos, node => node.type.name === this.name);
-                console.log(div);
-                return this.editor.chain().insertContentAt(div.pos + 1, {
-                    type: this.name,
-                    attrs: attributes,
-                    content: [
-                        {
-                            type: 'p',
-                            content: []
-                        }
-                    ]
-                }).run();
+            [`wrap${ucName}`]: () => ({ commands, attributes }) => {
+                return commands.wrapIn(this.name, attributes);
+            },
+            [`lift${ucName}`]: () => ({ commands, attributes }) => {
+                return commands.lift(this.name, attributes);
             }
         }
     }
