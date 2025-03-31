@@ -21,8 +21,11 @@ export class Toolbar {
             if (!def.toolbar) return;
             Object.entries(def.toolbar).forEach(([label, toolbarDef]) => {
                 const button = this.createButton(name, label, toolbarDef);
-                button.addEventListener('click', () => {
-                    if (def.type === 'inline') {
+                button.addEventListener('click', (ev) => {
+                    ev.preventDefault();
+                    if (toolbarDef.command) {
+                        this.editor.chain().focus()[toolbarDef.command](name, toolbarDef.attributes).run();
+                    } else if (def.type === 'inline') {
                         this.editor.chain().focus().toggleMark(name, toolbarDef.attributes).run();
                     } else if (def.type === 'list') {
                         this.editor.chain().focus().toggleList(name, toolbarDef.attributes).run();
@@ -35,14 +38,17 @@ export class Toolbar {
                         this.editor.chain().focus().setNode(name, toolbarDef.attributes).run();
                     }
                 });
-                this.toolbar.appendChild(button);
+                const li = document.createElement('li');
+                li.appendChild(button);
+                this.toolbar.appendChild(li);
             });
         });
     }
 
     createButton(name, label, def) {
-        const button = document.createElement('button');
-        button.type = 'button';
+        const button = document.createElement('a');
+        button.href = '#';
+        // button.type = 'button';
         button.className = 'outline toolbar-button';
         
         // Add icon if specified in schema
@@ -51,7 +57,7 @@ export class Toolbar {
         }
         
         // Add tooltip
-        button.title = label.charAt(0).toUpperCase() + label.slice(1);
+        button.dataset.tooltip = label;
         
         // Add active state styling
         button.addEventListener('mousedown', (e) => {
@@ -66,7 +72,9 @@ export class Toolbar {
             
             let isValid = true;
             
-            if (nodeType.type === 'inline') {
+            if (def.command) {
+                isValid = editor.can()[def.command](name, def.attributes);
+            }else if (nodeType.type === 'inline') {
                 // For inline marks, check if they can be applied to the current selection
                 isValid = editor.can().toggleMark(name, def.attributes);
             } else if (nodeType.type === 'block') {

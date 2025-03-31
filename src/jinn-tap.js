@@ -101,7 +101,9 @@ export class JinnTap extends HTMLElement {
         // Create the editor container structure
         this.innerHTML = `
             <div class="editor-container">
-                <div class="toolbar" role="group"></div>
+                <nav>
+                    <ul class="toolbar"></ul>
+                </nav>
                 <div class="editor-area"></div>
                 <aside class="attribute-panel">
                     <h3>Attributes</h3>
@@ -114,6 +116,7 @@ export class JinnTap extends HTMLElement {
         const extensions = createFromSchema(schema);
         this.editor = new Editor({
             element: this.querySelector('.editor-area'),
+            enableContentCheck: true,
             extensions: [
                 ...extensions,
                 History
@@ -128,7 +131,10 @@ export class JinnTap extends HTMLElement {
                 this.dispatchContentChange();
                 this.dispatchEvent(new CustomEvent('ready'));
             },
-            onUpdate: () => this.dispatchContentChange()
+            onUpdate: () => this.dispatchContentChange(),
+            onContentError: ({ editor, error, disableCollaboration }) => {
+                console.error(error);
+            }
         });
 
         // Initialize toolbar
