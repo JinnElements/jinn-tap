@@ -53,7 +53,7 @@ export function createFromSchema(schemaDef) {
 
 // Custom document extension that requires tei-div
 const TeiDocument = Document.extend({
-    content: 'div+'
+    content: 'block+'
 });
 
 // Base inline mark for TEI
@@ -211,7 +211,21 @@ export const TeiList = TeiBlock.extend({
     inline: false,
     
     addCommands() {
-        return {}
+        return {
+            toggleList: () => ({ commands, editor }) => {
+                const { state } = editor;
+                const { selection } = state;
+                const { $from } = selection;
+                
+                // Check if we're in a list
+                const list = findParentNodeClosestToPos($from, node => node.type.name === this.name);
+                if (list) {
+                    return commands.liftListItem(this.name);
+                }
+                
+                return commands.wrapInList(this.name, 'item', {});
+            }
+        }
     },
 
     addKeyboardShortcuts() {
@@ -219,7 +233,7 @@ export const TeiList = TeiBlock.extend({
         if (this.options.shortcuts) {
             Object.entries(this.options.shortcuts).forEach(([shortcut, config]) => {
                 shortcuts[shortcut] = () => {
-                    return this.editor.commands.toggleList(this.name, 'item', config.attributes);
+                    return this.editor.commands.toggleList();
                 }
             });
         }
@@ -229,8 +243,10 @@ export const TeiList = TeiBlock.extend({
 
 export const TeiItem = TeiBlock.extend({
     name: 'item',
-    content: 'block*',
+    content: 'p block*',
     group: 'item',
+    defining: false,
+
     addKeyboardShortcuts() {
         return {
             Enter: () => this.editor.commands.splitListItem(this.name),

@@ -1,7 +1,7 @@
 {
     "div": {
         "type": "block",
-        "defining": false,
+        "defining": true,
         "content": "heading? block*",
         "defaultContent": {
             "type": "p",
