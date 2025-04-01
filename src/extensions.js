@@ -243,7 +243,7 @@ export const TeiList = TeiBlock.extend({
 
 export const TeiItem = TeiBlock.extend({
     name: 'item',
-    content: 'p',
+    content: 'p block*',
     group: 'item',
     defining: false,
 
@@ -263,12 +263,9 @@ export const TeiItem = TeiBlock.extend({
                 }
                 
                 // If we're at the end of a list item
-                if ($from.parentOffset === listItem.content.size) {
+                // if ($from.parentOffset === listItem.content.size) {
                     return this.editor.commands.splitListItem(this.name);
-                }
-                
-                // If we're in the middle of content, use the base editor's enter command
-                return this.editor.view.dispatch(this.editor.view.state.tr.insert('\n'));
+                // }
             },
             Tab: () => this.editor.commands.sinkListItem(this.name),
             'Shift-Tab': () => this.editor.commands.liftListItem(this.name)

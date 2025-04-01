@@ -181,9 +181,7 @@
         }
     },
     "item": {
-        "type": "listItem",
-        "content": "p block*",
-        "defining": true
+        "type": "listItem"
     },
     "list": {
         "type": "list",
