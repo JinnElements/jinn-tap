@@ -53,7 +53,7 @@ export function createFromSchema(schemaDef) {
 
 // Custom document extension that requires tei-div
 const TeiDocument = Document.extend({
-    content: 'block+'
+    content: 'div+ noteGrp?'
 });
 
 // Base inline mark for TEI
@@ -243,13 +243,33 @@ export const TeiList = TeiBlock.extend({
 
 export const TeiItem = TeiBlock.extend({
     name: 'item',
-    content: 'p block*',
+    content: 'p',
     group: 'item',
     defining: false,
 
     addKeyboardShortcuts() {
         return {
-            Enter: () => this.editor.commands.splitListItem(this.name),
+            Enter: () => {
+                const { state } = this.editor;
+                const { selection } = state;
+                const { $from } = selection;
+                
+                // Get the current list item node
+                const listItem = $from.node();
+                
+                // If we're at the start of an empty list item
+                if ($from.parentOffset === 0 && listItem.content.size === 0) {
+                    return this.editor.commands.liftListItem(this.name);
+                }
+                
+                // If we're at the end of a list item
+                if ($from.parentOffset === listItem.content.size) {
+                    return this.editor.commands.splitListItem(this.name);
+                }
+                
+                // If we're in the middle of content, use the base editor's enter command
+                return this.editor.view.dispatch(this.editor.view.state.tr.insert('\n'));
+            },
             Tab: () => this.editor.commands.sinkListItem(this.name),
             'Shift-Tab': () => this.editor.commands.liftListItem(this.name)
         };

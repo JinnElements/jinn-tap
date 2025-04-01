@@ -221,5 +221,16 @@
                 "label": "<i class='bi bi-file-earmark-break'></i>"
             }
         }
+    },
+    "noteGrp": {
+        "type": "block",
+        "group": "",
+        "defining": true,
+        "content": "note+"
+    },
+    "note": {
+        "type": "listItem",
+        "defining": true,
+        "content": "inline*"
     }
-} 
+}
