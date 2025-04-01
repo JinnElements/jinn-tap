@@ -1,5 +1,6 @@
 import { Editor } from '@tiptap/core';
 import History from '@tiptap/extension-history';
+import Placeholder from '@tiptap/extension-placeholder';
 import { serializeToTEI } from './serialize.js';
 import { createFromSchema } from './extensions.js';
 import { AttributePanel } from './attribute-panel.js';
@@ -47,15 +48,6 @@ style.textContent = `
 
     jinn-tap .ProseMirror p {
         margin: 0;
-    }
-
-    jinn-tap .tiptap tei-p.is-empty::before {
-        color: #adb5bd;
-        content: attr(data-placeholder);
-        float: left;
-        height: 0;
-        pointer-events: none;
-        padding: 0.5em 0;
     }
 `;
 
@@ -119,7 +111,11 @@ export class JinnTap extends HTMLElement {
             enableContentCheck: true,
             extensions: [
                 ...extensions,
-                History
+                History,
+                Placeholder.configure({
+                    placeholder: 'Write something...',
+                    includeChildren: true,
+                })
             ],
             content: initialContent || `
                 <tei-div>
