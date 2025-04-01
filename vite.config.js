@@ -11,10 +11,18 @@ export default defineConfig({
     },
     sourcemap: true,
     outDir: 'dist',
-    emptyOutDir: false
+    emptyOutDir: false,
+    commonjsOptions: {
+      sourceMap: true
+    }
   },
   server: {
     port: 5174,
     host: true
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      sourcemap: true
+    }
   }
 })
