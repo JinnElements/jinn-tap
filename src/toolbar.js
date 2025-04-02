@@ -29,7 +29,7 @@ export class Toolbar {
                         this.editor.chain().focus().toggleMark(name, toolbarDef.attributes).run();
                     } else if (def.type === 'list') {
                         this.editor.chain().focus().toggleList(name, toolbarDef.attributes).run();
-                    } else if (def.type === 'empty') {
+                    } else if (def.type === 'empty' || def.type === 'anchor') {
                         this.editor.chain().focus().insertContent({
                             type: name,
                             attrs: toolbarDef.attributes
@@ -58,6 +58,7 @@ export class Toolbar {
         
         // Add tooltip
         button.dataset.tooltip = label;
+        button.dataset.placement = 'top';
         
         // Add active state styling
         button.addEventListener('mousedown', (e) => {

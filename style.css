@@ -8,17 +8,14 @@ html {
     grid-template-rows: auto 1fr minmax(5rem, 33%);
     height: 100vh;
     padding: 1rem;
-}
-
-jinn-tap {
-    flex: 2;
+    overflow: hidden;
 }
 
 pre {
     margin-top: 20px;
     padding: 15px;
     border-radius: 4px;
-    overflow-x: auto;
+    overflow: auto;
     white-space: pre-wrap;
     word-wrap: break-word;
 }

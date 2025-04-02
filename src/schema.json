@@ -221,14 +221,43 @@
         }
     },
     "noteGrp": {
-        "type": "block",
+        "type": "list",
         "group": "",
         "defining": true,
-        "content": "note+"
+        "content": "note+",
+        "keyboard": {
+            "Mod-Shift-u": {
+                "attributes": {}
+            }
+        }
     },
     "note": {
         "type": "listItem",
+        "content": "inline*",
         "defining": true,
-        "content": "inline*"
+        "isolating": true,
+        "attributes": {
+            "target": {
+                "type": "string"
+            }
+        }
+    },
+    "anchor": {
+        "type": "anchor",
+        "label": "fn",
+        "attributes": {
+            "type": {
+                "type": "string",
+                "default": "note"
+            }
+        },
+        "toolbar": {
+            "Footnote": {
+                "attributes": {
+                    "type": "note"
+                },
+                "label": "<i class='bi bi-123'></i>"
+            }
+        }
     }
 }

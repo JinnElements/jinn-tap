@@ -72,17 +72,26 @@ tei-term {
     color: #9236A4;
 }
 
-tei-list {
+tei-list, tei-noteGrp {
     display: block;
     list-style-type: disc;
     margin: 1em 0;
     padding-left: 2em;
 }
 
-tei-item {
+tei-item, tei-note {
     display: list-item;
     list-style-position: outside;
     margin: 0.5em 0;
+}
+
+tei-noteGrp {
+    list-style-type: decimal;
+}
+
+tei-anchor {
+    font-size: 0.8em;
+    vertical-align: super;
 }
 
 tei-pb {
@@ -91,7 +100,6 @@ tei-pb {
     border-radius: 4px;
     padding: 2px 6px;
 }
-
 
 tei-p.is-empty::before {
     color: #adb5bd;

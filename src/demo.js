@@ -6,8 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const output = document.getElementById('output');
     const fileInput = document.getElementById('xmlFile');
     
-    console.log('File input element:', fileInput);
-    
     if (!fileInput) {
         console.error('File input element not found!');
         return;
@@ -16,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle content changes
     editor.addEventListener('content-change', (event) => {
         try {
-            output.textContent = xmlFormatter(event.detail.xml, { collapseContent: true });
+            output.textContent = xmlFormatter(`<body>${event.detail.xml}</body>`, { collapseContent: true });
         } catch (error) {
             output.textContent = event.detail.xml;
         }
@@ -24,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle file upload
     fileInput.addEventListener('change', (event) => {
-        console.log('File input change event triggered');
         const file = event.target.files[0];
         if (!file) {
             console.log('No file selected');
@@ -34,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const reader = new FileReader();
         reader.onload = (e) => {
+            const xmlText = [];
             try {
                 const parser = new DOMParser();
                 const xmlDoc = parser.parseFromString(e.target.result, 'text/xml');
@@ -50,8 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // You can now process the XML document further
                 // For example, you could extract specific elements:
-                const content = xmlDoc.querySelector('text > body > *');
-                if (content) {
+                const nodes = xmlDoc.querySelectorAll('text > body > *');
+                nodes.forEach(content => {
                     // Transform node names to tei- prefixed format
                     const transformNode = (node) => {
                         if (node.nodeType === Node.ELEMENT_NODE) {
@@ -78,14 +76,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Transform the content and replace editor content
                     const transformedContent = transformNode(content);
                     console.log(transformedContent.outerHTML);
-                    editor.content = transformedContent.outerHTML;
-                }
+                    xmlText.push(transformedContent.outerHTML);
+                });
             } catch (error) {
                 console.error('Error parsing XML:', error);
             } finally {
                 // Reset the file input value so the same file can be selected again
                 fileInput.value = '';
             }
+            editor.content = xmlText.join('');
         };
         reader.readAsText(file);
     });

@@ -3,6 +3,7 @@ import History from '@tiptap/extension-history';
 import Placeholder from '@tiptap/extension-placeholder';
 import { serializeToTEI } from './serialize.js';
 import { createFromSchema } from './extensions.js';
+import { FootnoteRules } from './footnote.js';
 import { AttributePanel } from './attribute-panel.js';
 import { Toolbar } from './toolbar.js';
 import schema from './schema.json';
@@ -10,19 +11,19 @@ import schema from './schema.json';
 // Create a style element for the component's styles
 const style = document.createElement('style');
 style.textContent = `
-    jinn-tap .editor-container {
+    jinn-tap {
         display: grid;
         grid-template-rows: min-content 1fr;
         grid-template-columns: 1fr minmax(30vw, 460px);
         grid-template-areas:
             "toolbar attribute-panel"
             "editor attribute-panel";
-        column-gap: 20px;
+        height: 100%;
     }
 
     jinn-tap .editor-area {
-        grid-area: editor;
         overflow: auto;
+        min-height: 0;
     }
 
     jinn-tap .toolbar {
@@ -44,6 +45,7 @@ style.textContent = `
 
     jinn-tap .ProseMirror {
         outline: none;
+        height: 100%;
     }
 
     jinn-tap .ProseMirror p {
@@ -92,25 +94,23 @@ export class JinnTap extends HTMLElement {
 
         // Create the editor container structure
         this.innerHTML = `
-            <div class="editor-container">
-                <nav>
-                    <ul class="toolbar"></ul>
-                </nav>
-                <div class="editor-area"></div>
-                <aside class="attribute-panel">
-                    <h3>Attributes</h3>
-                    <form></form>
-                </aside>
-            </div>
+            <nav>
+                <ul class="toolbar"></ul>
+            </nav>
+            <div class="editor-area"></div>
+            <aside class="attribute-panel">
+                <h3>Attributes</h3>
+                <form></form>
+            </aside>
         `;
 
         // Initialize the editor
         const extensions = createFromSchema(schema);
         this.editor = new Editor({
             element: this.querySelector('.editor-area'),
-            enableContentCheck: true,
             extensions: [
                 ...extensions,
+                FootnoteRules,
                 History,
                 Placeholder.configure({
                     placeholder: 'Write something...',
@@ -127,10 +127,7 @@ export class JinnTap extends HTMLElement {
                 this.dispatchContentChange();
                 this.dispatchEvent(new CustomEvent('ready'));
             },
-            onUpdate: () => this.dispatchContentChange(),
-            onContentError: ({ editor, error, disableCollaboration }) => {
-                console.error(error);
-            }
+            onUpdate: () => this.dispatchContentChange()
         });
 
         // Initialize toolbar
