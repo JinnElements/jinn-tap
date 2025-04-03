@@ -239,6 +239,9 @@
         "attributes": {
             "target": {
                 "type": "string"
+            },
+            "data-reference": {
+                "type": "string"
             }
         }
     },

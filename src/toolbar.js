@@ -29,7 +29,9 @@ export class Toolbar {
                         this.editor.chain().focus().toggleMark(name, toolbarDef.attributes).run();
                     } else if (def.type === 'list') {
                         this.editor.chain().focus().toggleList(name, toolbarDef.attributes).run();
-                    } else if (def.type === 'empty' || def.type === 'anchor') {
+                    } else if (def.type === 'anchor') {
+                        this.editor.chain().focus().addAnchor(name, toolbarDef.attributes).run();
+                    } else if (def.type === 'empty') {
                         this.editor.chain().focus().insertContent({
                             type: name,
                             attrs: toolbarDef.attributes
@@ -84,7 +86,7 @@ export class Toolbar {
             } else if (nodeType.type === 'list') {
                 // For lists, check if they can be toggled
                 isValid = editor.can().toggleList(name, def.attributes);
-            } else if (nodeType.type === 'empty') {
+            } else if (nodeType.type === 'empty' || nodeType.type === 'anchor') {
                 // For empty nodes, check if they can be inserted
                 isValid = editor.can().insertContent({
                     type: name,

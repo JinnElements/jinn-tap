@@ -86,7 +86,12 @@ tei-item, tei-note {
 }
 
 tei-noteGrp {
-    list-style-type: decimal;
+    list-style-type: none;
+}
+
+tei-note::before {
+    content: attr(data-reference) ".";
+    margin-right: 0.5em;
 }
 
 tei-anchor {

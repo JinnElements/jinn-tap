@@ -1,5 +1,5 @@
 import { Plugin, PluginKey, TextSelection } from "@tiptap/pm/state";
-import { Extension, minMax } from "@tiptap/core";
+import { Extension } from "@tiptap/core";
 import { ReplaceStep } from "@tiptap/pm/transform";
 import { TeiEmptyElement } from './empty.js';
 
@@ -10,23 +10,54 @@ function generateUniqueId() {
     return `fn-${timestamp}-${randomStr}`;
 }
 
+// Map to store references for each anchor node
+const anchorReferences = new Map();
+
+// Function to compute reference numbers for all anchors in the document
+function computeAnchorReferences(doc) {
+    const anchors = [];
+    doc.descendants((node, pos) => {
+        if (node.type.name === 'anchor') {
+            anchors.push({ node, pos });
+        }
+    });
+    
+    // Sort anchors by their position in the document
+    anchors.sort((a, b) => a.pos - b.pos);
+    
+    // Clear the previous references
+    anchorReferences.clear();
+    
+    // Assign reference numbers
+    anchors.forEach((anchor, index) => {
+        // Store the reference in the map using the node's ID as the key
+        anchorReferences.set(anchor.node.attrs.id, index + 1);
+    });
+    return anchors;
+}
+
+// Function to get the reference for a specific anchor
+function getAnchorReference(nodeId) {
+    return anchorReferences.get(nodeId) || -1;
+}
+
 export const TeiAnchor = TeiEmptyElement.extend({
     name: "anchor",
     group: "inline",
-    content: "",
+    content: "text*",
     inline: true,
     atom: true,
 
     addAttributes() {
         const attributes = {
             "id": {
-                default: generateUniqueId(),
+                isRequired: true,
                 renderHTML(attributes) {
                     return { id: attributes.id };
                 },
                 parseHTML(element) {
                     return {
-                        id: element.getAttribute("id"),
+                        id: element.getAttribute("id") || generateUniqueId(),
                     };
                 }
             }
@@ -50,10 +81,26 @@ export const TeiAnchor = TeiEmptyElement.extend({
         return attributes;
     },
 
+    addCommands() {
+        return {
+            addAnchor: (attributes) => ({ commands }) => {
+                return commands.insertContent({
+                    type: this.name,
+                    attrs: {
+                        ...attributes,
+                        id: generateUniqueId()
+                    }
+                });
+            }
+        };
+    },
+
     addNodeView() {
         return ({ node }) => {
             const dom = document.createElement(`tei-${this.name}`);
-            dom.innerHTML = this.options.label;
+            // Display the reference from the map
+            const reference = getAnchorReference(node.attrs.id);
+            dom.innerHTML = reference > 0 ? reference.toString() : '';
             
             // Set all attributes on the DOM element
             Object.entries(node.attrs).forEach(([key, value]) => {
@@ -80,6 +127,9 @@ export const TeiAnchor = TeiEmptyElement.extend({
                             dom.removeAttribute(key);
                         }
                     });
+                    // Update the displayed reference number from the map
+                    const reference = getAnchorReference(node.attrs.id);
+                    dom.innerHTML = reference > 0 ? reference.toString() : '';
                     return true;
                 }
             }
@@ -96,25 +146,39 @@ export const FootnoteRules = Extension.create({
                 key: new PluginKey("footnoteRules"),
                 appendTransaction(transactions, oldState, newState) {
                     let newTr = newState.tr;
-                    let refsChanged = false; // true if the footnote references have been changed, false otherwise
                     let anchorId = null; // Store the ID of the newly inserted anchor
+                    let docChanged = false; // Track if the document has changed in any way
+                    let referencesUpdated = false; // Track if references were updated
 
+                    // Check if the document has changed in any way
+                    for (let tr of transactions) {
+                        if (tr.docChanged) {
+                            docChanged = true;
+                            break;
+                        }
+                    }
+
+                    // If the document has changed, recompute all references
+                    if (docChanged) {
+                        computeAnchorReferences(newState.doc);
+                        referencesUpdated = true;
+                    }
+
+                    // Check for newly inserted anchors
                     for (let tr of transactions) {
                         if (!tr.docChanged) continue;
-                        if (refsChanged) break;
+                        if (anchorId) break;
 
                         for (let step of tr.steps) {
                             if (!(step instanceof ReplaceStep)) continue;
-                            if (refsChanged) break;
+                            if (anchorId) break;
 
-                            const isDelete = step.from != step.to; // the user deleted items from the document (from != to & the step is a replace step)
                             const isInsert = step.slice.size > 0;
 
                             // check if any footnote references have been inserted
                             if (isInsert) {
                                 step.slice.content.descendants((node, pos) => {
                                     if (node?.type.name == "anchor") {
-                                        refsChanged = true;
                                         anchorId = node.attrs["id"];
                                         return false;
                                     }
@@ -122,7 +186,8 @@ export const FootnoteRules = Extension.create({
                             }
                         }
                     }
-                    if (refsChanged && anchorId) {
+                    
+                    if (anchorId) {
                         // Find existing noteGrp or create one at end
                         let noteGrpPos = null;
                         newState.doc.descendants((node, pos) => {
@@ -146,7 +211,10 @@ export const FootnoteRules = Extension.create({
                         }
 
                         // Insert a new note at the end of the noteGrp with a reference to the anchor
-                        const noteNode = newState.schema.nodes.note.create({ 'target': `#${anchorId}` });
+                        const noteNode = newState.schema.nodes.note.create({ 
+                            'target': `#${anchorId}`,
+                            'data-reference': getAnchorReference(anchorId).toString()
+                        });
                         const insertPos = noteGrpPos + noteGrpNode.nodeSize - 1;
                         
                         // Insert the note and create a paragraph inside it
@@ -163,9 +231,48 @@ export const FootnoteRules = Extension.create({
                                 notePos + 1
                             ));
                         }
-                        
-                        return newTr;
                     }
+                    
+                    // If references were updated, force a re-render of all anchor nodes
+                    if (referencesUpdated) {
+                        // Find all anchor nodes in the document
+                        const anchors = [];
+                        newState.doc.descendants((node, pos) => {
+                            if (node.type.name === 'anchor') {
+                                anchors.push({ node, pos });
+                            }
+                        });
+                        
+                        // Update each anchor node to force a re-render
+                        anchors.forEach(anchor => {
+                            // Create a new transaction that updates the node's attributes
+                            // This will trigger the node view's update method
+                            newTr = newTr.setNodeMarkup(anchor.pos, null, {
+                                ...anchor.node.attrs,
+                                // Add a timestamp to force the update
+                                _timestamp: Date.now()
+                            });
+                        });
+
+                        // Find all note nodes and update their data-reference attribute
+                        newState.doc.descendants((node, pos) => {
+                            if (node.type.name === 'note') {
+                                const target = node.attrs.target;
+                                if (target && target.startsWith('#')) {
+                                    const anchorId = target.substring(1);
+                                    const reference = getAnchorReference(anchorId);
+                                    if (reference > 0) {
+                                        newTr = newTr.setNodeMarkup(pos, null, {
+                                            ...node.attrs,
+                                            'data-reference': reference.toString(),
+                                            _timestamp: Date.now()
+                                        });
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    return newTr;
                 }
             })
         ]
