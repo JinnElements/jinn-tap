@@ -41,6 +41,45 @@ function getAnchorReference(nodeId) {
     return anchorReferences.get(nodeId) || -1;
 }
 
+// Function to update data-reference attributes of all notes
+function updateNoteReferences(tr, doc) {
+    doc.descendants((node, pos) => {
+        if (node.type.name === 'note') {
+            const target = node.attrs.target;
+            if (target && target.startsWith('#')) {
+                const anchorId = target.substring(1);
+                const reference = getAnchorReference(anchorId);
+                if (reference > 0) {
+                    tr = tr.setNodeMarkup(pos, null, {
+                        ...node.attrs,
+                        'data-reference': reference.toString(),
+                        _timestamp: Date.now()
+                    });
+                }
+            }
+        }
+    });
+    return tr;
+}
+
+// Function to update all anchor nodes to force a re-render
+function updateAnchorNodes(tr, doc) {
+    const anchors = [];
+    doc.descendants((node, pos) => {
+        if (node.type.name === 'anchor') {
+            anchors.push({ node, pos });
+        }
+    });
+    
+    anchors.forEach(anchor => {
+        tr = tr.setNodeMarkup(anchor.pos, null, {
+            ...anchor.node.attrs,
+            _timestamp: Date.now()
+        });
+    });
+    return tr;
+}
+
 export const TeiAnchor = TeiEmptyElement.extend({
     name: "anchor",
     group: "inline",
@@ -235,43 +274,12 @@ export const FootnoteRules = Extension.create({
                     
                     // If references were updated, force a re-render of all anchor nodes
                     if (referencesUpdated) {
-                        // Find all anchor nodes in the document
-                        const anchors = [];
-                        newState.doc.descendants((node, pos) => {
-                            if (node.type.name === 'anchor') {
-                                anchors.push({ node, pos });
-                            }
-                        });
-                        
-                        // Update each anchor node to force a re-render
-                        anchors.forEach(anchor => {
-                            // Create a new transaction that updates the node's attributes
-                            // This will trigger the node view's update method
-                            newTr = newTr.setNodeMarkup(anchor.pos, null, {
-                                ...anchor.node.attrs,
-                                // Add a timestamp to force the update
-                                _timestamp: Date.now()
-                            });
-                        });
-
-                        // Find all note nodes and update their data-reference attribute
-                        newState.doc.descendants((node, pos) => {
-                            if (node.type.name === 'note') {
-                                const target = node.attrs.target;
-                                if (target && target.startsWith('#')) {
-                                    const anchorId = target.substring(1);
-                                    const reference = getAnchorReference(anchorId);
-                                    if (reference > 0) {
-                                        newTr = newTr.setNodeMarkup(pos, null, {
-                                            ...node.attrs,
-                                            'data-reference': reference.toString(),
-                                            _timestamp: Date.now()
-                                        });
-                                    }
-                                }
-                            }
-                        });
+                        // Update all anchor nodes
+                        newTr = updateAnchorNodes(newTr, newState.doc);
+                        // Update all note references
+                        newTr = updateNoteReferences(newTr, newState.doc);
                     }
+                    
                     return newTr;
                 }
             })
