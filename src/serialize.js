@@ -66,7 +66,7 @@ class Serializer {
 
     const tagName = node.type;
     const attrs = node.attrs ? Object.entries(node.attrs)
-      .filter(([_, value]) => value !== null)
+      .filter(([key, value]) => value !== null && !key.startsWith('_'))
       .map(([key, value]) => `${key}="${value}"`)
       .join(' ') : '';
   

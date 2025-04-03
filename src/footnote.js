@@ -43,7 +43,7 @@ function getAnchorReference(nodeId) {
     return anchorReferences.get(nodeId) || -1;
 }
 
-// Function to update data-reference attributes of all notes
+// Function to update _reference attributes of all notes
 function updateNoteReferences(tr, doc) {
     doc.nodesBetween(0, doc.content.size, (node, pos) => {
         if (node.type.name === 'note') {
@@ -54,7 +54,7 @@ function updateNoteReferences(tr, doc) {
                 if (reference > 0) {
                     tr = tr.setNodeMarkup(pos, null, {
                         ...node.attrs,
-                        'data-reference': reference.toString(),
+                        _reference: reference.toString(),
                         _timestamp: Date.now()
                     });
                 }
@@ -355,7 +355,7 @@ export const FootnoteRules = Extension.create({
                         // Insert a new note at the end of the noteGrp with a reference to the anchor
                         const noteNode = newState.schema.nodes.note.create({ 
                             'target': `#${anchorId}`,
-                            'data-reference': '1' // Will be updated later
+                            '_reference': '1' // Will be updated later
                         });
                         const insertPos = noteGrpPos + noteGrpNode.nodeSize - 1;
                         

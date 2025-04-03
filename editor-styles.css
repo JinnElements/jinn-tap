@@ -90,7 +90,7 @@ tei-noteGrp {
 }
 
 tei-note::before {
-    content: attr(data-reference) ".";
+    content: attr(_reference) ".";
     margin-right: 0.5em;
 }
 

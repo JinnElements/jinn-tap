@@ -240,7 +240,7 @@
             "target": {
                 "type": "string"
             },
-            "data-reference": {
+            "_reference": {
                 "type": "string"
             }
         }
