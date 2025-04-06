@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const xmlText = [];
             try {
                 const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(e.target.result, 'text/xml');
+                const xmlDoc = parser.parseFromString(e.target.result, 'application/xml');
                 
                 // Check for parsing errors
                 const parserError = xmlDoc.querySelector('parsererror');
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const transformNode = (node) => {
                         if (node.nodeType === Node.ELEMENT_NODE) {
                             // Create new element with tei- prefix
-                            const newElement = document.createElement(`tei-${node.tagName.toLowerCase()}`);
+                            const newElement = document.createElement(`tei-${node.tagName}`);
                             
                             // Copy all attributes
                             for (const attr of node.attributes) {
