@@ -8,6 +8,45 @@ A rich text editor for creating and editing TEI XML documents. This editor provi
 npm install jinn-tap
 ```
 
+## Development Setup
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm (v7 or higher)
+
+### Building the Project
+
+```bash
+# Install dependencies
+npm install
+
+# Build the project
+npm run build
+
+# Build the demo
+npm run build:demo
+```
+
+### Running the Demo
+
+```bash
+# Start the development server
+npm run dev
+
+# Preview the built demo
+npm run preview
+```
+
+### Running Tests
+
+```bash
+# Open Cypress test runner
+npm run cypress:open
+
+# Run tests in headless mode
+npm run cypress:run
+```
+
 ## Usage
 
 ### Basic Usage
@@ -71,6 +110,7 @@ editor.focus();
 - Attribute editing through a side panel
 - Copy to clipboard functionality
 - Responsive design
+- Footnote system with automatic reference numbering
 
 ## Keyboard Shortcuts
 
@@ -84,6 +124,7 @@ The editor supports the following keyboard shortcuts:
 ### TEI Elements
 - `Ctrl/Cmd + Shift + P` - Insert TEI persName
 - `Ctrl/Cmd + Shift + L` - Toggle list
+- `Ctrl/Cmd + Shift + U` - Insert footnote
 - `Tab` - Indent list item
 - `Shift + Tab` - Outdent list item
 - `Enter` - Create new list item
@@ -110,6 +151,22 @@ editor.addEventListener('content-change', (event) => {
     // teiXml: TEI XML content
 });
 ```
+
+## Footnote System
+
+The editor includes a comprehensive footnote system that:
+
+- Automatically generates unique IDs for footnotes
+- Maintains sequential reference numbers
+- Automatically updates references when content changes
+- Supports complete document replacement while maintaining reference integrity
+- Provides a dedicated note group at the end of the document
+
+To insert a footnote:
+1. Click the footnote button in the toolbar (or use the keyboard shortcut)
+2. The editor will create a footnote marker in the text
+3. A corresponding note will be automatically created at the end of the document
+4. The cursor will be positioned in the note for immediate editing
 
 ## License
 

@@ -279,8 +279,8 @@ export const FootnoteRules = Extension.create({
                 appendTransaction(transactions, oldState, newState) {
                     let newTr = newState.tr;
                     let anchorId = null; // Store the ID of the newly inserted anchor
-                    let docChanged = false; // Track if the document has changed in any way
                     let referencesNeedUpdate = false; // Track if references need to be updated
+                    let deletedAnchorIds = new Set(); // Track IDs of deleted anchors
 
                     // Check for complete document replacement
                     const isCompleteReplacement = transactions.some(tr => {
@@ -298,7 +298,6 @@ export const FootnoteRules = Extension.create({
                         // Check for newly inserted anchors and document changes
                         for (let tr of transactions) {
                             if (!tr.docChanged) continue;
-                            docChanged = true;
 
                             for (let step of tr.steps) {
                                 if (!(step instanceof ReplaceStep)) continue;
@@ -315,31 +314,54 @@ export const FootnoteRules = Extension.create({
                                     });
                                 }
 
-                                // Check if any anchor positions changed
-                                if (step.from !== step.to || step.slice.size > 0) {
-                                    const oldDoc = tr.docs[0];
-                                    const newDoc = tr.doc;
-                                    const oldAnchors = [];
-                                    const newAnchors = [];
-                                    
-                                    oldDoc.descendants((node, pos) => {
-                                        if (node.type.name === 'anchor') {
-                                            oldAnchors.push(pos);
-                                        }
-                                    });
-                                    
-                                    newDoc.descendants((node, pos) => {
-                                        if (node.type.name === 'anchor') {
-                                            newAnchors.push(pos);
-                                        }
-                                    });
+                                // Check for deleted anchors
+                                const oldDoc = tr.docs[0];
+                                const newDoc = tr.doc;
+                                const oldAnchors = new Map();
+                                const newAnchors = new Map();
+                                
+                                oldDoc.descendants((node, pos) => {
+                                    if (node.type.name === 'anchor') {
+                                        oldAnchors.set(node.attrs.id, pos);
+                                    }
+                                });
+                                
+                                newDoc.descendants((node, pos) => {
+                                    if (node.type.name === 'anchor') {
+                                        newAnchors.set(node.attrs.id, pos);
+                                    }
+                                });
 
-                                    if (oldAnchors.join(',') !== newAnchors.join(',')) {
+                                // Find deleted anchors by comparing old and new maps
+                                for (const [id, pos] of oldAnchors) {
+                                    if (!newAnchors.has(id)) {
+                                        deletedAnchorIds.add(id);
                                         referencesNeedUpdate = true;
                                     }
                                 }
+
+                                // Check if any anchor positions changed
+                                if (oldAnchors.size !== newAnchors.size || 
+                                    Array.from(oldAnchors.entries()).some(([id, pos]) => newAnchors.get(id) !== pos)) {
+                                    referencesNeedUpdate = true;
+                                }
                             }
                         }
+                    }
+
+                    // Remove notes associated with deleted anchors
+                    if (deletedAnchorIds.size > 0) {
+                        newState.doc.descendants((node, pos) => {
+                            if (node.type.name === 'note') {
+                                const target = node.attrs.target;
+                                if (target && target.startsWith('#')) {
+                                    const anchorId = target.substring(1);
+                                    if (deletedAnchorIds.has(anchorId)) {
+                                        newTr = newTr.delete(pos, pos + node.nodeSize);
+                                    }
+                                }
+                            }
+                        });
                     }
 
                     // Handle new anchor creation
