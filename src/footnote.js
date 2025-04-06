@@ -173,13 +173,12 @@ export const TeiAnchor = TeiEmptyElement.extend({
         const attributes = {
             "id": {
                 isRequired: true,
+                type: "string",
                 renderHTML(attributes) {
                     return { id: attributes.id };
                 },
                 parseHTML(element) {
-                    return {
-                        id: element.getAttribute("id") || generateUniqueId(),
-                    };
+                    return element.getAttribute("id") || generateUniqueId();
                 }
             },
             "_timestamp": {
@@ -283,47 +282,61 @@ export const FootnoteRules = Extension.create({
                     let docChanged = false; // Track if the document has changed in any way
                     let referencesNeedUpdate = false; // Track if references need to be updated
 
-                    // Check for newly inserted anchors and document changes
-                    for (let tr of transactions) {
-                        if (!tr.docChanged) continue;
-                        docChanged = true;
-
-                        for (let step of tr.steps) {
-                            if (!(step instanceof ReplaceStep)) continue;
-
-                            const isInsert = step.slice.size > 0;
-                            if (isInsert) {
-                                // Check for new anchor nodes
-                                step.slice.content.descendants((node, pos) => {
-                                    if (node?.type.name == "anchor") {
-                                        anchorId = node.attrs["id"];
-                                        referencesNeedUpdate = true;
-                                        return false;
-                                    }
-                                });
+                    // Check for complete document replacement
+                    const isCompleteReplacement = transactions.some(tr => {
+                        return tr.steps.some(step => {
+                            if (step instanceof ReplaceStep) {
+                                return step.from === 0 && step.to === oldState.doc.content.size;
                             }
+                            return false;
+                        });
+                    });
 
-                            // Check if any anchor positions changed
-                            if (step.from !== step.to || step.slice.size > 0) {
-                                const oldDoc = tr.docs[0];
-                                const newDoc = tr.doc;
-                                const oldAnchors = [];
-                                const newAnchors = [];
-                                
-                                oldDoc.descendants((node, pos) => {
-                                    if (node.type.name === 'anchor') {
-                                        oldAnchors.push(pos);
-                                    }
-                                });
-                                
-                                newDoc.descendants((node, pos) => {
-                                    if (node.type.name === 'anchor') {
-                                        newAnchors.push(pos);
-                                    }
-                                });
+                    if (isCompleteReplacement) {
+                        referencesNeedUpdate = true;
+                    } else {
+                        // Check for newly inserted anchors and document changes
+                        for (let tr of transactions) {
+                            if (!tr.docChanged) continue;
+                            docChanged = true;
 
-                                if (oldAnchors.join(',') !== newAnchors.join(',')) {
-                                    referencesNeedUpdate = true;
+                            for (let step of tr.steps) {
+                                if (!(step instanceof ReplaceStep)) continue;
+
+                                const isInsert = step.slice.size > 0;
+                                if (isInsert) {
+                                    // Check for new anchor nodes
+                                    step.slice.content.descendants((node, pos) => {
+                                        if (node?.type.name == "anchor") {
+                                            anchorId = node.attrs["id"];
+                                            referencesNeedUpdate = true;
+                                            return false;
+                                        }
+                                    });
+                                }
+
+                                // Check if any anchor positions changed
+                                if (step.from !== step.to || step.slice.size > 0) {
+                                    const oldDoc = tr.docs[0];
+                                    const newDoc = tr.doc;
+                                    const oldAnchors = [];
+                                    const newAnchors = [];
+                                    
+                                    oldDoc.descendants((node, pos) => {
+                                        if (node.type.name === 'anchor') {
+                                            oldAnchors.push(pos);
+                                        }
+                                    });
+                                    
+                                    newDoc.descendants((node, pos) => {
+                                        if (node.type.name === 'anchor') {
+                                            newAnchors.push(pos);
+                                        }
+                                    });
+
+                                    if (oldAnchors.join(',') !== newAnchors.join(',')) {
+                                        referencesNeedUpdate = true;
+                                    }
                                 }
                             }
                         }
@@ -331,6 +344,19 @@ export const FootnoteRules = Extension.create({
 
                     // Handle new anchor creation
                     if (anchorId) {
+                        // Check if a note with this target already exists
+                        let noteExists = false;
+                        newState.doc.descendants((node, pos) => {
+                            if (node.type.name === 'note' && node.attrs.target === `#${anchorId}`) {
+                                console.log('note found', node);
+                                noteExists = true;
+                                return false;
+                            }
+                        });
+
+                        if (noteExists) {
+                            return null;
+                        }
                         // Find existing noteGrp or create one at end
                         let noteGrpPos = null;
                         newState.doc.descendants((node, pos) => {

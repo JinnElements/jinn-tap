@@ -14,8 +14,20 @@ export const TeiEmptyElement = TeiBlock.extend({
 
     addOptions() {
         return {
+            tag: `tei-${this.name}`,
+            shortcuts: {},
+            attributes: {},
+            defaultContent: [],
             label: 'Empty Element'
         }
+    },
+
+    parseHTML() {
+        return [
+            {
+                tag: this.options.tag
+            }
+        ]
     },
 
     addNodeView() {
