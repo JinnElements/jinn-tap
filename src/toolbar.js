@@ -4,6 +4,24 @@ export class Toolbar {
         this.toolbar = editor.querySelector('.toolbar');
         this.schemaDef = schemaDef;
         this.addButtons(schemaDef);
+        // Add debug toggle button
+        const debugButton = document.createElement('a');
+        debugButton.href = '#';
+        debugButton.className = 'outline toolbar-button';
+        debugButton.innerHTML = '<i class="bi bi-question-circle"></i>';
+        debugButton.title = 'Toggle debug mode';
+        debugButton.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            const component = this.toolbar.closest('jinn-tap');
+            if (component.hasAttribute('debug')) {
+                component.removeAttribute('debug');
+            } else {
+                component.setAttribute('debug', '');
+            }
+        });
+        const li = document.createElement('li'); 
+        li.appendChild(debugButton);
+        this.toolbar.appendChild(li);
     }
 
     addButtons(schemaDef) {

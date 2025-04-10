@@ -19,21 +19,38 @@ tei-title[level="m"] {
     font-style: italic;
 }
 
-tei-div {
-    display: block;
-    border-right: 2px solid #525F7A;
-    padding-right: 4px;
-    margin-right: 4px;
-    margin-bottom: 1rem;
+.debug tei-div {
+    border-right: 2px solid var(--tei-div-color-0);
 }
 
-tei-div > tei-div {
-    border-right: 2px solid #F748B7;
+.debug tei-div > tei-div {
+    border-right: 2px solid var(--tei-div-color-1);
 }
+
+.debug tei-div > tei-div > tei-div {
+    border-right: 2px solid var(--tei-div-color-2);
+}
+
+.debug tei-div > tei-div {
+    border-right: 2px solid var(--tei-div-color-3);
+}
+
+.debug tei-div > tei-div > tei-div {
+    border-right: 2px solid var(--tei-div-color-4);
+}
+
+.debug tei-div > tei-div > tei-div > tei-div {
+    border-right: 2px solid var(--tei-div-color-5);
+}
+
 tei-p {
     display: block;
     margin: 0.5em 0;
     position: relative;
+}
+
+.debug tei-p {
+    border-right: 2px solid var(--tei-p-color);
 }
 
 tei-p[rend="center"] {
@@ -85,6 +102,10 @@ tei-item, tei-note {
     margin: 0.5em 0;
 }
 
+.debug tei-item {
+    border-right: 1px solid var(--tei-item-color);
+}
+
 tei-noteGrp {
     list-style-type: none;
 }
@@ -112,4 +133,28 @@ tei-p.is-empty::before {
     position: absolute;
     height: 0;
     pointer-events: none;
+}
+
+tei-div, tei-p, tei-item {
+    display: block;
+}
+
+.debug tei-div, .debug tei-p, .debug tei-item {
+    margin-right: 2px;
+    padding-right: 2px;
+}
+
+.debug *::after {
+    display: inline-block;
+    max-width: 7ch;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    border-radius: 4px;
+    margin-left: 2px;
+    padding: 2px 6px;
+    font-size: .65rem;
+    font-weight: normal;
+    color: white;
+    vertical-align: middle;
 }

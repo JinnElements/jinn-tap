@@ -6,6 +6,7 @@ import { createFromSchema } from './extensions.js';
 import { FootnoteRules } from './footnote.js';
 import { AttributePanel } from './attribute-panel.js';
 import { Toolbar } from './toolbar.js';
+import { colorCssFromSchema } from './util.js';
 import schema from './schema.json';
 
 // Create a style element for the component's styles
@@ -18,6 +19,7 @@ style.textContent = `
         grid-template-areas:
             "toolbar attribute-panel"
             "editor attribute-panel";
+        column-gap: 1rem;
         height: 100%;
     }
 
@@ -51,6 +53,8 @@ style.textContent = `
     jinn-tap .ProseMirror p {
         margin: 0;
     }
+
+    ${colorCssFromSchema(schema)}
 `;
 
 // Add the style element to the document
@@ -78,11 +82,25 @@ if (!document.querySelector('#jinn-tap-styles')) {
  * @fires {CustomEvent} ready - Fired when the component and the editor are ready.
  */
 export class JinnTap extends HTMLElement {
+    static get observedAttributes() {
+        return ['debug'];
+    }
+
     constructor() {
         super();
         this.editor = null;
         this.toolbar = null;
         this.attributePanel = null;
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === 'debug') {
+            if (newValue !== null) {
+                this.classList.add('debug');
+            } else {
+                this.classList.remove('debug');
+            }
+        }
     }
 
     connectedCallback() {
