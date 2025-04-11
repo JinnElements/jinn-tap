@@ -4,6 +4,8 @@ export class AttributePanel {
         this.editor = editor.tiptap;
         this.schemaDef = schemaDef;
         this.panel = editor.querySelector('.attribute-panel form');
+        this.currentElement = null;
+        this.currentAttributes = {};
         this.setupEventListeners();
     }
 
@@ -42,6 +44,14 @@ export class AttributePanel {
         });
         
         if (matchingMark) {
+            // Check if attributes have changed for authority fields
+            const hasChanged = this.hasAuthorityAttributesChanged(matchingMark);
+            if (!hasChanged && this.currentElement?.type?.name === matchingMark.type.name && 
+                this.currentElement?.attrs?.id === matchingMark.attrs?.id) {
+                return;
+            }
+            this.currentElement = matchingMark;
+            this.currentAttributes = { ...matchingMark.attrs };
             this.showMarkAttributes(matchingMark, matchingText);
             return;
         }
@@ -51,6 +61,14 @@ export class AttributePanel {
         const node = $pos.node();
         
         if (node && Object.keys(this.schemaDef).includes(node.type.name)) {
+            // Check if attributes have changed for authority fields
+            const hasChanged = this.hasAuthorityAttributesChanged(node);
+            if (!hasChanged && this.currentElement?.type?.name === node.type.name && 
+                this.currentElement?.attrs?.id === node.attrs?.id) {
+                return;
+            }
+            this.currentElement = node;
+            this.currentAttributes = { ...node.attrs };
             this.showNodeAttributes(node);
         } else {
             // Check parent nodes
@@ -58,13 +76,36 @@ export class AttributePanel {
             while (depth > 0) {
                 const parentNode = $pos.node(depth);
                 if (Object.keys(this.schemaDef).includes(parentNode.type.name)) {
+                    // Check if attributes have changed for authority fields
+                    const hasChanged = this.hasAuthorityAttributesChanged(parentNode);
+                    if (!hasChanged && this.currentElement?.type?.name === parentNode.type.name && 
+                        this.currentElement?.attrs?.id === parentNode.attrs?.id) {
+                        return;
+                    }
+                    this.currentElement = parentNode;
+                    this.currentAttributes = { ...parentNode.attrs };
                     this.showNodeAttributes(parentNode);
                     return;
                 }
                 depth--;
             }
+            this.currentElement = null;
+            this.currentAttributes = {};
             this.hidePanel();
         }
+    }
+
+    hasAuthorityAttributesChanged(element) {
+        const def = this.schemaDef[element.type.name];
+        if (!def || !def.attributes) return false;
+
+        // Check each attribute that has a connector
+        return Object.entries(def.attributes).some(([attrName, attrDef]) => {
+            if (attrDef.connector) {
+                return this.currentAttributes[attrName] !== element.attrs[attrName];
+            }
+            return false;
+        });
     }
 
     showMarkAttributes(mark, text) {
