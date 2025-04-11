@@ -27,7 +27,6 @@
     "test": "cypress run"
   },
   "dependencies": {
-    "@teipublisher/pb-components": "^2.25.2",
     "@tiptap/core": "^2.1.13",
     "@tiptap/extension-history": "^2.1.13",
     "@tiptap/extension-placeholder": "^2.11.5",
