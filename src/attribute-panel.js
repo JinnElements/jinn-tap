@@ -3,11 +3,8 @@ export class AttributePanel {
     constructor(editor, schemaDef) {
         this.editor = editor.tiptap;
         this.schemaDef = schemaDef;
-        this.currentNode = null;
-        this.currentMark = null;
         this.panel = editor.querySelector('.attribute-panel form');
         this.setupEventListeners();
-        this.pendingChanges = {};
     }
 
     setupEventListeners() {
@@ -31,6 +28,7 @@ export class AttributePanel {
         
         // Check for marks across the entire selection
         let matchingMark = null;
+        let matchingText = null;
         editor.state.doc.nodesBetween(from, to, (node, pos, parent, index) => {
             if (matchingMark) return; // Stop if we found a mark
             
@@ -38,10 +36,13 @@ export class AttributePanel {
             matchingMark = marks.find(mark => 
                 Object.keys(this.schemaDef).includes(mark.type.name)
             );
+            if (matchingMark) {
+                matchingText = node.text;
+            }
         });
         
         if (matchingMark) {
-            this.showMarkAttributes(matchingMark);
+            this.showMarkAttributes(matchingMark, matchingText);
             return;
         }
 
@@ -66,37 +67,54 @@ export class AttributePanel {
         }
     }
 
-    showMarkAttributes(mark) {
-        this.currentMark = mark;
-        this.currentNode = null;
-        this.updatePanel();
+    showMarkAttributes(mark, text) {
+        this.updatePanel(mark, text);
     }
 
     showNodeAttributes(node) {
-        this.currentNode = node;
-        this.currentMark = null;
-        this.updatePanel();
+        this.updatePanel(node);
     }
 
     hidePanel() {
-        this.currentNode = null;
-        this.currentMark = null;
         this.updatePanel();
     }
 
-    updatePanel() {
+    createAttributeInput(attrName, attrDef, currentValue) {
+        const label = document.createElement('label');
+        label.textContent = attrName;
+
+        let input;
+        if (attrDef.enum) {
+            input = document.createElement('select');
+            attrDef.enum.forEach(value => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = value;
+                input.appendChild(option);
+            });
+        } else {
+            input = document.createElement('input');
+            input.type = 'text';
+        }
+        input.value = currentValue || attrDef.default || '';
+        input.name = attrName;
+
+        label.appendChild(input);
+        this.panel.appendChild(label);
+        return input;
+    }
+
+    updatePanel(nodeOrMark, text) {
         if (!this.panel) return;
         
         this.panel.innerHTML = '';
-        this.pendingChanges = {};
         
-        if (!this.currentNode && !this.currentMark) {
+        if (!nodeOrMark) {
             this.panel.innerHTML = '<p>Select text or a node to edit attributes</p>';
             return;
         }
 
-        const element = this.currentNode || this.currentMark;
-        const def = this.schemaDef[element.type.name];
+        const def = this.schemaDef[nodeOrMark.type.name];
         
         if (!def || !def.attributes) {
             this.panel.innerHTML = '<p>No attributes available</p>';
@@ -104,56 +122,78 @@ export class AttributePanel {
         }
 
         Object.entries(def.attributes).forEach(([attrName, attrDef]) => {
-            const label = document.createElement('label');
-            label.textContent = attrName;
-            this.panel.appendChild(label);
+            if (attrDef.connector) {
+                const input = this.createAttributeInput(
+                    attrName, 
+                    attrDef, 
+                    nodeOrMark.attrs[attrName]
+                );
 
-            let input;
-            if (attrDef.enum) {
-                input = document.createElement('select');
-                attrDef.enum.forEach(value => {
-                    const option = document.createElement('option');
-                    option.value = value;
-                    option.textContent = value;
-                    input.appendChild(option);
+                const info = document.createElement('div');
+                this.panel.appendChild(info);
+
+                const lookup = document.createElement('pb-authority-lookup');
+                lookup.setAttribute('type', attrDef.connector.type);
+                lookup.setAttribute('query', text);
+                lookup.setAttribute('auto', nodeOrMark.attrs[attrName] ? 'true' : 'false');
+                lookup.setAttribute('no-occurrences', true);
+                const authority = document.createElement('pb-authority');
+                authority.setAttribute('connector', attrDef.connector.name);
+                authority.setAttribute('name', attrDef.connector.type);
+                if (attrDef.connector.user) {
+                    authority.setAttribute('user', attrDef.connector.user);
+                }
+                lookup.appendChild(authority);
+
+                document.addEventListener('pb-authority-select', (event) => {
+                    input.value = `${attrDef.connector.prefix}-${event.detail.properties.ref}`;
+                    if (Object.keys(def.attributes).length === 1) {
+                        setTimeout(() => this.handleAttributeUpdate(nodeOrMark));
+                    }
                 });
+                this.panel.appendChild(lookup);
+
+                if (nodeOrMark.attrs[attrName]) {
+                    const ref = nodeOrMark.attrs[attrName].split('-')[1];
+                    lookup.lookup(attrDef.connector.type, ref, info);
+                }
             } else {
-                input = document.createElement('input');
-                input.type = 'text';
+                this.createAttributeInput(
+                    attrName, 
+                    attrDef, 
+                    nodeOrMark.attrs[attrName]
+                );
             }
-            input.value = element.attrs[attrName] || attrDef.default || '';
-
-            input.addEventListener('change', () => {
-                this.pendingChanges[attrName] = input.value;
-            });
-
-            label.appendChild(input);
         });
 
         // Add Apply button if there are attributes
-        if (Object.keys(def.attributes).length > 0) {
+        // Skip button if only one attribute and it has a connector
+        if (Object.keys(def.attributes).length > 0 && 
+            !(Object.keys(def.attributes).length === 1 && def.attributes[Object.keys(def.attributes)[0]].connector)) {
             const applyButton = document.createElement('button');
             applyButton.dataset.tooltip = 'Apply Changes';
             applyButton.type = 'submit';
             applyButton.innerHTML = '<i class="bi bi-check-all"></i>';
             applyButton.addEventListener('click', (ev) => {
                 ev.preventDefault();
-                if (Object.keys(this.pendingChanges).length > 0) {
-                    if (this.currentNode) {
-                        this.editor.chain()
-                            .focus()
-                            .updateAttributes(this.currentNode.type.name, this.pendingChanges)
-                            .run();
-                    } else if (this.currentMark) {
-                        this.editor.chain()
-                            .focus()
-                            .updateAttributes(this.currentMark.type.name, this.pendingChanges)
-                            .run();
-                    }
-                    this.pendingChanges = {};
-                }
+                this.handleAttributeUpdate(nodeOrMark);
             });
             this.panel.appendChild(applyButton);
+        }
+    }
+
+    handleAttributeUpdate(nodeOrMark) {
+        const formData = new FormData(this.panel);
+        const pendingChanges = {};
+        for (const [key, value] of formData.entries()) {
+            pendingChanges[key] = value;
+        }
+        console.log(pendingChanges);
+        if (Object.keys(pendingChanges).length > 0) {
+            this.editor.chain()
+                .focus()
+                .updateAttributes(nodeOrMark.type.name, pendingChanges)
+                .run();
         }
     }
 } 

@@ -23,11 +23,6 @@ style.textContent = `
         height: 100%;
     }
 
-    jinn-tap .editor-area {
-        overflow: auto;
-        min-height: 0;
-    }
-
     jinn-tap .toolbar {
         grid-area: toolbar;
     }

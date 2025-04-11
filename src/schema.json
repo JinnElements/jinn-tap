@@ -92,6 +92,11 @@
         "type": "inline",
         "attributes": {
             "key": {
+                "connector": {
+                    "name": "GND",
+                    "type": "person",
+                    "prefix": "gnd"
+                },
                 "type": "string"
             }
         },
@@ -111,7 +116,13 @@
         "type": "inline",
         "attributes": {
             "key": {
-                "type": "string"
+                "type": "string",
+                "connector": {
+                    "name": "GeoNames",
+                    "type": "place",
+                    "prefix": "geo",
+                    "user": "existdb"
+                }
             }
         },
         "keyboard": {
@@ -130,7 +141,12 @@
         "type": "inline",
         "attributes": {
             "key": {
-                "type": "string"
+                "type": "string",
+                "connector": {
+                    "name": "GND",
+                    "type": "term",
+                    "prefix": "gnd"
+                }
             }
         },
         "keyboard": {
@@ -207,7 +223,7 @@
             }
         },
         "keyboard": {
-            "Mod-Shift-p": {
+            "Mod-Alt-p": {
                 "attributes": {
                     "n": "22"
                 }

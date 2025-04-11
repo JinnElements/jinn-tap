@@ -6,18 +6,17 @@ html {
 .container {
     display: grid;
     grid-template-rows: auto 1fr minmax(5rem, 33%);
-    height: 100vh;
     padding: 1rem;
-    overflow: hidden;
+    min-height: 100vh;
 }
 
 pre {
     margin-top: 20px;
     padding: 15px;
     border-radius: 4px;
-    overflow: auto;
     white-space: pre-wrap;
     word-wrap: break-word;
+    overflow: auto;
 }
 
 .header {
@@ -27,6 +26,10 @@ pre {
     margin-bottom: 20px;
 }
 
+pb-authority-lookup {
+    max-height: 460px;
+    min-height: 320px;
+}
 .file-upload {
     display: flex;
     align-items: center;

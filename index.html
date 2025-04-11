@@ -12,6 +12,7 @@
 </head>
 
 <body>
+    <pb-page>
     <div class="container">
         <div class="header">
             <h1>JinnTap</h1>
@@ -26,7 +27,10 @@
         <jinn-tap></jinn-tap>
         <pre id="output"></pre>
     </div>
+    </pb-page>
     <script src="https://cdn.jsdelivr.net/npm/xml-formatter@3.6.5/dist/browser/xml-formatter-singleton.js"></script>
+    <!--script type="module" src="http://localhost:8000/src/pb-components-bundle.js"></script-->
+    <script type="module" src="node_modules/@teipublisher/pb-components/dist/pb-components-bundle.js"></script>
     <script type="module" src="/src/demo.js"></script>
 </body>
 
