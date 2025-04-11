@@ -113,7 +113,7 @@ export class JinnTap extends HTMLElement {
             <div class="editor-area"></div>
             <aside class="attribute-panel">
                 <h3>Attributes</h3>
-                <form></form>
+                <form action="" method="post"></form>
             </aside>
         `;
 

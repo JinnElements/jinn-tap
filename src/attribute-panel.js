@@ -123,11 +123,10 @@ export class AttributePanel {
 
         Object.entries(def.attributes).forEach(([attrName, attrDef]) => {
             if (attrDef.connector) {
-                const input = this.createAttributeInput(
-                    attrName, 
-                    attrDef, 
-                    nodeOrMark.attrs[attrName]
-                );
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.value = nodeOrMark.attrs[attrName];
+                this.panel.appendChild(input);
 
                 const info = document.createElement('div');
                 this.panel.appendChild(info);
@@ -146,9 +145,10 @@ export class AttributePanel {
                 lookup.appendChild(authority);
 
                 document.addEventListener('pb-authority-select', (event) => {
-                    input.value = `${attrDef.connector.prefix}-${event.detail.properties.ref}`;
+                    const value = `${attrDef.connector.prefix}-${event.detail.properties.ref}`;
+                    input.value = value;
                     if (Object.keys(def.attributes).length === 1) {
-                        setTimeout(() => this.handleAttributeUpdate(nodeOrMark));
+                        this.handleAttributeUpdate(nodeOrMark, { [attrName]: value });
                     }
                 });
                 this.panel.appendChild(lookup);
@@ -182,9 +182,8 @@ export class AttributePanel {
         }
     }
 
-    handleAttributeUpdate(nodeOrMark) {
+    handleAttributeUpdate(nodeOrMark, pendingChanges = {}) {
         const formData = new FormData(this.panel);
-        const pendingChanges = {};
         for (const [key, value] of formData.entries()) {
             pendingChanges[key] = value;
         }
