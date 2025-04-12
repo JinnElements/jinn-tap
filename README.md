@@ -1,5 +1,7 @@
 # JinnTap
 
+![JinnTap Logo](jinntap-logo.png)
+
 A rich text editor for creating and editing TEI XML documents. This editor provides a user-friendly interface for working with TEI markup while maintaining the structural integrity of the document.
 
 ## Installation

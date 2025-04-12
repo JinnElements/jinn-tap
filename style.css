@@ -37,3 +37,8 @@ jinn-tap label[data-tooltip].toolbar-button {
 jinn-tap .toolbar-button i {
     font-size: 1.2rem;
 }
+
+jinn-tap .tiptap:has(.is-editor-empty) {
+    background: url(jinntap-logo.png) no-repeat center center;
+    background-size: 50%;
+}
