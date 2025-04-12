@@ -31,6 +31,7 @@ export class AttributePanel {
         // Check for marks across the entire selection
         let matchingMark = null;
         let matchingText = null;
+        let matchingParent = null;
         editor.state.doc.nodesBetween(from, to, (node, pos, parent, index) => {
             if (matchingMark) return; // Stop if we found a mark
             
@@ -40,6 +41,7 @@ export class AttributePanel {
             );
             if (matchingMark) {
                 matchingText = node.text;
+                matchingParent = parent;
             }
         });
         
@@ -47,10 +49,12 @@ export class AttributePanel {
             // Check if attributes have changed for authority fields
             const hasChanged = this.hasAuthorityAttributesChanged(matchingMark);
             if (!hasChanged && this.currentElement?.type?.name === matchingMark.type.name && 
-                this.currentElement?.attrs?.id === matchingMark.attrs?.id) {
+                this.currentElement?.attrs?.id === matchingMark.attrs?.id &&
+                this.currentElement?.parent?.type?.name === matchingParent?.type?.name) {
                 return;
             }
             this.currentElement = matchingMark;
+            this.currentElement.parent = matchingParent;
             this.currentAttributes = { ...matchingMark.attrs };
             this.showMarkAttributes(matchingMark, matchingText);
             return;
@@ -59,15 +63,18 @@ export class AttributePanel {
         // If no marks, check for nodes
         const $pos = editor.state.doc.resolve(from);
         const node = $pos.node();
+        const parent = $pos.depth > 0 ? $pos.node($pos.depth) : null;
         
         if (node && Object.keys(this.schemaDef).includes(node.type.name)) {
             // Check if attributes have changed for authority fields
             const hasChanged = this.hasAuthorityAttributesChanged(node);
             if (!hasChanged && this.currentElement?.type?.name === node.type.name && 
-                this.currentElement?.attrs?.id === node.attrs?.id) {
+                this.currentElement?.attrs?.id === node.attrs?.id &&
+                this.currentElement?.parent?.type?.name === parent?.type?.name) {
                 return;
             }
             this.currentElement = node;
+            this.currentElement.parent = parent;
             this.currentAttributes = { ...node.attrs };
             this.showNodeAttributes(node);
         } else {
@@ -75,14 +82,17 @@ export class AttributePanel {
             let depth = $pos.depth;
             while (depth > 0) {
                 const parentNode = $pos.node(depth);
+                const parentParent = depth > 1 ? $pos.node(depth - 1) : null;
                 if (Object.keys(this.schemaDef).includes(parentNode.type.name)) {
                     // Check if attributes have changed for authority fields
                     const hasChanged = this.hasAuthorityAttributesChanged(parentNode);
                     if (!hasChanged && this.currentElement?.type?.name === parentNode.type.name && 
-                        this.currentElement?.attrs?.id === parentNode.attrs?.id) {
+                        this.currentElement?.attrs?.id === parentNode.attrs?.id &&
+                        this.currentElement?.parent?.type?.name === parentParent?.type?.name) {
                         return;
                     }
                     this.currentElement = parentNode;
+                    this.currentElement.parent = parentParent;
                     this.currentAttributes = { ...parentNode.attrs };
                     this.showNodeAttributes(parentNode);
                     return;
