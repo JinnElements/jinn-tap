@@ -8,6 +8,8 @@ export class Toolbar {
         // Add debug toggle button
         const debugButton = document.createElement('a');
         debugButton.href = '#';
+        debugButton.dataset.tooltip = 'Toggle debug mode';
+        debugButton.dataset.placement = 'bottom';
         debugButton.className = 'outline toolbar-button';
         debugButton.innerHTML = '<i class="bi bi-question-circle"></i>';
         debugButton.title = 'Toggle debug mode';
