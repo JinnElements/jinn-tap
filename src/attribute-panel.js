@@ -245,17 +245,21 @@ export class AttributePanel {
         }
 
         console.log('<jinn-tap> pendingChanges: %o, cleared: %o', pendingChanges, clearedAttributes);
+        const { from, to } = this.editor.state.selection;
+        this.editor.chain()
+            .focus()
+            .extendMarkRange(nodeOrMark.type.name)
+            .run();
+
         if (clearedAttributes.length > 0) {
-            this.editor.chain()
-                .focus()
-                .resetAttributes(nodeOrMark.type.name, clearedAttributes)
-                .run();
+            this.editor.commands.resetAttributes(nodeOrMark.type.name, clearedAttributes);
         }
 
         if (Object.keys(pendingChanges).length > 0) {
             this.editor.chain()
                 .focus()
-                .updateAttributes(nodeOrMark.type.name, pendingChanges)
+                .updateAttributes(nodeOrMark.type, pendingChanges)
+                .setTextSelection({ from, to })
                 .run();
         }
     }
