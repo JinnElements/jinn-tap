@@ -74,6 +74,11 @@ class Serializer {
       ? node.content.map(child => this.serialize(child)).join('')
       : '';
   
+    // If content is empty, output as self-closing element
+    if (!content) {
+      return `<${tagName}${attrs ? ' ' + attrs : ''}/>`;
+    }
+  
     return `<${tagName}${attrs ? ' ' + attrs : ''}>${content}${this.closeMarks()}</${tagName}>`;
   }
 
