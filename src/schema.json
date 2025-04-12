@@ -112,6 +112,25 @@
             }
         }
     },
+    "orgName": {
+        "type": "inline",
+        "attributes": {
+            "key": {
+                "connector": {
+                    "name": "GND",
+                    "type": "organization",
+                    "prefix": "gnd"
+                },
+                "type": "string"
+            }
+        },
+        "toolbar": {
+            "Organization": {
+                "attributes": {},
+                "label": "<i class='bi bi-people'></i>"
+            }
+        }
+    },
     "placeName": {
         "type": "inline",
         "attributes": {
@@ -158,6 +177,32 @@
             "Term": {
                 "attributes": {},
                 "label": "<i class='bi bi-bookmark'></i>"
+            }
+        }
+    },
+    "date": {
+        "type": "inline",
+        "attributes": {
+            "when": {
+                "type": "string"
+            },
+            "not-before": {
+                "type": "string"
+            },
+            "not-after": {
+                "type": "string"
+            },
+            "from": {
+                "type": "string"
+            },
+            "to": {
+                "type": "string"
+            }
+        },
+        "toolbar": {
+            "Date": {
+                "attributes": {},
+                "label": "<i class='bi bi-calendar-date'></i>"
             }
         }
     },

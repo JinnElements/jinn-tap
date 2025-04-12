@@ -225,10 +225,23 @@ export class AttributePanel {
 
     handleAttributeUpdate(nodeOrMark, pendingChanges = {}) {
         const formData = new FormData(this.panel);
+        const clearedAttributes = [];
         for (const [key, value] of formData.entries()) {
-            pendingChanges[key] = value;
+            if (value !== '') {
+                pendingChanges[key] = value;
+            } else {
+                clearedAttributes.push(key);
+            }
         }
-        console.log(pendingChanges);
+
+        console.log('<jinn-tap> pendingChanges: %o, cleared: %o', pendingChanges, clearedAttributes);
+        if (clearedAttributes.length > 0) {
+            this.editor.chain()
+                .focus()
+                .resetAttributes(nodeOrMark.type.name, clearedAttributes)
+                .run();
+        }
+        
         if (Object.keys(pendingChanges).length > 0) {
             this.editor.chain()
                 .focus()
