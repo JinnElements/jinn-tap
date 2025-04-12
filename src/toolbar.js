@@ -1,9 +1,10 @@
 export class Toolbar {
-    constructor(editor, schemaDef) {
+    constructor(editor, schemaDef, toolbarSlot) {
         this.editor = editor.tiptap;
         this.toolbar = editor.querySelector('.toolbar');
         this.schemaDef = schemaDef;
         this.addButtons(schemaDef);
+
         // Add debug toggle button
         const debugButton = document.createElement('a');
         debugButton.href = '#';
@@ -22,6 +23,16 @@ export class Toolbar {
         const li = document.createElement('li'); 
         li.appendChild(debugButton);
         this.toolbar.appendChild(li);
+
+        // Add custom toolbar items from slot if provided
+        if (toolbarSlot) {
+            const customItems = Array.from(toolbarSlot.children);
+            customItems.forEach(item => {
+                const li = document.createElement('li');
+                li.appendChild(item.cloneNode(true));
+                this.toolbar.appendChild(li);
+            });
+        }
     }
 
     addButtons(schemaDef) {
@@ -78,7 +89,7 @@ export class Toolbar {
         
         // Add tooltip
         button.dataset.tooltip = label;
-        button.dataset.placement = 'top';
+        button.dataset.placement = 'bottom';
         
         // Add active state styling
         button.addEventListener('mousedown', (e) => {

@@ -14,17 +14,14 @@
 <body>
     <pb-page api-version="1.0.0">
     <div class="container">
-        <div class="header">
-            <h1>JinnTap</h1>
-            <div class="file-upload">
-                <input type="file" id="xmlFile" accept=".xml">
-                <label for="xmlFile">
+        <jinn-tap>
+            <li slot="toolbar">
+                <label for="xmlFile" class="toolbar-button" data-tooltip="Upload XML" data-placement="bottom">
                     <i class="bi bi-upload"></i>
-                    Upload XML
+                    <input type="file" id="xmlFile" accept=".xml" style="display: none;">
                 </label>
-            </div>
-        </div>
-        <jinn-tap></jinn-tap>
+            </li>
+        </jinn-tap>
         <pre id="output"></pre>
     </div>
     </pb-page>

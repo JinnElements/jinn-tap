@@ -5,7 +5,7 @@ html {
 
 .container {
     display: grid;
-    grid-template-rows: auto 1fr minmax(5rem, 33%);
+    grid-template-rows: 1fr minmax(5rem, 33%);
     padding: 1rem;
     min-height: 100vh;
 }
@@ -19,38 +19,21 @@ pre {
     overflow: auto;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
 pb-authority-lookup {
     max-height: 460px;
     min-height: 320px;
 }
-.file-upload {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+
+jinn-tap .toolbar li a {
+    color: inherit;
 }
 
-.file-upload input[type="file"] {
-    display: none;
-}
-
-.file-upload label {
-    padding: 8px 16px;
-    background: #007bff;
-    color: white;
-    border-radius: 4px;
+jinn-tap label[data-tooltip].toolbar-button {
+    margin: 0;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    border-bottom: none;
 }
 
-.file-upload label:hover {
-    background: #0056b3;
+jinn-tap .toolbar-button i {
+    font-size: 1.2rem;
 }

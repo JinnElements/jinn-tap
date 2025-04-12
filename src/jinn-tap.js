@@ -31,10 +31,10 @@ style.textContent = `
         background-color: white;
     }
 
-    jinn-tap .toolbar-button i {
-        font-size: 1.2rem;
+    jinn-tap .editor-area {
+        min-height: 1rem;
     }
-
+        
     jinn-tap .attribute-panel {
         grid-area: attribute-panel;
         background: white;
@@ -108,7 +108,16 @@ export class JinnTap extends HTMLElement {
     }
 
     setupEditor() {
-        const initialContent = this.innerHTML;
+        const toolbarSlot = this.querySelector('[slot="toolbar"]');
+        // Create a temporary container to parse the content
+        const temp = document.createElement('div');
+        temp.innerHTML = this.innerHTML;
+        // Remove the toolbar slot element
+        const slotElement = temp.querySelector('[slot="toolbar"]');
+        if (slotElement) {
+            slotElement.remove();
+        }
+        const initialContent = temp.innerHTML.trim();
 
         // Create the editor container structure
         this.innerHTML = `
@@ -148,7 +157,7 @@ export class JinnTap extends HTMLElement {
         });
 
         // Initialize toolbar
-        this.toolbar = new Toolbar(this, schema);
+        this.toolbar = new Toolbar(this, schema, toolbarSlot);
 
         // Initialize attribute panel
         this.attributePanel = new AttributePanel(this, schema);
