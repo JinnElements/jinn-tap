@@ -247,6 +247,11 @@
     "list": {
         "type": "list",
         "content": "item+",
+        "attributes": {
+            "rend": {
+                "type": "string"
+            }
+        },
         "keyboard": {
             "Mod-Shift-l": {
                 "attributes": {}
@@ -256,6 +261,10 @@
             "List": {
                 "attributes": {},
                 "label": "<i class='bi bi-list-ul'></i>"
+            },
+            "Numbered list": {
+                "attributes": { "rend": "enumerated" },
+                "label": "<i class='bi bi-list-ol'></i>"
             }
         }
     },

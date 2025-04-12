@@ -11,7 +11,7 @@ export const TeiList = TeiBlock.extend({
     addCommands() {
         const ucName = this.name.charAt(0).toUpperCase() + this.name.slice(1);
         return {
-            [`toggle${ucName}`]: () => ({ commands, editor }) => {
+            [`toggle${ucName}`]: (attributes) => ({ commands, editor }) => {
                 const { state } = editor;
                 const { selection } = state;
                 const { $from } = selection;
@@ -22,7 +22,7 @@ export const TeiList = TeiBlock.extend({
                     return commands.liftListItem(this.name);
                 }
                 
-                return commands.wrapInList(this.name);
+                return commands.wrapInList(this.name, attributes);
             }
         }
     },

@@ -1,3 +1,7 @@
+tei-div, tei-p, tei-item {
+    display: block;
+}
+
 tei-head {
     font-size: 2rem;
     font-weight: bold;
@@ -100,6 +104,10 @@ tei-list, tei-noteGrp {
     padding-left: 2em;
 }
 
+tei-list[rend="enumerated"] {
+    list-style-type: decimal;
+}
+
 tei-item, tei-note {
     display: list-item;
     list-style-position: outside;
@@ -141,6 +149,8 @@ tei-anchor {
 tei-pb {
     display: inline-block;
     background-color: #ffa500;
+    font-size: 1rem;
+    font-weight: normal;
     border-radius: 4px;
     padding: 2px 6px;
 }
@@ -151,10 +161,6 @@ tei-p.is-empty::before {
     position: absolute;
     height: 0;
     pointer-events: none;
-}
-
-tei-div, tei-p, tei-item {
-    display: block;
 }
 
 .debug tei-div, .debug tei-p, .debug tei-item {

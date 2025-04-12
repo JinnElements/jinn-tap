@@ -59,9 +59,9 @@ export class Toolbar {
                     } else if (def.type === 'inline') {
                         this.editor.chain().focus().toggleMark(name, toolbarDef.attributes).run();
                     } else if (def.type === 'list') {
-                        this.editor.chain().focus().toggleList(name, toolbarDef.attributes).run();
+                        this.editor.chain().focus().toggleList(toolbarDef.attributes).run();
                     } else if (def.type === 'anchor') {
-                        this.editor.chain().focus().addAnchor(name, toolbarDef.attributes).run();
+                        this.editor.chain().focus().addAnchor(toolbarDef.attributes).run();
                     } else if (def.type === 'empty') {
                         this.editor.chain().focus().insertContent({
                             type: name,
