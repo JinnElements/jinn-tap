@@ -63,11 +63,8 @@ export class AttributePanel {
         // If no marks, check for nodes
         const $pos = editor.state.doc.resolve(from);
         const node = $pos.node();
-        const parent = $pos.depth > 0 ? $pos.node($pos.depth) : null;
         
         if (node && Object.keys(this.schemaDef).includes(node.type.name)) {
-            // Check if attributes have changed for authority fields
-            const hasChanged = this.hasAuthorityAttributesChanged(node);
             if (this.currentElement == node) {
                 return;
             }
