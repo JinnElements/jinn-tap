@@ -130,7 +130,7 @@ export class AttributePanel {
         this.updatePanel();
     }
 
-    createAttributeInput(attrName, attrDef, currentValue) {
+    createAttributeInput(attrName, attrDef, currentValue, placeholder = '') {
         const label = document.createElement('label');
         label.textContent = attrName;
 
@@ -147,6 +147,7 @@ export class AttributePanel {
             input = document.createElement('input');
             input.type = 'text';
         }
+        input.placeholder = placeholder;
         input.value = currentValue || attrDef.default || '';
         input.name = attrName;
 
@@ -174,10 +175,13 @@ export class AttributePanel {
 
         Object.entries(def.attributes).forEach(([attrName, attrDef]) => {
             if (attrDef.connector) {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.value = nodeOrMark.attrs[attrName];
-                this.panel.appendChild(input);
+                const input = this.createAttributeInput(
+                    attrName, 
+                    attrDef, 
+                    nodeOrMark.attrs[attrName],
+                    "No reference assigned"
+                );
+                input.disabled = true;
 
                 const info = document.createElement('div');
                 this.panel.appendChild(info);
