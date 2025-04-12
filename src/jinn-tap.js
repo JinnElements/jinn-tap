@@ -23,8 +23,12 @@ style.textContent = `
         height: 100%;
     }
 
-    jinn-tap .toolbar {
+    jinn-tap nav {
         grid-area: toolbar;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background-color: white;
     }
 
     jinn-tap .toolbar-button i {
@@ -35,9 +39,10 @@ style.textContent = `
         grid-area: attribute-panel;
         background: white;
         padding: 20px;
-        overflow-y: auto;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 4px;
+        max-height: fit-content;
+        position: sticky;
+        top: 0;
+        z-index: 10;
     }
 
     jinn-tap .ProseMirror {
@@ -112,7 +117,6 @@ export class JinnTap extends HTMLElement {
             </nav>
             <div class="editor-area"></div>
             <aside class="attribute-panel">
-                <h3>Attributes</h3>
                 <form action="" method="post"></form>
             </aside>
         `;

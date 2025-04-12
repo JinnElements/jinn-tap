@@ -158,7 +158,7 @@ export class AttributePanel {
         const def = this.schemaDef[nodeOrMark.type.name];
         
         if (!def || !def.attributes) {
-            this.panel.innerHTML = '<p>No attributes available</p>';
+            this.panel.innerHTML = '';
             return;
         }
 
@@ -241,7 +241,7 @@ export class AttributePanel {
                 .resetAttributes(nodeOrMark.type.name, clearedAttributes)
                 .run();
         }
-        
+
         if (Object.keys(pendingChanges).length > 0) {
             this.editor.chain()
                 .focus()
