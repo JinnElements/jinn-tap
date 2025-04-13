@@ -5,8 +5,9 @@ import { serializeToTEI } from './serialize.js';
 import { createFromSchema } from './extensions.js';
 import { FootnoteRules } from './footnote.js';
 import { AttributePanel } from './attribute-panel.js';
+import { NavigationPanel } from './navigator.js';
 import { Toolbar } from './toolbar.js';
-import { colorCssFromSchema } from './util.js';
+import { colorCssFromSchema } from './colors.js';
 import schema from './schema.json';
 
 // Create a style element for the component's styles
@@ -17,8 +18,8 @@ style.textContent = `
         grid-template-rows: min-content 1fr;
         grid-template-columns: 1fr minmax(30vw, 460px);
         grid-template-areas:
-            "toolbar attribute-panel"
-            "editor attribute-panel";
+            "toolbar aside"
+            "editor aside";
         column-gap: 1rem;
         height: 100%;
     }
@@ -35,8 +36,8 @@ style.textContent = `
         min-height: 1rem;
     }
         
-    jinn-tap .attribute-panel {
-        grid-area: attribute-panel;
+    jinn-tap .aside {
+        grid-area: aside;
         background: white;
         padding: 20px;
         max-height: fit-content;
@@ -125,9 +126,10 @@ export class JinnTap extends HTMLElement {
                 <ul class="toolbar"></ul>
             </nav>
             <div class="editor-area"></div>
-            <aside class="attribute-panel">
-                <form action="" method="post"></form>
-            </aside>
+            <div class="aside">
+                <nav class="navigation-panel" aria-label="breadcrumb"></nav>
+                <form class="attribute-panel" action="" method="post"></form>
+            </div>
         `;
 
         // Initialize the editor
@@ -161,6 +163,9 @@ export class JinnTap extends HTMLElement {
 
         // Initialize attribute panel
         this.attributePanel = new AttributePanel(this, schema);
+
+        // Initialize navigation panel
+        this.navigationPanel = new NavigationPanel(this, schema);
     }
 
     dispatchContentChange() {

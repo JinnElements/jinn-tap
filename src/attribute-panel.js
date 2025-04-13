@@ -1,11 +1,13 @@
+import { marksInRange } from './util.js';
+
 export class AttributePanel {
 
     constructor(editor, schemaDef) {
         this.editor = editor.tiptap;
         this.schemaDef = schemaDef;
-        this.panel = editor.querySelector('.attribute-panel form');
+        this.panel = editor.querySelector('.attribute-panel');
         this.currentElement = null;
-        this.currentAttributes = {};
+        this.currentMark = null;
         this.setupEventListeners();
     }
 
@@ -27,36 +29,15 @@ export class AttributePanel {
 
     updatePanelForCurrentPosition(editor) {
         const { from, to } = editor.state.selection;
-        
-        // Check for marks across the entire selection
-        let matchingMark = null;
-        let matchingText = null;
-        let matchingParent = null;
-        editor.state.doc.nodesBetween(from, to, (node, pos, parent, index) => {
-            if (matchingMark) return; // Stop if we found a mark
-            
-            const marks = node.marks;
-            matchingMark = marks.find(mark => 
-                Object.keys(this.schemaDef).includes(mark.type.name)
-            );
-            if (matchingMark) {
-                matchingText = node.text;
-                matchingParent = parent;
+        const matchingMarks = marksInRange(editor, from, to);
+
+        if (matchingMarks && matchingMarks.length > 0) {
+            this.currentElement = null;
+            const matchingMark = matchingMarks[matchingMarks.length - 1];
+            if (this.currentMark?.mark != matchingMark.mark) {
+                this.showMarkAttributes(matchingMark.mark, matchingMark.text);
             }
-        });
-        
-        if (matchingMark) {
-            // Check if attributes have changed for authority fields
-            const hasChanged = this.hasAuthorityAttributesChanged(matchingMark);
-            if (!hasChanged && this.currentElement?.type?.name === matchingMark.type.name && 
-                this.currentElement?.attrs?.id === matchingMark.attrs?.id &&
-                this.currentElement?.parent === matchingParent) {
-                return;
-            }
-            this.currentElement = matchingMark;
-            this.currentElement.parent = matchingParent;
-            this.currentAttributes = { ...matchingMark.attrs };
-            this.showMarkAttributes(matchingMark, matchingText);
+            this.currentMark = matchingMark;
             return;
         }
 
@@ -64,6 +45,7 @@ export class AttributePanel {
         const $pos = editor.state.doc.resolve(from);
         const node = $pos.node();
         
+        this.currentMark = null;
         if (node && Object.keys(this.schemaDef).includes(node.type.name)) {
             if (this.currentElement == node) {
                 return;
@@ -76,19 +58,6 @@ export class AttributePanel {
             this.currentAttributes = {};
             this.hidePanel();
         }
-    }
-
-    hasAuthorityAttributesChanged(element) {
-        const def = this.schemaDef[element.type.name];
-        if (!def || !def.attributes) return false;
-
-        // Check each attribute that has a connector
-        return Object.entries(def.attributes).some(([attrName, attrDef]) => {
-            if (attrDef.connector) {
-                return this.currentAttributes[attrName] !== element.attrs[attrName];
-            }
-            return false;
-        });
     }
 
     showMarkAttributes(mark, text) {
@@ -145,6 +114,10 @@ export class AttributePanel {
             this.panel.innerHTML = '';
             return;
         }
+
+        const title = document.createElement('h4');
+        title.textContent = nodeOrMark.type.name;
+        this.panel.appendChild(title);
 
         Object.entries(def.attributes).forEach(([attrName, attrDef]) => {
             if (attrDef.connector) {
