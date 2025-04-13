@@ -27,11 +27,11 @@
     "test": "cypress run"
   },
   "dependencies": {
-    "@tiptap/core": "^2.1.13",
-    "@tiptap/extension-history": "^2.1.13",
-    "@tiptap/extension-placeholder": "^2.11.5",
-    "@tiptap/pm": "^2.1.13",
-    "@tiptap/starter-kit": "^2.1.13"
+    "@tiptap/core": "^2.11.7",
+    "@tiptap/extension-history": "^2.11.7",
+    "@tiptap/extension-placeholder": "^2.11.7",
+    "@tiptap/pm": "^2.11.7",
+    "@tiptap/starter-kit": "^2.11.7"
   },
   "devDependencies": {
     "chai-xml": "^0.4.1",
