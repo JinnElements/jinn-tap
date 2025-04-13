@@ -2,7 +2,18 @@
     "div": {
         "type": "block",
         "defining": true,
-        "content": "heading? block*",
+        "content": "heading+ block*",
+        "attributes": {
+            "rend": {
+                "type": "string"
+            },
+            "type": {
+                "type": "string"
+            },
+            "n": {
+                "type": "string"
+            }
+        },
         "defaultContent": {
             "type": "p",
             "content": [{

@@ -1,8 +1,9 @@
 import { marksInRange } from './util.js';
 
 export class NavigationPanel {
-    constructor(editor) {
+    constructor(editor, attributePanel) {
         this.editor = editor.tiptap;
+        this.attributePanel = attributePanel;
         this.panel = editor.querySelector('.navigation-panel');
         this.setupEventListeners();
     }
@@ -57,6 +58,7 @@ export class NavigationPanel {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 this.editor.chain().focus().setTextSelection(nodeInfo.pos).run();
+                this.attributePanel.showNodeAttributes(nodeInfo.node);
             });
             li.appendChild(link);
             ul.appendChild(li);
@@ -70,6 +72,7 @@ export class NavigationPanel {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
                     this.editor.chain().focus().extendMarkRange(mark.mark.type).run();
+                    this.attributePanel.showMarkAttributes(mark.mark, mark.text);
                 });
                 li.appendChild(link);
                 ul.appendChild(li);

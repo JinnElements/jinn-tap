@@ -165,7 +165,7 @@ export class JinnTap extends HTMLElement {
         this.attributePanel = new AttributePanel(this, schema);
 
         // Initialize navigation panel
-        this.navigationPanel = new NavigationPanel(this, schema);
+        this.navigationPanel = new NavigationPanel(this, this.attributePanel);
     }
 
     dispatchContentChange() {
