@@ -26,7 +26,7 @@ export class NavigationPanel {
         // Add current node and its marks
         let marks;
         if (node) {
-            // Only add the node if it extends to the end of the selection
+            // if it's a text node, collect all marks in the selection
             if (node.isText) {
                 marks = marksInRange(editor, from, to);
             }

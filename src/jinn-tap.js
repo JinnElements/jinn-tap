@@ -184,7 +184,7 @@ export class JinnTap extends HTMLElement {
 
     // Setter for the editor's content
     set content(value) {
-        this.editor.commands.setContent(value);
+        this.editor.chain().focus().setContent(value).setTextSelection(0).run();
         this.dispatchContentChange();
     }
 
