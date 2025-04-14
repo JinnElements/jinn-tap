@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+   <teiHeader>
+      <fileDesc>
+         <titleStmt>
+            <title>Travel Report of Lucius Septimius Aquilinus through Gallia and Germania Superior</title>
+         </titleStmt>
+         <publicationStmt>
+            <p>Private Travel Report</p>
+         </publicationStmt>
+         <sourceDesc>
+            <p>Original letter to Marcus Tullius Cicero</p>
+         </sourceDesc>
+      </fileDesc>
+   </teiHeader>
+   <text>
+      <body>
+         <div type="letter">
+        <head>Travel Report of <persName>Lucius Septimius Aquilinus</persName></head>
+        <p>To my most esteemed friend <persName key="gnd-118520814">Marcus Tullius Cicero</persName> in <placeName key="geo-3169070">Rome</placeName></p>
+        <p>Greetings, dearest friend!</p>
+        <div type="day" n="1">
+            <head>Arrival in <placeName key="geo-2809346">Aquae Mattiacorum</placeName></head>
+            <p>After a most arduous journey across the <placeName key="geo-2661786">Alps</placeName> (where I nearly lost my favorite <term>toga</term> to a particularly aggressive mountain goat), I finally reached <placeName key="geo-2809346">Aquae Mattiacorum</placeName>. The <term>thermal baths</term> here are truly divine! The <persName>Bath Master Gaius Balneator<anchor xml:id="fn-gaius-balneator" type="note"/></persName> led me through the various <term>bathing chambers</term>. The <term>Caldarium</term> was so hot that I swear I saw <persName key="gnd-118770462">Vulcan</persName> himself taking a dip! In the <term>Tepidarium</term>, I encountered a group of <term key="gnd-4055409-0">Legionaries</term> from the <hi rend="i">XXII Legion</hi>, who regaled me with tales of their adventures along the <placeName>Limes</placeName> - though I suspect some of their stories about <hi rend="i">giant bears</hi> and <hi rend="i">flying barbarians</hi> might have been slightly exaggerated after a few too many cups of <term key="gnd-4065133-2">wine</term>.</p>
+            <p>The <term key="gnd-4040311-7">mosaics</term> in the <term>Frigidarium</term> are so magnificent that even <persName key="gnd-118503642">Apollo</persName> would be green with envy! They depict scenes of <persName key="gnd-11952354X">Neptune</persName> riding a chariot pulled by <hi rend="i">giant seahorses</hi> - though I must say, the artist seems to have taken some creative liberties with the anatomy of the creatures.</p>
+            <p>In the evening, I dined at the <term key="gnd-4071600-4">tavern</term> of <persName>Marcus Vinarius<anchor xml:id="fn-marcus-vinarius" type="note"/></persName>, where I found a most excellent <term key="gnd-4065133-2">Falernian wine</term>. The innkeeper claimed that <persName key="gnd-118623567">Emperor Trajan<anchor xml:id="fn-emperor-trajan" type="note"/></persName> himself had dined here - though I suspect this story might be as authentic as the <hi rend="i">Egyptian mummy</hi> he keeps in the corner for decoration.</p>
+        </div>
+        <div type="day" n="2">
+            <head>Visit to <placeName key="geo-2874225">Mogontiacum</placeName></head>
+            <p>Today I visited the famous <placeName key="geo-2874213">Amphitheater</placeName> of <placeName key="geo-2874225">Mogontiacum</placeName>. The <persName>Lanista Quintus Magnus<anchor xml:id="fn-quintus-magnus" type="note"/></persName> presented a troupe of <hi rend="i">Germanic Warriors</hi> - who turned out to be <hi rend="b">actors</hi>! They wore <term>bear skins</term> and <term>horned helmets</term> that they were selling in the <placeName>Forum</placeName> for a <term>denarius</term> each. <persName key="gnd-118504037">Arminius<anchor xml:id="fn-arminius" type="note"/></persName> would be rolling in his grave! The highlight was when one of the "warriors" tripped over his own <term key="gnd-4053972-6">sword</term> and landed in the <term>arena sand</term> - the crowd went wild!</p>
+            <p>In the afternoon, I visited the <term key="gnd-118558897">Temple of <persName key="gnd-118558897">Jupiter</persName>, where the <persName></persName>Pontifex Maximus</term> was conducting a <term key="gnd-4512618-5">sacrifice</term>. The <term>frescoes</term> on the walls tell of the deeds of <persName key="gnd-119241811">Drusus<anchor xml:id="fn-drusus" type="note"/></persName> in <term key="gnd-1028376227">Germania</term>. One particularly amusing scene shows him riding a <hi rend="i">giant eagle</hi> while fighting <hi rend="i">dragon-like creatures</hi> - I suspect the artist might have been sampling some of that <term>Germanic beer</term> while working!</p>
+        </div>
+        <div type="day" n="3">
+            <head>Journey to <placeName key="geo-2806142">Borbetomagus</placeName></head>
+            <p>My journey today took me to <placeName key="geo-2806142">Borbetomagus</placeName> (modern-day <placeName key="geo-2806142">Worms</placeName>). Along the way, I encountered a caravan of <persName>Amber Traders</persName> from the <placeName key="geo-2633321">Baltic Sea</placeName>. Their tales of the wild <hi rend="i">barbarians</hi> in the north were so thrilling that I immediately purchased some <term>amber amulets</term> for the <placeName key="geo-11983686">Forum Boarium</placeName> in <placeName key="geo-3169070">Rome</placeName>. One trader claimed to have seen a <hi rend="i">giant sea serpent</hi> that could swallow a <term>trireme</term> whole - though I suspect this might have been after one too many cups of <term>mead</term>.</p>
+            <p>In <placeName key="geo-2806142">Borbetomagus</placeName>, I visited the famous <term>vineyards</term> of <persName>Tiberius Vitis<anchor xml:id="fn-tiberius-vitis" type="note"/></persName>. His <term key="gnd-4138434-9">Riesling</term> is so delicious that even <persName key="gnd-118651439">Bacchus</persName> would approve! The wine cellars are so extensive that I'm convinced they must connect to the <placeName>Underworld</placeName> - though that might just be the effect of sampling too many vintages.</p>
+        </div>
+        <div type="day" n="4">
+            <head>Arrival in <placeName>Lutetia Parisiorum</placeName></head>
+            <p>After a challenging journey across the <placeName key="geo-2967682">Vosges Mountains</placeName> (where I nearly lost my <term>traveling cloak</term> to a particularly persistent <hi rend="i">mountain goat</hi>), I finally reached <placeName key="geo-2988507">Lutetia Parisiorum</placeName>. The <term>Temple of Isis</term> here is truly impressive! The <persName>High Priest Claudius Mysticus<anchor xml:id="fn-claudius-mysticus" type="note"/></persName> promised me a <hi rend="i">divine vision</hi> - which turned out to be <hi rend="b">terrible wine</hi>! But the <term>frescoes</term> were so beautiful that even <persName key="gnd-118649787">Apelles</persName> couldn't have painted them better.</p>
+            <p>In the evening, I dined at the <term>house</term> of <persName key="gnd-120871459">Gaius Gallicus<anchor xml:id="fn-gaius-gallicus" type="note"/></persName>, a wealthy <term>merchant</term> who told me about his business with the <hi rend="i">Britons</hi>. His <term>kitchen</term> was so exquisite that even <persName key="gnd-119024667">Apicius</persName> would have been jealous! The highlight was a <term>roast boar</term> served on a bed of <term>peacock feathers</term> - though I suspect the feathers were just for show, as they were rather difficult to chew.</p>
+        </div>
+        <div type="day" n="5">
+            <head>Return Journey to <placeName key="geo-3169070">Rome</placeName></head>
+            <p>Now I'm making my way back to <placeName key="geo-3169070">Rome</placeName>. My <term>wagon</term> is laden with <term>amphorae</term> full of <hi rend="i">Germanic beer</hi> (which the <term key="gnd-4055409-0">Legionaries</term> prefer to our <term>Falernian</term>!), <term>amber amulets</term>, and several <term>barrels</term> of the delicious <term>Riesling</term> from <placeName key="geo-2806142">Borbetomagus</placeName>. I've also acquired a rather suspicious-looking <term>statue</term> of <persName key="gnd-118641077">Mercury</persName> that the seller claimed was "authentic" - though I suspect it might have been made last week.</p>
+            <p>The journey has been most successful, and I look forward to telling you all about my adventures upon my return. May <persName key="gnd-118641077">Mercury</persName> protect my return journey - though I suspect he might be too busy counting all the <term>coins</term> I've spent on souvenirs!</p>
+        </div>
+        <p>Farewell!</p>
+        <p>Your friend, <persName>Lucius Septimius Aquilinus</persName></p>
+    </div>
+    <noteGrp>
+        <note target="#fn-gaius-balneator">Gaius Balneator - A bath master of questionable reputation, known for his tendency to "accidentally" mix up the hot and cold baths, much to the amusement (or horror) of his patrons.</note>
+        <note target="#fn-marcus-vinarius">Marcus Vinarius - A wine merchant who claims to have served every emperor since <persName>Romulus</persName>, though his memory seems to improve with each cup of wine he serves.</note>
+        <note target="#fn-emperor-trajan"><persName key="gnd-118623567">Emperor Trajan</persName> - Famous for his military campaigns and public works, though not particularly known for his sense of humor. The story of him dining in a small <term key="gnd-4071600-4">tavern</term> is about as likely as <persName>Jupiter</persName> taking up pottery.</note>
+        <note target="#fn-quintus-magnus"><persName key="gnd-1187003654">Quintus Magnus</persName> - A former gladiator turned impresario, known for his dramatic retellings of battles where he was "the only survivor" - a claim he makes about every battle in Roman history.</note>
+        <note target="#fn-arminius"><persName key="gnd-118504037">Arminius</persName> - The Germanic leader who famously defeated three Roman legions in the Teutoburg Forest. His ghost is said to haunt Roman military camps, though this might just be the effect of too much <term>Germanic beer</term>.</note>
+        <note target="#fn-drusus"><persName key="gnd-119241811">Drusus</persName> - A Roman general who campaigned extensively in Germania. The frescoes in his honor tend to get more... creative with each retelling, much like fish stories.</note>
+        <note target="#fn-tiberius-vitis">Tiberius Vitis - A wine merchant who claims his family has been making wine since before <persName>Bacchus</persName> was born. His wine is excellent, but his stories are even better.</note>
+        <note target="#fn-claudius-mysticus">Claudius Mysticus - A high priest known for his "mystical visions" that always seem to involve expensive donations to the temple. His wine cellar is more impressive than his spiritual insights.</note>
+        <note target="#fn-gaius-gallicus"><persName key="gnd-120871459">Gaius Gallicus</persName> - A merchant who claims to have traded with every barbarian tribe north of the <placeName key="geo-2661786">Alps</placeName>. His stories grow taller with each telling, much like the mythical creatures he claims to have encountered.</note>
+    </noteGrp>
+      </body>
+   </text>
+</TEI> 
