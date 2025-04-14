@@ -56,8 +56,7 @@ export function createFromSchema(schemaDef) {
         extensions.push(NodeOrMark.configure({
             shortcuts: def.keyboard,
             attributes: def.attributes,
-            label: def.label,
-            defaultContent: def.defaultContent
+            label: def.label
         }));
     });
     return extensions;

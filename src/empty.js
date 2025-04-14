@@ -17,7 +17,6 @@ export const TeiEmptyElement = TeiBlock.extend({
             tag: `tei-${this.name}`,
             shortcuts: {},
             attributes: {},
-            defaultContent: [],
             label: 'Empty Element'
         }
     },

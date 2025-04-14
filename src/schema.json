@@ -14,13 +14,6 @@
                 "type": "string"
             }
         },
-        "defaultContent": {
-            "type": "p",
-            "content": [{
-                "type": "text",
-                "text": "Hello, world!"
-            }]
-        },
         "keyboard": {
             "Mod-Shift-e": {
                 "attributes": {},
@@ -328,7 +321,6 @@
     },
     "anchor": {
         "type": "anchor",
-        "label": "fn",
         "attributes": {
             "type": {
                 "type": "string",
@@ -341,6 +333,42 @@
                     "type": "note"
                 },
                 "label": "<i class='bi bi-123'></i>"
+            }
+        }
+    },
+    "opener": {
+        "type": "block",
+        "attributes": {},
+        "content": "block+",
+        "toolbar": {
+            "Opener": {
+                "select": "Letter",
+                "attributes": {},
+                "label": "<i class='bi bi-quote'></i>"
+            }
+        }
+    },
+    "byline": {
+        "type": "block",
+        "attributes": {},
+        "content": "inline+",
+        "toolbar": {
+            "Byline": {
+                "select": "Letter",
+                "attributes": {},
+                "label": "<i class='bi bi-quote'></i>"
+            }
+        }
+    },
+    "salute": {
+        "type": "block",
+        "attributes": {},
+        "content": "inline+",
+        "toolbar": {
+            "Salute": {
+                "select": "Letter",
+                "attributes": {},
+                "label": "<i class='bi bi-quote'></i>"
             }
         }
     }

@@ -9,8 +9,7 @@ export const TeiBlock = Node.create({
         return {
             tag: `tei-${this.name}`,
             shortcuts: {},
-            attributes: {},
-            defaultContent: []
+            attributes: {}
         }
     },
 
