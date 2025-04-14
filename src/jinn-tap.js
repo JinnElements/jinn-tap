@@ -83,7 +83,8 @@ style.textContent = `
     }
 
     .jinn-tap.overlay {
-        background-color: rgba(252.5, 230.5, 191.5, 0.5);
+        border: 5px dashed #EE402E;
+        border-radius: 5px;
     }
 
     ${colorCssFromSchema(schema)}

@@ -298,10 +298,10 @@ export class AttributePanel {
                         }
                        
                         this.overlay.style.display = 'block';
-                        this.overlay.style.top = rect.top + 'px';
-                        this.overlay.style.left = rect.left + 'px';
-                        this.overlay.style.width = rect.width + 'px'; 
-                        this.overlay.style.height = rect.height + 'px';
+                        this.overlay.style.top = (rect.top - 10) + 'px';
+                        this.overlay.style.left = (rect.left - 10) + 'px';
+                        this.overlay.style.width = (rect.width + 20) + 'px'; 
+                        this.overlay.style.height = (rect.height + 20) + 'px';
                         document.body.appendChild(this.overlay);
                     }
                 });
