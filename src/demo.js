@@ -1,5 +1,5 @@
 import './jinn-tap.js';
-import { fromTeiXml } from './util.js';
+import { fromXml } from './util.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM Content Loaded');
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
-                editor.content = fromTeiXml(e.target.result);
+                editor.content = fromXml(e.target.result);
             } catch (error) {
                 console.error('Error parsing XML:', error);
             } finally {

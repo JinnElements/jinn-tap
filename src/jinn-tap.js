@@ -8,7 +8,7 @@ import { AttributePanel } from './attribute-panel.js';
 import { NavigationPanel } from './navigator.js';
 import { Toolbar } from './toolbar.js';
 import { colorCssFromSchema } from './colors.js';
-import { parseXml, fromTei } from './util.js';
+import { fromXml } from './util.js';
 import schema from './schema.json';
 
 // Create a style element for the component's styles
@@ -114,11 +114,7 @@ export class JinnTap extends HTMLElement {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const content = await response.text();
-            const xmlDoc = parseXml(content);
-            
-            // Check if root element is in TEI namespace
-            const hasTeiNamespace = xmlDoc.documentElement.namespaceURI === 'http://www.tei-c.org/ns/1.0';
-            const html = hasTeiNamespace ? fromTei(xmlDoc) : content;            
+            const html = fromXml(content);            
             if (this.editor) {
                 this.content = html;
             } else {

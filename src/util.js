@@ -87,7 +87,10 @@ export function fromTei(xmlDoc) {
     return xmlText.join('');
 }
 
-export function fromTeiXml(xml) {
-    const xmlDoc = parseTeiXml(xml);
-    return transformTeiToHtml(xmlDoc);
+export function fromXml(content) {
+    const xmlDoc = parseXml(content);
+            
+    // Check if root element is in TEI namespace
+    const hasTeiNamespace = xmlDoc.documentElement.namespaceURI === 'http://www.tei-c.org/ns/1.0';
+    return hasTeiNamespace ? fromTei(xmlDoc) : xml;
 }
