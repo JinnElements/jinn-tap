@@ -12,7 +12,7 @@ export function marksInRange(editor, from, to) {
     editor.state.doc.nodesBetween(from, to, (node, pos, parent, index) => {
         if (node.isText) {
             if (matchingMarks == null) {
-                matchingMarks = node.marks.map(mark => ({mark, pos}));
+                matchingMarks = node.marks.map(mark => ({ mark, pos }));
             } else {
                 matchingMarks = matchingMarks.filter(mark => node.marks.find(m => m.type.name === mark.mark.type.name));
             }
@@ -29,4 +29,65 @@ export function marksInRange(editor, from, to) {
         matchingMarks.sort((a, b) => (b.text?.length || 0) - (a.text?.length || 0));
     }
     return matchingMarks;
+}
+
+export function parseXml(xml) {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xml, 'application/xml');
+
+    // Check for parsing errors
+    const parserError = xmlDoc.querySelector('parsererror');
+    if (parserError) {
+        console.error('XML Parsing Error:', parserError.textContent);
+        return null;
+    }
+
+    return xmlDoc;
+}
+
+export function fromTei(xmlDoc) {
+    if (!xmlDoc) return '';
+    
+    const xmlText = [];
+    const nodes = xmlDoc.querySelectorAll('text > body > *');
+    
+    // Transform node names to tei- prefixed format
+    const transformNode = (node) => {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+            // Create new element with tei- prefix
+            const newElement = document.createElement(`tei-${node.tagName}`);
+
+            // Copy all attributes
+            for (const attr of node.attributes) {
+                if (attr.name === 'xml:id') {
+                    newElement.setAttribute('id', attr.value);
+                } else { 
+                    newElement.setAttribute(attr.name, attr.value);
+                }
+            }
+
+            // Transform child nodes recursively
+            for (const child of node.childNodes) {
+                newElement.appendChild(transformNode(child));
+            }
+
+            return newElement;
+        } else {
+            // For text nodes, just clone them
+            return node.cloneNode();
+        }
+    };
+
+    nodes.forEach(content => {
+        const transformedContent = transformNode(content);
+        console.log(transformedContent.outerHTML);
+        xmlText.push(transformedContent.outerHTML);
+    });
+    
+    return xmlText.join('');
+}
+
+export function fromTeiXml(xml) {
+    const xmlDoc = parseTeiXml(xml);
+    return transformTeiToHtml(xmlDoc);
 }

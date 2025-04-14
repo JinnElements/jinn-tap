@@ -8,6 +8,7 @@ import { AttributePanel } from './attribute-panel.js';
 import { NavigationPanel } from './navigator.js';
 import { Toolbar } from './toolbar.js';
 import { colorCssFromSchema } from './colors.js';
+import { parseXml, fromTei } from './util.js';
 import schema from './schema.json';
 
 // Create a style element for the component's styles
@@ -84,7 +85,7 @@ if (!document.querySelector('#jinn-tap-styles')) {
  */
 export class JinnTap extends HTMLElement {
     static get observedAttributes() {
-        return ['debug'];
+        return ['debug', 'url'];
     }
 
     constructor() {
@@ -101,6 +102,34 @@ export class JinnTap extends HTMLElement {
             } else {
                 this.classList.remove('debug');
             }
+        } else if (name === 'url' && newValue) {
+            this.loadFromUrl(newValue);
+        }
+    }
+
+    async loadFromUrl(url) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const content = await response.text();
+            const xmlDoc = parseXml(content);
+            
+            // Check if root element is in TEI namespace
+            const hasTeiNamespace = xmlDoc.documentElement.namespaceURI === 'http://www.tei-c.org/ns/1.0';
+            const html = hasTeiNamespace ? fromTei(xmlDoc) : content;            
+            if (this.editor) {
+                this.content = html;
+            } else {
+                // Store the content to be used when editor is initialized
+                this._pendingContent = html;
+            }
+        } catch (error) {
+            console.error('Error loading content from URL:', error);
+            this.dispatchEvent(new CustomEvent('error', {
+                detail: { error: error.message }
+            }));
         }
     }
 
@@ -145,7 +174,7 @@ export class JinnTap extends HTMLElement {
                     includeChildren: true,
                 })
             ],
-            content: initialContent || `
+            content: this._pendingContent || initialContent || `
                 <tei-div>
                     <tei-p></tei-p>
                 </tei-div>
@@ -166,6 +195,12 @@ export class JinnTap extends HTMLElement {
 
         // Initialize navigation panel
         this.navigationPanel = new NavigationPanel(this, this.attributePanel);
+
+        // Check if URL attribute is present
+        const url = this.getAttribute('url');
+        if (url) {
+            this.loadFromUrl(url);
+        }
     }
 
     dispatchContentChange() {

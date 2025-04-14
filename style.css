@@ -24,6 +24,15 @@ pb-authority-lookup {
     min-height: 320px;
 }
 
+jinn-tap .navigation-panel {
+    margin-bottom: 1rem;
+}
+
+jinn-tap .navigation-panel li {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
 jinn-tap .toolbar li a {
     color: inherit;
 }
