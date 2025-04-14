@@ -219,12 +219,27 @@ export const TeiAnchor = TeiEmptyElement.extend({
                         id: generateUniqueId()
                     }
                 });
+            },
+            gotoNote: (id) => ({ commands, editor }) => {
+                const noteSelector = `tei-note[target="#${id}"]`;
+                const noteElement = editor.view.dom.querySelector(noteSelector);
+                
+                if (noteElement) {
+                    // Scroll note into view
+                    noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Set selection at start of note
+                    const pos = this.editor.view.posAtDOM(noteElement, 0);
+                    commands.setTextSelection(pos);
+                    return true;
+                }
+                return false;
             }
         };
     },
 
     addNodeView() {
-        return ({ node, getPos }) => {
+        return ({ node, editor }) => {
             const dom = document.createElement(`tei-${this.name}`);
             
             // Set all attributes on the DOM element
@@ -239,7 +254,7 @@ export const TeiAnchor = TeiEmptyElement.extend({
             dom.textContent = reference > 0 ? reference.toString() : '';
 
             dom.addEventListener('click', () => {
-                this.editor.options.element.dispatchEvent(new CustomEvent('empty-element-clicked', { detail: { node } }));
+                editor.commands.gotoNote(node.attrs.id);
             });
 
             return {

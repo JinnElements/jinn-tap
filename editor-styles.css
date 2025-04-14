@@ -144,6 +144,7 @@ tei-note::before {
 tei-anchor {
     font-size: 0.8em;
     vertical-align: super;
+    cursor: pointer;
 }
 
 tei-pb {
