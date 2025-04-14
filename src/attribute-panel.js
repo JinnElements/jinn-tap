@@ -1,5 +1,5 @@
-import { marksInRange } from './util.js';
-
+import { marksInRange, occurrences } from './util.js';
+import { kwicText } from './kwic.js';
 export class AttributePanel {
 
     constructor(editor, schemaDef) {
@@ -9,6 +9,14 @@ export class AttributePanel {
         this.currentElement = null;
         this.currentMark = null;
         this.setupEventListeners();
+
+        this.overlay = document.createElement('div');
+        this.overlay.className = 'jinn-tap overlay';
+        this.overlay.style.display = 'block';
+        this.overlay.style.position = 'fixed';
+        this.overlay.style.pointerEvents = 'none';
+        this.overlay.style.zIndex = '1000';
+        this.overlay.style.display = 'none';
     }
 
     setupEventListeners() {
@@ -72,7 +80,7 @@ export class AttributePanel {
         this.updatePanel();
     }
 
-    createAttributeInput(attrName, attrDef, currentValue, placeholder = '') {
+    createAttributeInput(form, attrName, attrDef, currentValue, placeholder = '') {
         const label = document.createElement('label');
         label.textContent = attrName;
 
@@ -94,7 +102,7 @@ export class AttributePanel {
         input.name = attrName;
 
         label.appendChild(input);
-        this.panel.appendChild(label);
+        form.appendChild(label);
         return input;
     }
 
@@ -119,9 +127,16 @@ export class AttributePanel {
         title.textContent = nodeOrMark.type.name;
         this.panel.appendChild(title);
 
+        const info = document.createElement('div');
+        this.panel.appendChild(info);
+
+        const form = document.createElement('form');
+        this.panel.appendChild(form);
+
         Object.entries(def.attributes).forEach(([attrName, attrDef]) => {
             if (attrDef.connector) {
                 const input = this.createAttributeInput(
+                    form,
                     attrName, 
                     attrDef, 
                     nodeOrMark.attrs[attrName],
@@ -129,8 +144,11 @@ export class AttributePanel {
                 );
                 input.disabled = true;
 
-                const info = document.createElement('div');
-                this.panel.appendChild(info);
+                const details = document.createElement('details');
+                details.open = !nodeOrMark.attrs[attrName];
+                const summary = document.createElement('summary');
+                summary.textContent = 'Lookup';
+                details.appendChild(summary);
 
                 const lookup = document.createElement('pb-authority-lookup');
                 lookup.setAttribute('type', attrDef.connector.type);
@@ -148,18 +166,28 @@ export class AttributePanel {
                 document.addEventListener('pb-authority-select', (event) => {
                     const value = `${attrDef.connector.prefix}-${event.detail.properties.ref}`;
                     input.value = value;
+                    details.open = false;
                     if (Object.keys(def.attributes).length === 1) {
                         this.handleAttributeUpdate(nodeOrMark, { [attrName]: value });
                     }
                 });
-                this.panel.appendChild(lookup);
+                details.appendChild(lookup);
+                form.appendChild(details);
 
                 if (nodeOrMark.attrs[attrName]) {
-                    const ref = nodeOrMark.attrs[attrName].split('-')[1];
-                    lookup.lookup(attrDef.connector.type, ref, info);
+                    const ref = nodeOrMark.attrs[attrName].substring(nodeOrMark.attrs[attrName].indexOf('-') + 1);
+                    lookup.lookup(attrDef.connector.type, ref, info)
+                        .then(occurrences => {
+                            const strings = occurrences.strings;
+                            // Sort strings by length in descending order
+                            strings.sort((a, b) => b.length - a.length);
+                            strings.unshift(text);
+                            this.updateOccurrences(this.editor, nodeOrMark, strings);
+                        });
                 }
             } else {
                 this.createAttributeInput(
+                    form,
                     attrName, 
                     attrDef, 
                     nodeOrMark.attrs[attrName]
@@ -184,7 +212,7 @@ export class AttributePanel {
     }
 
     handleAttributeUpdate(nodeOrMark, pendingChanges = {}) {
-        const formData = new FormData(this.panel);
+        const formData = new FormData(this.panel.querySelector('form'));
         const clearedAttributes = [];
         for (const [key, value] of formData.entries()) {
             if (value !== '') {
@@ -211,6 +239,88 @@ export class AttributePanel {
                 .updateAttributes(nodeOrMark.type, pendingChanges)
                 .setTextSelection({ from, to })
                 .run();
+        }
+    }
+
+    updateOccurrences(editor, markOrNode, strings) {
+        const result = occurrences(editor, strings);
+
+        const div = document.createElement('div');
+        div.classList.add('occurrences');
+        div.innerHTML = `
+            <h5>Other Occurrences</h5>
+            <ul></ul>`;
+        const ul = div.querySelector('ul');
+        this.panel.appendChild(div);
+
+        for (const [string, positions] of Object.entries(result)) {
+            for (const pos of positions) {
+                const $pos = editor.state.doc.resolve(pos.pos);
+                let node = $pos.node();
+                let textNode = null;
+                if (!node.isText) {
+                    // If not a text node, try to find the text node at this position
+                    editor.state.doc.nodesBetween(pos.pos, pos.pos + pos.length, (node, pos) => {
+                        if (node.isText) {
+                            textNode = node;
+                            return false; // Stop traversal once we find a text node
+                        }
+                    });
+                }
+                const hasMark = textNode && textNode.marks.find(mark => markOrNode.eq(mark));
+                const li = document.createElement('li');
+                const label = document.createElement('label');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = hasMark;
+                label.appendChild(checkbox);
+                const text = editor.state.doc.textBetween(pos.pos, $pos.end());
+                const kwic = kwicText(text, pos.index, pos.index + pos.length);
+                const span = document.createElement('span');
+                span.innerHTML = kwic;
+                label.appendChild(span);
+                li.appendChild(label);
+                ul.appendChild(li);
+
+                label.addEventListener('mouseenter', (ev) => {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    const domNode = editor.view.nodeDOM(pos.pos);
+                    if (domNode) {
+                        let rect;
+                        if (domNode.nodeType === Node.TEXT_NODE) {
+                            const range = document.createRange();
+                            range.setStart(domNode, pos.index);
+                            range.setEnd(domNode, pos.index + pos.length);
+                            rect = range.getBoundingClientRect();
+                        } else {
+                            rect = domNode.getBoundingClientRect();
+                        }
+                       
+                        this.overlay.style.display = 'block';
+                        this.overlay.style.top = rect.top + 'px';
+                        this.overlay.style.left = rect.left + 'px';
+                        this.overlay.style.width = rect.width + 'px'; 
+                        this.overlay.style.height = rect.height + 'px';
+                        document.body.appendChild(this.overlay);
+                    }
+                });
+                label.addEventListener('mouseleave', (ev) => {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    this.overlay.style.display = 'none';
+                });
+                checkbox.addEventListener('change', (ev) => {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    console.log(pos);
+                    this.editor.chain()
+                        .focus()
+                        .setTextSelection({from: pos.pos + pos.index, to: pos.pos + pos.index + pos.length})
+                        .toggleMark(markOrNode.type, markOrNode.attrs)
+                        .run();
+                });
+            }
         }
     }
 } 

@@ -27,11 +27,6 @@ pre {
     overflow: auto;
 }
 
-pb-authority-lookup {
-    max-height: 460px;
-    min-height: 320px;
-}
-
 jinn-tap .navigation-panel {
     margin-bottom: 1rem;
 }
@@ -54,8 +49,10 @@ jinn-tap label[data-tooltip].toolbar-button {
 jinn-tap .toolbar-button i {
     font-size: 1.2rem;
 }
-/* 
-jinn-tap .tiptap:has(.is-editor-empty) {
-    background: url(jinntap-logo.png) no-repeat center center;
-    background-size: 50%;
-} */
+
+jinn-tap .occurrences {
+    margin-top: var(--pico-block-spacing-vertical);
+    margin-bottom: var(--pico-block-spacing-vertical);
+    padding-top: var(--pico-block-spacing-vertical);
+    border-top: 1px solid #ccc;
+}

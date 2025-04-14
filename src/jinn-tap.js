@@ -25,7 +25,7 @@ style.textContent = `
         height: 100%;
     }
 
-    jinn-tap nav {
+    jinn-tap > nav {
         grid-area: toolbar;
         position: sticky;
         top: 0;
@@ -34,9 +34,10 @@ style.textContent = `
     }
 
     jinn-tap .editor-area {
+        grid-area: editor;
         min-height: 1rem;
     }
-        
+    
     jinn-tap .aside {
         grid-area: aside;
         background: white;
@@ -47,6 +48,31 @@ style.textContent = `
         z-index: 10;
     }
 
+    jinn-tap .attribute-panel > div {
+        overflow-y: auto;
+    }
+
+    jinn-tap pb-authority-lookup {
+        overflow-y: auto;
+        height: 20rem;
+    }
+    
+    jinn-tap .occurrences {
+        margin-top: 1rem;
+        overflow-y: auto;
+    }
+
+    jinn-tap .occurrences ul {
+        height: 20rem;
+        overflow-y: auto;
+        margin: 0;
+        padding: 0;
+    }
+
+    jinn-tap .occurrences li {
+        list-style: none;
+    }
+
     jinn-tap .ProseMirror {
         outline: none;
         height: 100%;
@@ -54,6 +80,10 @@ style.textContent = `
 
     jinn-tap .ProseMirror p {
         margin: 0;
+    }
+
+    .jinn-tap.overlay {
+        background-color: rgba(252.5, 230.5, 191.5, 0.5);
     }
 
     ${colorCssFromSchema(schema)}
@@ -153,7 +183,7 @@ export class JinnTap extends HTMLElement {
             <div class="editor-area"></div>
             <div class="aside">
                 <nav class="navigation-panel" aria-label="breadcrumb"></nav>
-                <form class="attribute-panel" action="" method="post"></form>
+                <div class="attribute-panel"></div>
             </div>
         `;
 

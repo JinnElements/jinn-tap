@@ -31,6 +31,31 @@ export function marksInRange(editor, from, to) {
     return matchingMarks;
 }
 
+export function occurrences(editor, strings = []) {
+    const occurrences = {};
+    const foundPositions = [];
+    editor.state.doc.nodesBetween(0, editor.state.doc.content.size, (node, pos) => {
+        if (node.isText) {
+            strings.forEach(string => {
+                const index = node.text.indexOf(string);
+                if (index !== -1) {
+                    const newPos = { pos: pos, index: index, length: string.length };
+                    // Only add if not contained within any existing position
+                    const isContained = foundPositions.some(existing => 
+                        existing.pos <= newPos.pos && 
+                        existing.pos + existing.index + existing.length >= newPos.pos + newPos.index + newPos.length
+                    );
+                    if (!isContained) {
+                        occurrences[string] = [...(occurrences[string] || []), newPos];
+                        foundPositions.push(newPos);
+                    }
+                }
+            });
+        }
+    });
+    return occurrences;
+}
+
 export function parseXml(xml) {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xml, 'application/xml');
@@ -80,7 +105,6 @@ export function fromTei(xmlDoc) {
 
     nodes.forEach(content => {
         const transformedContent = transformNode(content);
-        console.log(transformedContent.outerHTML);
         xmlText.push(transformedContent.outerHTML);
     });
     
