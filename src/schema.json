@@ -277,7 +277,7 @@
         },
         "list": {
             "type": "list",
-            "content": "item+",
+            "content": "heading* item+",
             "attributes": {
                 "rend": {
                     "type": "string",

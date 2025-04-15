@@ -3,7 +3,7 @@ import { TeiBlock } from './block.js';
 
 export const TeiList = TeiBlock.extend({
     name: 'list',
-    content: 'item+',
+    content: 'head? item+',
     group: 'block',
     defining: true,
     inline: false,
@@ -23,6 +23,35 @@ export const TeiList = TeiBlock.extend({
                 }
                 
                 return commands.wrapInList(this.name, attributes);
+            },
+            [`transformToHead`]: () => ({ commands, state, tr }) => {
+                const { selection } = state;
+                const { $from } = selection;
+                
+                // Check if we're in a list item
+                const listItem = findParentNodeClosestToPos($from, node => node.type.name === 'item');
+                if (!listItem) return false;
+                
+                // Check if we're the first item in the list
+                const list = findParentNodeClosestToPos($from, node => node.type.name === 'list');
+                if (!list) return false;
+                
+                const isFirstItem = list.node.firstChild === listItem.node;
+                if (!isFirstItem) return false;
+                
+                // Get the content from the paragraph inside the item
+                const paragraph = listItem.node.firstChild;
+                if (!paragraph) return false;
+                
+                // Create a new head node with the content from the paragraph
+                const headNode = state.schema.nodes.head.create(
+                    {},
+                    paragraph.content
+                );
+                
+                // Replace the item with the head node
+                tr.replaceWith(listItem.pos, listItem.pos + listItem.node.nodeSize, headNode);
+                return true;
             }
         }
     },
@@ -68,7 +97,8 @@ export const TeiItem = TeiBlock.extend({
                 // }
             },
             Tab: () => this.editor.commands.sinkListItem(this.name),
-            'Shift-Tab': () => this.editor.commands.liftListItem(this.name)
+            'Shift-Tab': () => this.editor.commands.liftListItem(this.name),
+            'Mod-Alt-1': () => this.editor.commands.transformToHead()
         };
     }
 }); 

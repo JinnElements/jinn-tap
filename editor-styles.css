@@ -108,8 +108,12 @@ tei-list, tei-noteGrp {
     padding-left: 2em;
 }
 
-tei-list[rend="enumerated"] {
+tei-list[rend="ordered"] {
     list-style-type: decimal;
+}
+
+tei-list > tei-head {
+    font-size: 1.25rem;
 }
 
 tei-item, tei-note {

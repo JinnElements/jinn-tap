@@ -53,6 +53,9 @@
                         <item>
                             <p><hi rend="b">shift-tab</hi> moves the list item one level up. If it is already at the top level, it will be transformed into a normal paragraph</p>
                         </item>
+                        <item>
+                            <p>TEI lists may start with a heading. You can transform the first list item into a <hi rend="code">head</hi> by placing the cursor inside the item and choosing <hi rend="i">Head</hi> from the toolbar.</p>
+                        </item>
                     </list>
                 </item>
             </list>

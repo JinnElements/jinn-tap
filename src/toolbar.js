@@ -1,3 +1,5 @@
+import { findParentNodeClosestToPos } from '@tiptap/core';
+
 /**
  * Toolbar class for the editor.
  * 
@@ -95,6 +97,20 @@ export class Toolbar {
      * @param {Object} toolbarDef - The definition of the toolbar item.
      */
     handleNodeAction(name, def, toolbarDef) {
+        if (name === 'head') {
+            // Check if we're in a list item
+            const { state } = this.editor;
+            const { selection } = state;
+            const { $from } = selection;
+            const listItem = findParentNodeClosestToPos($from, node => node.type.name === 'item');
+            
+            if (listItem) {
+                // If in a list item, use transformToHead
+                this.editor.chain().focus().transformToHead().run();
+                return;
+            }
+        }
+
         if (toolbarDef.command) {
             this.editor.chain().focus()[toolbarDef.command](name, toolbarDef.attributes).run();
         } else if (def.type === 'inline') {
