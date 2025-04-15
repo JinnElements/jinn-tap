@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/JinnElements/jinn-tap/compare/v1.1.0...v1.1.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* close toolbar dropdown after selection ([e9ba367](https://github.com/JinnElements/jinn-tap/commit/e9ba367f4b67d91eaca594541e726bd65b34ca8f))
+
 # [1.1.0](https://github.com/JinnElements/jinn-tap/compare/v1.0.1...v1.1.0) (2025-04-15)
 
 
