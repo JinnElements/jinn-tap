@@ -2,7 +2,7 @@
 
 ![JinnTap Logo](jinntap-logo.png)
 
-A rich text editor for creating and editing TEI XML documents. This editor provides a user-friendly interface for working with TEI markup while maintaining the structural integrity of the document.
+Edit TEI XML documents using a rich text editor. JinnTap preserves the structure of the XML in the editor. There's no need for complex transformation steps from TEI to HTML and back. The representation of the document in the editor corresponds directly with the XML. TEI elements are converted to HTML custom elements, preserving all attributes and structural features.
 
 ## Installation
 
@@ -103,17 +103,6 @@ const teiXml = editor.teiXml;
 editor.focus();
 ```
 
-## Features
-
-- Rich text editing with TEI XML support
-- Real-time XML preview
-- Support for common TEI elements (paragraphs, lists, page breaks)
-- Support for TEI inline elements (highlighting, additions, deletions)
-- Attribute editing through a side panel
-- Copy to clipboard functionality
-- Responsive design
-- Footnote system with automatic reference numbering
-
 ## Keyboard Shortcuts
 
 The editor supports the following keyboard shortcuts:
@@ -153,22 +142,6 @@ editor.addEventListener('content-change', (event) => {
     // teiXml: TEI XML content
 });
 ```
-
-## Footnote System
-
-The editor includes a comprehensive footnote system that:
-
-- Automatically generates unique IDs for footnotes
-- Maintains sequential reference numbers
-- Automatically updates references when content changes
-- Supports complete document replacement while maintaining reference integrity
-- Provides a dedicated note group at the end of the document
-
-To insert a footnote:
-1. Click the footnote button in the toolbar (or use the keyboard shortcut)
-2. The editor will create a footnote marker in the text
-3. A corresponding note will be automatically created at the end of the document
-4. The cursor will be positioned in the note for immediate editing
 
 ## License
 
