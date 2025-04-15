@@ -1,3 +1,11 @@
+# [1.1.0](https://github.com/JinnElements/jinn-tap/compare/v1.0.1...v1.1.0) (2025-04-15)
+
+
+### Features
+
+* add apply-all button to occurrences ([fdb1abc](https://github.com/JinnElements/jinn-tap/commit/fdb1abc13066a5111217c1a598e1c90bce66fbb3))
+* add support for ref links ([0a5e238](https://github.com/JinnElements/jinn-tap/commit/0a5e23882b25e674f2f859dd8d21398e3e7a5506))
+
 ## [1.0.1](https://github.com/JinnElements/jinn-tap/compare/v1.0.0...v1.0.1) (2025-04-15)
 
 
