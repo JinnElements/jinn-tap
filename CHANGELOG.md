@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/JinnElements/jinn-tap/compare/v1.1.1...v1.1.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* refactor mechanism to inject into slots to be more generic ([eecc798](https://github.com/JinnElements/jinn-tap/commit/eecc798f84b1d2324bd20f0f93fabe3058a28001))
+
 ## [1.1.1](https://github.com/JinnElements/jinn-tap/compare/v1.1.0...v1.1.1) (2025-04-15)
 
 
