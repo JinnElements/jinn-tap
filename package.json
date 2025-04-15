@@ -1,7 +1,6 @@
 {
-  "name": "@jinnelements/jinntap",
+  "name": "@jinntec/jinntap",
   "version": "1.0.1",
-  "private": false,
   "type": "module",
   "main": "./dist/jinn-tap.umd.js",
   "module": "./dist/jinn-tap.es.js",
@@ -57,7 +56,7 @@
   "license": "GPL-3.0-or-later",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JinnElements/jinn-tap.git"
+    "url": "git+https://github.com/JinnElements/jinn-tap.git"
   },
   "release": {
     "branches": [
