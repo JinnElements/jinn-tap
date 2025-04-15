@@ -32,6 +32,23 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Start dev server
+        run: npm run dev &
+        env:
+          PORT: 5174
+
+      - name: Wait for dev server
+        run: |
+          for i in {1..30}; do
+            if curl -s http://localhost:5174 > /dev/null; then
+              echo "Server is up!"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Server failed to start"
+          exit 1
+
       - name: Run tests
         run: npm test
 
