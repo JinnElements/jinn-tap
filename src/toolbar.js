@@ -215,6 +215,7 @@ export class Toolbar {
         li.appendChild(link);
         link.addEventListener('click', (ev) => {
             ev.preventDefault();
+            select.open = false;
             this.handleNodeAction(name, def, toolbarDef);
         });
 
