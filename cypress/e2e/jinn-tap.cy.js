@@ -1,6 +1,6 @@
 describe('JinnTap Component', () => {
     beforeEach(() => {
-        cy.visit('/')
+        cy.visit('/jinn-tap/test.html')
 
         // Wait for the component to be defined
         cy.window().then((win) => {
@@ -98,14 +98,17 @@ describe('JinnTap Component', () => {
                 // Add event listener for content-change event
                 $component[0].addEventListener('content-change', contentChangeSpy)
 
+                // Set the content
+                $component[0].content = testContent
+
                 // Wait for the content-change event
                 cy.get('@contentChangeSpy')
                     .should('have.been.called')
                     .then(() => {
                         const editor = $component[0].editor
-                        editor.chain().focus().setContent(testContent).setTextSelection({ from: 8, to: 13 }).run()
+                        editor.chain().focus().setTextSelection({ from: 8, to: 13 }).run()
                         cy.wait(500)
-                        cy.get('jinn-tap .toolbar-button[title="Bold"]').click()
+                        cy.get('jinn-tap .toolbar-button[data-tooltip="Bold"]').click()
                         cy.wait(500)
                         cy.get('@contentChangeSpy')
                         .should('have.been.calledTwice')
