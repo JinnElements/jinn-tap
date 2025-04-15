@@ -54,7 +54,7 @@ export class Toolbar {
 
     addButtons(schemaDef) {
         // Sort nodes by type - blocks and lists first, then inline nodes
-        const sortedEntries = Object.entries(schemaDef).sort(([, a], [, b]) => {
+        const sortedEntries = Object.entries(schemaDef.schema).sort(([, a], [, b]) => {
             // Define type order: blocks/lists first, then inline
             const getTypeOrder = (type) => {
                 if (type === 'block' || type === 'list' || type === 'empty') return 0;

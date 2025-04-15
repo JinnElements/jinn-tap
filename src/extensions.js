@@ -18,7 +18,7 @@ export function createFromSchema(schemaDef) {
         TeiDocument,
         Text,
     ];
-    Object.entries(schemaDef).forEach(([name, def]) => {
+    Object.entries(schemaDef.schema).forEach(([name, def]) => {
         let NodeOrMark; 
         if (def.type === 'inline') {
             NodeOrMark = TeiInline.extend({
@@ -53,9 +53,11 @@ export function createFromSchema(schemaDef) {
                 content: def.content
             });
         }
+        // Merge global attributes with node-specific attributes
+        const attributes = { ...schemaDef.attributes, ...def.attributes };
         extensions.push(NodeOrMark.configure({
             shortcuts: def.keyboard,
-            attributes: def.attributes,
+            attributes: attributes,
             label: def.label
         }));
     });

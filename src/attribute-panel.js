@@ -54,7 +54,7 @@ export class AttributePanel {
         const node = $pos.node();
         
         this.currentMark = null;
-        if (node && Object.keys(this.schemaDef).includes(node.type.name)) {
+        if (node && Object.keys(this.schemaDef.schema).includes(node.type.name)) {
             if (this.currentElement == node) {
                 return;
             }
@@ -116,9 +116,9 @@ export class AttributePanel {
             return;
         }
 
-        const def = this.schemaDef[nodeOrMark.type.name];
+        const def = this.schemaDef.schema[nodeOrMark.type.name];
         
-        if (!def || !def.attributes) {
+        if (!def) {
             this.panel.innerHTML = '';
             return;
         }
@@ -133,7 +133,10 @@ export class AttributePanel {
         const form = document.createElement('form');
         this.panel.appendChild(form);
 
-        Object.entries(def.attributes).forEach(([attrName, attrDef]) => {
+        // Merge global attributes with node-specific attributes
+        const attributes = { ...this.schemaDef.attributes, ...def.attributes };
+        
+        Object.entries(attributes).forEach(([attrName, attrDef]) => {
             if (attrDef.connector) {
                 const input = this.createAttributeInput(
                     form,
@@ -167,7 +170,7 @@ export class AttributePanel {
                     const value = `${attrDef.connector.prefix}-${event.detail.properties.ref}`;
                     input.value = value;
                     details.open = false;
-                    if (Object.keys(def.attributes).length === 1) {
+                    if (Object.keys(attributes).length === 1) {
                         this.handleAttributeUpdate(nodeOrMark, { [attrName]: value });
                     }
                 });
@@ -197,8 +200,8 @@ export class AttributePanel {
 
         // Add Apply button if there are attributes
         // Skip button if only one attribute and it has a connector
-        if (Object.keys(def.attributes).length > 0 && 
-            !(Object.keys(def.attributes).length === 1 && def.attributes[Object.keys(def.attributes)[0]].connector)) {
+        if (Object.keys(attributes).length > 0 && 
+            !(Object.keys(attributes).length === 1 && attributes[Object.keys(attributes)[0]].connector)) {
             const applyButton = document.createElement('button');
             applyButton.dataset.tooltip = 'Apply Changes';
             applyButton.type = 'submit';

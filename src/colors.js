@@ -54,7 +54,7 @@ export function colorCssFromSchema(schema) {
         colorVariables[`--tei-div-color-${i}`] = color;
     }
     let inlineCount = 5;
-    Object.entries(schema).forEach(([name, def]) => {
+    Object.entries(schema.schema).forEach(([name, def]) => {
         const hue = (baseH + (inlineCount * 60)) % 360;
         const color = hslToHex(hue, baseS, baseL);
         colorVariables[`--tei-${name}-color`] = `${color}`;

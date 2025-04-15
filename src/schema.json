@@ -1,342 +1,347 @@
 {
-    "div": {
-        "type": "block",
-        "defining": true,
-        "content": "heading* block*",
-        "attributes": {
-            "rend": {
-                "type": "string"
-            },
-            "type": {
-                "type": "string"
-            },
-            "n": {
-                "type": "string"
-            }
-        },
-        "keyboard": {
-            "Mod-Shift-e": {
-                "attributes": {},
-                "command": "wrapDiv"
-            },
-            "Mod-Alt-e": {
-                "attributes": {},
-                "command": "liftDiv"
-            }
-        },
-        "toolbar": {
-            "Division": {
-                "attributes": {},
-                "command": "wrapDiv",
-                "label": "<i class='bi bi-body-text'></i>"
-            },
-            "Unwrap nodes in division": {
-                "attributes": {},
-                "command": "liftDiv",
-                "label": "<i class='bi bi-arrow-up-left'></i>"
-            }
+    "attributes": {
+        "rend": {
+            "type": "string"
         }
     },
-    "hi": {
-        "type": "inline",
-        "attributes": {
-            "rend": {
-                "type": "string",
-                "default": "i",
-                "enum": ["i", "b", "u"]
-            }
-        },
-        "keyboard": {
-            "Cmd-b": { 
-                "attributes": { "rend": "b" }
-            },
-            "Cmd-i": { 
-                "attributes": { "rend": "i" }
-            },
-            "Cmd-u": { 
-                "attributes": { "rend": "u" }
-            }
-        },
-        "toolbar": {
-            "Bold": {
-                "attributes": { "rend": "b" },
-                "label": "<i class='bi bi-type-bold'></i>"
-            },
-            "Italic": {
-                "attributes": { "rend": "i" },
-                "label": "<i class='bi bi-type-italic'></i>"
-            },
-            "Underline": {
-                "attributes": { "rend": "u" },
-                "label": "<i class='bi bi-type-underline'></i>"
-            }
-        }
-    },
-    "title": {
-        "type": "inline",
-        "attributes": {
-            "level": {
-                "type": "string",
-                "enum": ["m", "s", "a"]
-            }
-        },
-        "keyboard": {
-            "Mod-Alt-t": { 
-                "attributes": { "level": "m" }
-            }
-        },
-        "toolbar": {
-            "Title": {
-                "attributes": { "level": "m" },
-                "label": "<i class='bi bi-quote'></i>"
-            }
-        }
-    },
-    "persName": {
-        "type": "inline",
-        "attributes": {
-            "key": {
-                "connector": {
-                    "name": "GND",
-                    "type": "person",
-                    "prefix": "gnd"
+    "schema": {
+        "div": {
+            "type": "block",
+            "defining": true,
+            "content": "heading* block*",
+            "attributes": {
+                "type": {
+                    "type": "string"
                 },
-                "type": "string"
-            }
-        },
-        "keyboard": {
-            "Mod-Shift-p": {
-                "attributes": {}
-            }
-        },
-        "toolbar": {
-            "Person": {
-                "attributes": {},
-                "label": "<i class='bi bi-person'></i>"
-            }
-        }
-    },
-    "orgName": {
-        "type": "inline",
-        "attributes": {
-            "key": {
-                "connector": {
-                    "name": "GND",
-                    "type": "organization",
-                    "prefix": "gnd"
+                "n": {
+                    "type": "string"
+                }
+            },
+            "keyboard": {
+                "Mod-Shift-e": {
+                    "attributes": {},
+                    "command": "wrapDiv"
                 },
-                "type": "string"
-            }
-        },
-        "toolbar": {
-            "Organization": {
-                "attributes": {},
-                "label": "<i class='bi bi-people'></i>"
-            }
-        }
-    },
-    "placeName": {
-        "type": "inline",
-        "attributes": {
-            "key": {
-                "type": "string",
-                "connector": {
-                    "name": "GeoNames",
-                    "type": "place",
-                    "prefix": "geo",
-                    "user": "existdb"
+                "Mod-Alt-e": {
+                    "attributes": {},
+                    "command": "liftDiv"
                 }
-            }
-        },
-        "keyboard": {
-            "Mod-Shift-h": {
-                "attributes": {}
-            }
-        },
-        "toolbar": {
-            "Place": {
-                "attributes": {},
-                "label": "<i class='bi bi-geo-alt'></i>"
-            }
-        }
-    },
-    "term": {
-        "type": "inline",
-        "attributes": {
-            "key": {
-                "type": "string",
-                "connector": {
-                    "name": "GND",
-                    "type": "term",
-                    "prefix": "gnd"
-                }
-            }
-        },
-        "keyboard": {
-            "Mod-Shift-t": {
-                "attributes": {}
-            }
-        },
-        "toolbar": {
-            "Term": {
-                "attributes": {},
-                "label": "<i class='bi bi-bookmark'></i>"
-            }
-        }
-    },
-    "date": {
-        "type": "inline",
-        "attributes": {
-            "when": {
-                "type": "string"
             },
-            "not-before": {
-                "type": "string"
-            },
-            "not-after": {
-                "type": "string"
-            },
-            "from": {
-                "type": "string"
-            },
-            "to": {
-                "type": "string"
-            }
-        },
-        "toolbar": {
-            "Date": {
-                "attributes": {},
-                "label": "<i class='bi bi-calendar-date'></i>"
-            }
-        }
-    },
-    "p": {
-        "type": "block",
-        "priority": 100,
-        "toolbar": {
-            "Paragraph": {
-                "select": "Blocks",
-                "attributes": {},
-                "label": "<i class='bi bi-paragraph'></i>"
-            }
-        }
-    },
-    "head": {
-        "type": "block",
-        "group": "heading",
-        "attributes": {
-            "type": {
-                "type": "string"
-            },
-            "n": {
-                "type": "string"
-            }
-        },
-        "keyboard": {
-            "Shift-Mod-1": {
-                "attributes": {
-                    "n": "1"
-                }
-            }
-        },
-        "toolbar": {
-            "Head": {
-                "select": "Blocks",
-                "attributes": {},
-                "label": "<i class='bi bi-type-h1'></i>"
-            }
-        }
-    },
-    "item": {
-        "type": "listItem"
-    },
-    "list": {
-        "type": "list",
-        "content": "item+",
-        "attributes": {
-            "rend": {
-                "type": "string"
-            }
-        },
-        "keyboard": {
-            "Mod-Shift-l": {
-                "attributes": {}
-            }
-        },
-        "toolbar": {
-            "List": {
-                "select": "Blocks",
-                "attributes": {},
-                "label": "<i class='bi bi-list-ul'></i>"
-            },
-            "Numbered list": {
-                "select": "Blocks",
-                "attributes": { "rend": "enumerated" },
-                "label": "<i class='bi bi-list-ol'></i>"
-            }
-        }
-    },
-    "noteGrp": {
-        "type": "list",
-        "group": "",
-        "defining": true,
-        "content": "note+",
-        "keyboard": {
-            "Mod-Shift-u": {
-                "attributes": {}
-            }
-        }
-    },
-    "note": {
-        "type": "listItem",
-        "content": "inline*",
-        "defining": true,
-        "isolating": true,
-        "attributes": {
-            "target": {
-                "type": "string"
-            },
-            "_reference": {
-                "type": "string"
-            }
-        }
-    },
-    "anchor": {
-        "type": "anchor",
-        "attributes": {
-            "type": {
-                "type": "string",
-                "default": "note"
-            }
-        },
-        "toolbar": {
-            "Footnote": {
-                "attributes": {
-                    "type": "note"
+            "toolbar": {
+                "Division": {
+                    "attributes": {},
+                    "command": "wrapDiv",
+                    "label": "<i class='bi bi-body-text'></i>"
                 },
-                "label": "<i class='bi bi-123'></i>"
-            }
-        }
-    },
-    "pb": {
-        "type": "empty",
-        "label": "pb",
-        "attributes": {
-            "n": {
-                "type": "string"
-            }
-        },
-        "keyboard": {
-            "Mod-Alt-p": {
-                "attributes": {
-                    "n": "22"
+                "Unwrap nodes in division": {
+                    "attributes": {},
+                    "command": "liftDiv",
+                    "label": "<i class='bi bi-arrow-up-left'></i>"
                 }
             }
         },
-        "toolbar": {
-            "PageBreak": {
-                "attributes": { "n": "22" },
-                "label": "<i class='bi bi-file-earmark-break'></i>"
+        "hi": {
+            "type": "inline",
+            "attributes": {
+                "rend": {
+                    "type": "string",
+                    "default": "i",
+                    "enum": ["i", "b", "u"]
+                }
+            },
+            "keyboard": {
+                "Cmd-b": { 
+                    "attributes": { "rend": "b" }
+                },
+                "Cmd-i": { 
+                    "attributes": { "rend": "i" }
+                },
+                "Cmd-u": { 
+                    "attributes": { "rend": "u" }
+                }
+            },
+            "toolbar": {
+                "Bold": {
+                    "attributes": { "rend": "b" },
+                    "label": "<i class='bi bi-type-bold'></i>"
+                },
+                "Italic": {
+                    "attributes": { "rend": "i" },
+                    "label": "<i class='bi bi-type-italic'></i>"
+                },
+                "Underline": {
+                    "attributes": { "rend": "u" },
+                    "label": "<i class='bi bi-type-underline'></i>"
+                }
+            }
+        },
+        "title": {
+            "type": "inline",
+            "attributes": {
+                "level": {
+                    "type": "string",
+                    "enum": ["m", "s", "a"]
+                }
+            },
+            "keyboard": {
+                "Mod-Alt-t": { 
+                    "attributes": { "level": "m" }
+                }
+            },
+            "toolbar": {
+                "Title": {
+                    "attributes": { "level": "m" },
+                    "label": "<i class='bi bi-quote'></i>"
+                }
+            }
+        },
+        "persName": {
+            "type": "inline",
+            "attributes": {
+                "key": {
+                    "connector": {
+                        "name": "GND",
+                        "type": "person",
+                        "prefix": "gnd"
+                    },
+                    "type": "string"
+                }
+            },
+            "keyboard": {
+                "Mod-Shift-p": {
+                    "attributes": {}
+                }
+            },
+            "toolbar": {
+                "Person": {
+                    "attributes": {},
+                    "label": "<i class='bi bi-person'></i>"
+                }
+            }
+        },
+        "orgName": {
+            "type": "inline",
+            "attributes": {
+                "key": {
+                    "connector": {
+                        "name": "GND",
+                        "type": "organization",
+                        "prefix": "gnd"
+                    },
+                    "type": "string"
+                }
+            },
+            "toolbar": {
+                "Organization": {
+                    "attributes": {},
+                    "label": "<i class='bi bi-people'></i>"
+                }
+            }
+        },
+        "placeName": {
+            "type": "inline",
+            "attributes": {
+                "key": {
+                    "type": "string",
+                    "connector": {
+                        "name": "GeoNames",
+                        "type": "place",
+                        "prefix": "geo",
+                        "user": "existdb"
+                    }
+                }
+            },
+            "keyboard": {
+                "Mod-Shift-h": {
+                    "attributes": {}
+                }
+            },
+            "toolbar": {
+                "Place": {
+                    "attributes": {},
+                    "label": "<i class='bi bi-geo-alt'></i>"
+                }
+            }
+        },
+        "term": {
+            "type": "inline",
+            "attributes": {
+                "key": {
+                    "type": "string",
+                    "connector": {
+                        "name": "GND",
+                        "type": "term",
+                        "prefix": "gnd"
+                    }
+                }
+            },
+            "keyboard": {
+                "Mod-Shift-t": {
+                    "attributes": {}
+                }
+            },
+            "toolbar": {
+                "Term": {
+                    "attributes": {},
+                    "label": "<i class='bi bi-bookmark'></i>"
+                }
+            }
+        },
+        "date": {
+            "type": "inline",
+            "attributes": {
+                "when": {
+                    "type": "string"
+                },
+                "not-before": {
+                    "type": "string"
+                },
+                "not-after": {
+                    "type": "string"
+                },
+                "from": {
+                    "type": "string"
+                },
+                "to": {
+                    "type": "string"
+                }
+            },
+            "toolbar": {
+                "Date": {
+                    "attributes": {},
+                    "label": "<i class='bi bi-calendar-date'></i>"
+                }
+            }
+        },
+        "p": {
+            "type": "block",
+            "priority": 100,
+            "toolbar": {
+                "Paragraph": {
+                    "select": "Blocks",
+                    "attributes": {},
+                    "label": "<i class='bi bi-paragraph'></i>"
+                }
+            }
+        },
+        "head": {
+            "type": "block",
+            "group": "heading",
+            "attributes": {
+                "type": {
+                    "type": "string"
+                },
+                "n": {
+                    "type": "string"
+                }
+            },
+            "keyboard": {
+                "Shift-Mod-1": {
+                    "attributes": {
+                        "n": "1"
+                    }
+                }
+            },
+            "toolbar": {
+                "Head": {
+                    "select": "Blocks",
+                    "attributes": {},
+                    "label": "<i class='bi bi-type-h1'></i>"
+                }
+            }
+        },
+        "item": {
+            "type": "listItem"
+        },
+        "list": {
+            "type": "list",
+            "content": "item+",
+            "attributes": {
+                "rend": {
+                    "type": "string",
+                    "enum": ["ordered", "unordered"]
+                }
+            },
+            "keyboard": {
+                "Mod-Shift-l": {
+                    "attributes": {}
+                }
+            },
+            "toolbar": {
+                "List": {
+                    "select": "Blocks",
+                    "attributes": { "rend": "unordered" },
+                    "label": "<i class='bi bi-list-ul'></i>"
+                },
+                "Numbered list": {
+                    "select": "Blocks",
+                    "attributes": { "rend": "ordered" },
+                    "label": "<i class='bi bi-list-ol'></i>"
+                }
+            }
+        },
+        "noteGrp": {
+            "type": "list",
+            "group": "",
+            "defining": true,
+            "content": "note+",
+            "keyboard": {
+                "Mod-Shift-u": {
+                    "attributes": {}
+                }
+            }
+        },
+        "note": {
+            "type": "listItem",
+            "content": "inline*",
+            "defining": true,
+            "isolating": true,
+            "attributes": {
+                "target": {
+                    "type": "string"
+                },
+                "_reference": {
+                    "type": "string"
+                }
+            }
+        },
+        "anchor": {
+            "type": "anchor",
+            "attributes": {
+                "type": {
+                    "type": "string",
+                    "default": "note"
+                }
+            },
+            "toolbar": {
+                "Footnote": {
+                    "attributes": {
+                        "type": "note"
+                    },
+                    "label": "<i class='bi bi-123'></i>"
+                }
+            }
+        },
+        "pb": {
+            "type": "empty",
+            "label": "pb",
+            "attributes": {
+                "n": {
+                    "type": "string"
+                }
+            },
+            "keyboard": {
+                "Mod-Alt-p": {
+                    "attributes": {
+                        "n": "22"
+                    }
+                }
+            },
+            "toolbar": {
+                "PageBreak": {
+                    "attributes": { "n": "22" },
+                    "label": "<i class='bi bi-file-earmark-break'></i>"
+                }
             }
         }
     }
