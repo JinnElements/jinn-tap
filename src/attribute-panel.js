@@ -252,11 +252,19 @@ export class AttributePanel {
         const div = document.createElement('div');
         div.classList.add('occurrences');
         div.innerHTML = `
-            <h5>Other Occurrences</h5>
+            <h5>Other Occurrences
+                <div role="group">
+                    <button class="apply-all" data-tooltip="Apply to All">
+                        <i class="bi bi-check-all"></i>
+                    </button>
+                </div>
+            </h5>
             <ul></ul>`;
         const ul = div.querySelector('ul');
         this.panel.appendChild(div);
 
+        // Store all occurrence positions and their checkboxes
+        const occurrenceData = [];
         for (const [string, positions] of Object.entries(result)) {
             for (const pos of positions) {
                 const $pos = editor.state.doc.resolve(pos.pos);
@@ -278,6 +286,15 @@ export class AttributePanel {
                 checkbox.type = 'checkbox';
                 checkbox.checked = hasMark;
                 label.appendChild(checkbox);
+
+                // Store the occurrence data
+                occurrenceData.push({
+                    checkbox,
+                    from: pos.pos + pos.index,
+                    to: pos.pos + pos.index + pos.length,
+                    hasMark
+                });
+
                 const text = editor.state.doc.textBetween(pos.pos, $pos.end());
                 const kwic = kwicText(text, pos.index, pos.index + pos.length);
                 const span = document.createElement('span');
@@ -317,7 +334,6 @@ export class AttributePanel {
                 checkbox.addEventListener('change', (ev) => {
                     ev.preventDefault();
                     ev.stopPropagation();
-                    console.log(pos);
                     this.editor.chain()
                         .focus()
                         .setTextSelection({from: pos.pos + pos.index, to: pos.pos + pos.index + pos.length})
@@ -326,5 +342,33 @@ export class AttributePanel {
                 });
             }
         }
+
+        // Add click handler for apply-all button
+        const applyAllButton = div.querySelector('.apply-all');
+        applyAllButton.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+
+            // Get all unmarked occurrences
+            const unmarkedOccurrences = occurrenceData.filter(data => !data.checkbox.checked);
+            
+            if (unmarkedOccurrences.length > 0) {
+                // Start a chain command
+                let chain = this.editor.chain().focus();
+                
+                // Apply marks to all unmarked occurrences in one transaction
+                unmarkedOccurrences.forEach(data => {
+                    chain = chain
+                        .setTextSelection({from: data.from, to: data.to})
+                        .toggleMark(markOrNode.type, markOrNode.attrs);
+                    
+                    // Update checkbox state
+                    data.checkbox.checked = true;
+                });
+                
+                // Execute all commands
+                chain.run();
+            }
+        });
     }
 } 

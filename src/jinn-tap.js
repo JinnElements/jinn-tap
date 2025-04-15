@@ -62,6 +62,11 @@ style.textContent = `
         overflow-y: auto;
     }
 
+    jinn-tap .occurrences [role="group"] {
+        float: right;
+        width: fit-content;
+    }
+    
     jinn-tap .occurrences ul {
         height: 20rem;
         overflow-y: auto;
