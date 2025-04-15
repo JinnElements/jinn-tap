@@ -148,7 +148,7 @@ export class AttributePanel {
                     nodeOrMark.attrs[attrName],
                     "No reference assigned"
                 );
-                input.disabled = true;
+                input.readOnly = true;
 
                 const details = document.createElement('details');
                 details.open = !nodeOrMark.attrs[attrName];
@@ -173,9 +173,7 @@ export class AttributePanel {
                     const value = `${attrDef.connector.prefix}-${event.detail.properties.ref}`;
                     input.value = value;
                     details.open = false;
-                    if (Object.keys(attributes).length === 1) {
-                        this.handleAttributeUpdate(nodeOrMark, { [attrName]: value });
-                    }
+                    this.handleAttributeUpdate(nodeOrMark, { [attrName]: value });
                 });
                 details.appendChild(lookup);
                 form.appendChild(details);
