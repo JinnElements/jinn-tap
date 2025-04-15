@@ -14,7 +14,7 @@ export class Toolbar {
      * @param {Object} schemaDef - The schema definition.
      * @param {Element} toolbarSlot - The toolbar slot element.
      */
-    constructor(editor, schemaDef, toolbarSlot) {
+    constructor(editor, schemaDef) {
         this.editor = editor.tiptap;
         this.toolbar = editor.querySelector('.toolbar');
         this.schemaDef = schemaDef;
@@ -40,16 +40,6 @@ export class Toolbar {
         const li = document.createElement('li'); 
         li.appendChild(debugButton);
         this.toolbar.appendChild(li);
-
-        // Add custom toolbar items from slot if provided
-        if (toolbarSlot) {
-            const customItems = Array.from(toolbarSlot.children);
-            customItems.forEach(item => {
-                const li = document.createElement('li');
-                li.appendChild(item.cloneNode(true));
-                this.toolbar.appendChild(li);
-            });
-        }
     }
 
     addButtons(schemaDef) {

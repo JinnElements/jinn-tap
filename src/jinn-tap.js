@@ -176,28 +176,28 @@ export class JinnTap extends HTMLElement {
     }
 
     setupEditor() {
-        const toolbarSlot = this.querySelector('[slot="toolbar"]');
         // Create a temporary container to parse the content
         const temp = document.createElement('div');
         temp.innerHTML = this.innerHTML;
-        // Remove the toolbar slot element
-        const slotElement = temp.querySelector('[slot="toolbar"]');
-        if (slotElement) {
-            slotElement.remove();
-        }
-        const initialContent = temp.innerHTML.trim();
 
         // Create the editor container structure
         this.innerHTML = `
             <nav>
-                <ul class="toolbar"></ul>
+                <ul class="toolbar">
+                    <slot name="toolbar"></slot>
+                </ul>
             </nav>
             <div class="editor-area"></div>
             <div class="aside">
+                <slot name="aside"></slot>
                 <nav class="navigation-panel" aria-label="breadcrumb"></nav>
                 <div class="attribute-panel"></div>
             </div>
         `;
+
+        // Fill in the slots and clean up the current content
+        this.applySlots(temp);
+        const initialContent = temp.innerHTML.trim();
 
         // Initialize the editor
         const extensions = createFromSchema(schema);
@@ -226,7 +226,7 @@ export class JinnTap extends HTMLElement {
         });
 
         // Initialize toolbar
-        this.toolbar = new Toolbar(this, schema, toolbarSlot);
+        this.toolbar = new Toolbar(this, schema);
 
         // Initialize attribute panel
         this.attributePanel = new AttributePanel(this, schema);
@@ -274,6 +274,26 @@ export class JinnTap extends HTMLElement {
     // Method to get the editor instance
     get tiptap() {
         return this.editor;
+    }
+
+    applySlots(content) {
+        const slotElements = this.querySelectorAll('slot');
+        for (const slotElement of slotElements) {
+            const name = slotElement.name;
+            const slotContent = content.querySelector(`[slot="${name}"]`);
+            if (slotContent) {
+                // Create temporary node to parse the outerHTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = slotContent.outerHTML;
+                const parent = slotElement.parentNode;
+                const children = Array.from(tempDiv.children);
+                children.forEach(child => parent.insertBefore(child, slotElement));
+                slotContent.remove();
+            }
+        }
+        // Remove all slot elements after processing
+        slotElements.forEach(slot => slot.remove());
+        return content;
     }
 }
 
