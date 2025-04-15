@@ -73,6 +73,12 @@ style.textContent = `
         list-style: none;
     }
 
+    jinn-tap .toolbar .disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+    
     jinn-tap .ProseMirror {
         outline: none;
         height: 100%;

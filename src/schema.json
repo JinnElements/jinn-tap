@@ -215,6 +215,7 @@
         "priority": 100,
         "toolbar": {
             "Paragraph": {
+                "select": "Blocks",
                 "attributes": {},
                 "label": "<i class='bi bi-paragraph'></i>"
             }
@@ -240,6 +241,7 @@
         },
         "toolbar": {
             "Head": {
+                "select": "Blocks",
                 "attributes": {},
                 "label": "<i class='bi bi-type-h1'></i>"
             }
@@ -263,34 +265,14 @@
         },
         "toolbar": {
             "List": {
+                "select": "Blocks",
                 "attributes": {},
                 "label": "<i class='bi bi-list-ul'></i>"
             },
             "Numbered list": {
+                "select": "Blocks",
                 "attributes": { "rend": "enumerated" },
                 "label": "<i class='bi bi-list-ol'></i>"
-            }
-        }
-    },
-    "pb": {
-        "type": "empty",
-        "label": "pb",
-        "attributes": {
-            "n": {
-                "type": "string"
-            }
-        },
-        "keyboard": {
-            "Mod-Alt-p": {
-                "attributes": {
-                    "n": "22"
-                }
-            }
-        },
-        "toolbar": {
-            "PageBreak": {
-                "attributes": { "n": "22" },
-                "label": "<i class='bi bi-file-earmark-break'></i>"
             }
         }
     },
@@ -336,39 +318,25 @@
             }
         }
     },
-    "opener": {
-        "type": "block",
-        "attributes": {},
-        "content": "block+",
-        "toolbar": {
-            "Opener": {
-                "select": "Letter",
-                "attributes": {},
-                "label": "<i class='bi bi-quote'></i>"
+    "pb": {
+        "type": "empty",
+        "label": "pb",
+        "attributes": {
+            "n": {
+                "type": "string"
             }
-        }
-    },
-    "byline": {
-        "type": "block",
-        "attributes": {},
-        "content": "inline+",
-        "toolbar": {
-            "Byline": {
-                "select": "Letter",
-                "attributes": {},
-                "label": "<i class='bi bi-quote'></i>"
+        },
+        "keyboard": {
+            "Mod-Alt-p": {
+                "attributes": {
+                    "n": "22"
+                }
             }
-        }
-    },
-    "salute": {
-        "type": "block",
-        "attributes": {},
-        "content": "inline+",
+        },
         "toolbar": {
-            "Salute": {
-                "select": "Letter",
-                "attributes": {},
-                "label": "<i class='bi bi-quote'></i>"
+            "PageBreak": {
+                "attributes": { "n": "22" },
+                "label": "<i class='bi bi-file-earmark-break'></i>"
             }
         }
     }
