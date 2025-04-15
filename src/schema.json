@@ -49,7 +49,7 @@
                 "rend": {
                     "type": "string",
                     "default": "i",
-                    "enum": ["i", "b", "u"]
+                    "enum": ["i", "b", "u", "code"]
                 }
             },
             "keyboard": {
@@ -75,6 +75,25 @@
                 "Underline": {
                     "attributes": { "rend": "u" },
                     "label": "<i class='bi bi-type-underline'></i>"
+                }
+            }
+        },
+        "ref": {
+            "type": "inline",
+            "attributes": {
+                "target": {
+                    "type": "string"
+                }
+            },
+            "keyboard": {
+                "Alt-Shift-r": {
+                    "attributes": {}
+                }
+            },
+            "toolbar": {
+                "Reference": {
+                    "attributes": {},
+                    "label": "<i class='bi bi-link'></i>"
                 }
             }
         },

@@ -81,6 +81,10 @@ tei-hi[rend="u"] {
     text-decoration: underline;
 }
 
+tei-hi[rend="code"] {
+    font-family: monospace;
+}
+
 tei-persname {
     color: #A83410;
 }
@@ -162,6 +166,12 @@ tei-p.is-empty::before {
     position: absolute;
     height: 0;
     pointer-events: none;
+}
+
+tei-ref {
+    color: var(--pico-primary);
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .debug tei-div, .debug tei-p, .debug tei-item {
