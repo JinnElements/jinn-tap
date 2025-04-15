@@ -1,6 +1,6 @@
 {
   "name": "@jinnelements/jinntap",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "main": "./dist/jinn-tap.umd.js",
   "module": "./dist/jinn-tap.es.js",
@@ -32,17 +32,18 @@
     "@tiptap/extension-history": "^2.11.7",
     "@tiptap/extension-placeholder": "^2.11.7",
     "@tiptap/pm": "^2.11.7",
-    "@tiptap/starter-kit": "^2.11.7"
+    "@tiptap/starter-kit": "^2.11.7",
+    "rollup": "^4.40.0"
   },
   "devDependencies": {
-    "chai-xml": "^0.4.1",
-    "cypress": "^14.2.1",
-    "vite": "^5.1.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^9.2.6",
     "@semantic-release/npm": "^10.0.4",
-    "semantic-release": "^22.0.8"
+    "chai-xml": "^0.4.1",
+    "cypress": "^14.2.1",
+    "semantic-release": "^22.0.8",
+    "vite": "^5.1.0"
   },
   "keywords": [
     "tei",
@@ -58,7 +59,9 @@
     "url": "https://github.com/JinnElements/jinn-tap.git"
   },
   "release": {
-    "branches": ["main"],
+    "branches": [
+      "main"
+    ],
     "plugins": [
       "@semantic-release/commit-analyzer",
       "@semantic-release/release-notes-generator",
