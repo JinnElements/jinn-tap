@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/JinnElements/jinn-tap/compare/v1.1.2...v1.1.3) (2025-04-15)
+
+
+### Bug Fixes
+
+* **attribute-panel:** scroll the highlighted occurrence into view ([d1065e8](https://github.com/JinnElements/jinn-tap/commit/d1065e8dd7acf54dc085d3552a53b3e62c14f4fa))
+
 ## [1.1.2](https://github.com/JinnElements/jinn-tap/compare/v1.1.1...v1.1.2) (2025-04-15)
 
 
