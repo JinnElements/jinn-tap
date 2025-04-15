@@ -1,4 +1,3 @@
-import { findParentNodeClosestToPos, Mark, Node, NodePos } from '@tiptap/core'
 import Document from '@tiptap/extension-document';
 import Text from '@tiptap/extension-text';
 import { TeiInline } from './inline.js';

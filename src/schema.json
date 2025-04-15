@@ -2,6 +2,9 @@
     "attributes": {
         "rend": {
             "type": "string"
+        },
+        "id": {
+            "type": "string"
         }
     },
     "schema": {

@@ -137,6 +137,9 @@ export class AttributePanel {
         const attributes = { ...this.schemaDef.attributes, ...def.attributes };
         
         Object.entries(attributes).forEach(([attrName, attrDef]) => {
+            if (attrName.startsWith('_')) {
+                return;
+            }
             if (attrDef.connector) {
                 const input = this.createAttributeInput(
                     form,
