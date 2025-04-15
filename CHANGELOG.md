@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/JinnElements/jinn-tap/compare/v1.0.0...v1.0.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* entity assignments should always be applied automatically ([24602ef](https://github.com/JinnElements/jinn-tap/commit/24602efb3d125eaeca377e8b033ad19cfa486da0))
+
 # 1.0.0 (2025-04-15)
 
 
