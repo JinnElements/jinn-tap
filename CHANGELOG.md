@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/JinnElements/jinn-tap/compare/v1.1.3...v1.2.0) (2025-04-15)
+
+
+### Features
+
+* allow head inside a list ([ec29379](https://github.com/JinnElements/jinn-tap/commit/ec2937973bc890323c3d2dc0647ac67fbaf2fc26))
+
 ## [1.1.3](https://github.com/JinnElements/jinn-tap/compare/v1.1.2...v1.1.3) (2025-04-15)
 
 
