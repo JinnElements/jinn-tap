@@ -15,66 +15,117 @@
    </teiHeader>
    <text>
       <body>
-    <div>
-        <head>JinnTap</head>
-        <p>Edit <ref target="https://tei-c.org/">TEI XML</ref> documents using a rich text editor. JinnTap preserves the structure of the XML in the editor. There's no need for complex transformation steps from TEI to HTML and back. The representation of the document in the editor corresponds directly to the XML. TEI elements are converted to HTML custom elements, preserving all attributes and structural features.</p>
-        <p>While it is very difficult to create a completely generic editor covering the entire complexity of TEI, JinnTap tries to be as customizable as possible. To work properly in a WYSWIG context, the editor needs to be strict with respect to the underlying schema. Many elements in TEI are ambiguous with respect to their block or inline nature, i.e. they can appear either way. However, the editor has a clear distinction between block and inline content<anchor xml:id="fn-m9ic2gkq-e2pwse" type="note"/>. Therefore JinnTap uses its own schema to define what is allowed in which position. It extends the schema used by the underlying editor (<ref target="https://prosemirror.net/">ProseMirror</ref>) to configure additional features like toolbar buttons, keyboard shortcuts etc. and is written in JSON.</p>
-        <p>Out of the box, the default schema supports:</p>
-        <list rend="unordered">
-            <item>
-                <p>block level elements like headings, paragraphs, lists</p>
-            </item>
-            <item>
-                <p>elements for inline formatting like <hi rend="code">hi</hi>, <hi rend="code">title</hi></p>
-            </item>
-            <item>
-                <p>semantic markup for people, organizations, places, terms</p>
-            </item>
-            <item>
-                <p>analytic elements like <hi rend="code">date</hi></p>
-            </item>
-            <item>
-                <p>footnotes</p>
-            </item>
-        </list>
-        <div>
-            <head>How to edit</head>
-            <p>The default starting point for editing is always a paragraph. Use the toolbar buttons to transform it into a heading or another type of block. Note that – according to the gods of TEI – not all elements are allowed at any position. A <hi rend="code">head</hi> may only appear at the start of a division, not after a paragraph. This is where TEI differs from HTML.</p>
+         <div>
+            <head>JinnTap</head>
+            <p>Edit <ref target="https://tei-c.org/">TEI XML</ref> documents using a rich text
+               editor. JinnTap preserves the structure of the XML in the editor. There's no need for
+               complex transformation steps from TEI to HTML and back. The representation of the
+               document in the editor corresponds directly to the XML. TEI elements are converted to
+               HTML custom elements, preserving all attributes and structural features.</p>
+            <p>While it is very difficult to create a completely generic editor covering the entire
+               complexity of TEI, JinnTap tries to be as customizable as possible. To work properly
+               in a WYSWIG context, the editor needs to be strict with respect to the underlying
+               schema. Many elements in TEI are ambiguous with respect to their block or inline
+               nature, i.e. they can appear either way. However, the editor has a clear distinction
+               between block and inline content<anchor xml:id="fn-m9ic2gkq-e2pwse" type="note" />.
+               Therefore JinnTap uses its own schema to define what is allowed in which position. It
+               extends the schema used by the underlying editor (<ref
+                  target="https://prosemirror.net/">ProseMirror</ref>) to configure additional
+               features like toolbar buttons, keyboard shortcuts etc. and is written in JSON.</p>
+            <p>Out of the box, the default schema supports:</p>
             <list rend="unordered">
-                <item>
-                    <p>a block will be deleted if you press backspace or delete inside an otherwise empty block.</p>
-                </item>
-                <item>
-                    <p>within a list-like structure:</p>
-                    <list>
-                        <item>
-                            <p>pressing <hi rend="b">tab</hi> will create a nested list below the current one</p>
-                        </item>
-                        <item>
-                            <p><hi rend="b">shift-tab</hi> moves the list item one level up. If it is already at the top level, it will be transformed into a normal paragraph</p>
-                        </item>
-                        <item>
-                            <p>TEI lists may start with a heading. You can transform the first list item into a <hi rend="code">head</hi> by placing the cursor inside the item and choosing <hi rend="i">Head</hi> from the toolbar.</p>
-                        </item>
-                    </list>
-                </item>
+               <item>
+                  <p>block level elements like headings, paragraphs, lists</p>
+               </item>
+               <item>
+                  <p>elements for inline formatting like <hi rend="code">hi</hi>, <hi rend="code">
+                     title</hi></p>
+               </item>
+               <item>
+                  <p>semantic markup for people, organizations, places, terms</p>
+               </item>
+               <item>
+                  <p>analytic elements like <hi rend="code">date</hi></p>
+               </item>
+               <item>
+                  <p>footnotes</p>
+               </item>
             </list>
-            <p>Apply inline markup by selecting some text and pressing a corresponding button. Note that those buttons are toggles, i.e. pressing again will <hi rend="b">remove</hi> the inline markup.</p>
-        </div>
-        <div>
-            <head>Changing attributes</head>
-            <p>Whenever you move around the document, you'll see how the right-hand panel of the editor changes, showing a form with different fields. Those are the attributes which can be applied to the current element. You can change them any time and the attributes of the element will change accordingly.</p>
-            <p>For example, if you marked something as <hi rend="b">bold</hi> text, you can change it later to <hi rend="u">underline</hi> by placing the cursor inside the element and choosing <hi rend="i">underline</hi> from the dropdown. Don't forget to click the apply button though.</p>
-        </div>
-        <div>
-            <head>Semantic annotations</head>
-            <p>JinnTap has extended support for <hi rend="i">semantic annotation</hi>, drawing on external registers to identify entities like people, places, organizations or terms. To mark up a person appearing in the text, say: <persName key="gnd-118578537">Karl Marx</persName>, select the name and press the <hi rend="i">Person</hi> toolbar button. The attributes panel to the right will show you a search panel, which is connected to the registered registry. Find the correct person in the list and click on the <hi rend="i">link</hi> button to the left of the entry. This copies the ID of the person from the registry into the <hi rend="code">key</hi> form field.</p>
-            <p>Note that selecting an entry from the registry will automatically apply the attribute, so if this is your only change, you don't have to press the <hi rend="i">apply-all</hi> button manually. After selecting, you should also see some additional information about the entity displayed at the very top of the attribute panel.</p>
-        </div>
-    </div>
-    <noteGrp>
-        <note target="#fn-m9ic2gkq-e2pwse">In more technical terms, the editor distinguishes between <hi rend="i">nodes</hi> and <hi rend="i">marks</hi>: while nodes are mostly block-level elements (with some exceptions), marks are lightweight markers attached to a piece of text.</note>
-    </noteGrp>
-</body>
+            <div>
+               <head>How to edit</head>
+               <p>The default starting point for editing is always a paragraph. Use the toolbar
+                  buttons to transform it into a heading or another type of block. Note that –
+                  according to the gods of TEI – not all elements are allowed at any position. A <hi
+                     rend="code">head</hi> may only appear at the start of a division, not after a
+                  paragraph. This is where TEI differs from HTML.</p>
+               <list rend="unordered">
+                  <item>
+                     <p>a block will be deleted if you press backspace or delete inside an otherwise
+                        empty block.</p>
+                  </item>
+                  <item>
+                     <p>within a list-like structure:</p>
+                     <list>
+                        <item>
+                           <p>pressing <hi rend="b">tab</hi> will create a nested list below the
+                              current one</p>
+                        </item>
+                        <item>
+                           <p><hi rend="b">shift-tab</hi> moves the list item one level up. If it is
+                              already at the top level, it will be transformed into a normal
+                              paragraph</p>
+                        </item>
+                        <item>
+                           <p>TEI lists may start with a heading. You can transform the first list
+                              item into a <hi rend="code">head</hi> by placing the cursor inside the
+                              item and choosing <hi rend="i">Head</hi> from the toolbar.</p>
+                        </item>
+                        <item>
+                           <p>to enter an en dash (–), use two hyphens, to create an mdash (—), type
+                              three hyphens</p>
+                        </item>
+                     </list>
+                  </item>
+               </list>
+               <p>Apply inline markup by selecting some text and pressing a corresponding button.
+                  Note that those buttons are toggles, i.e. pressing again will <hi rend="b">remove</hi>
+                  the inline markup.</p>
+            </div>
+            <div>
+               <head>Changing attributes</head>
+               <p>Whenever you move around the document, you'll see how the right-hand panel of the
+                  editor changes, showing a form with different fields. Those are the attributes
+                  which can be applied to the current element. You can change them any time and the
+                  attributes of the element will change accordingly.</p>
+               <p>For example, if you marked something as <hi rend="b">bold</hi> text, you can
+                  change it later to <hi rend="u">underline</hi> by placing the cursor inside the
+                  element and choosing <hi rend="i">underline</hi> from the dropdown. Don't forget
+                  to click the apply button though.</p>
+            </div>
+            <div>
+               <head>Semantic annotations</head>
+               <p>JinnTap has extended support for <hi rend="i">semantic annotation</hi>, drawing on
+                  external registers to identify entities like people, places, organizations or
+                  terms. To mark up a person appearing in the text, say: <persName
+                     key="gnd-118578537">Karl Marx</persName>, select the name and press the <hi
+                     rend="i">Person</hi> toolbar button. The attributes panel to the right will
+                  show you a search panel, which is connected to the registered registry. Find the
+                  correct person in the list and click on the <hi rend="i">link</hi> button to the
+                  left of the entry. This copies the ID of the person from the registry into the <hi
+                     rend="code">key</hi> form field.</p>
+               <p>Note that selecting an entry from the registry will automatically apply the
+                  attribute, so if this is your only change, you don't have to press the <hi
+                     rend="i">apply-all</hi> button manually. After selecting, you should also see
+                  some additional information about the entity displayed at the very top of the
+                  attribute panel.</p>
+            </div>
+         </div>
+         <noteGrp>
+            <note target="#fn-m9ic2gkq-e2pwse">In more technical terms, the editor distinguishes
+               between <hi rend="i">nodes</hi> and <hi rend="i">marks</hi>: while nodes are mostly
+               block-level elements (with some exceptions), marks are lightweight markers attached
+               to a piece of text.</note>
+         </noteGrp>
+      </body>
    </text>
 </TEI>

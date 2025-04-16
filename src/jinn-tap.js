@@ -4,6 +4,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import { serializeToTEI } from './serialize.js';
 import { createFromSchema } from './extensions.js';
 import { FootnoteRules } from './footnote.js';
+import { InputRules } from './input-rules.js';
 import { AttributePanel } from './attribute-panel.js';
 import { NavigationPanel } from './navigator.js';
 import { Toolbar } from './toolbar.js';
@@ -205,6 +206,7 @@ export class JinnTap extends HTMLElement {
             element: this.querySelector('.editor-area'),
             extensions: [
                 ...extensions,
+                InputRules,
                 FootnoteRules,
                 History,
                 Placeholder.configure({
