@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/JinnElements/jinn-tap/compare/v1.4.0...v1.5.0) (2025-04-16)
+
+
+### Features
+
+* add input rules for en and em dash ([8b5a2b5](https://github.com/JinnElements/jinn-tap/commit/8b5a2b5c8c4a288f57614df76aea72462b3dda5e))
+
 # [1.4.0](https://github.com/JinnElements/jinn-tap/compare/v1.3.0...v1.4.0) (2025-04-16)
 
 
