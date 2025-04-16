@@ -2,10 +2,10 @@ import './jinn-tap.js';
 import { fromXml } from './util.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM Content Loaded');
     const editor = document.querySelector('jinn-tap');
     const output = document.getElementById('output');
     const fileInput = document.getElementById('xmlFile');
+    const copyButton = editor.querySelector('[data-tooltip="Copy TEI to clipboard"]');
     
     if (!fileInput) {
         console.error('File input element not found!');
@@ -43,4 +43,28 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         reader.readAsText(file);
     });
+
+    // Handle copy to clipboard
+    if (copyButton) {
+        copyButton.addEventListener('click', async (event) => {
+            event.preventDefault();
+            try {
+                const xml = editor.xml;
+                await navigator.clipboard.writeText(xml);
+                
+                // Show success message
+                const originalTooltip = copyButton.dataset.tooltip;
+                copyButton.dataset.tooltip = 'Copied!';
+                setTimeout(() => {
+                    copyButton.dataset.tooltip = originalTooltip;
+                }, 2000);
+            } catch (error) {
+                console.error('Failed to copy to clipboard:', error);
+                copyButton.dataset.tooltip = 'Failed to copy';
+                setTimeout(() => {
+                    copyButton.dataset.tooltip = 'Copy TEI to clipboard';
+                }, 2000);
+            }
+        });
+    }
 });
