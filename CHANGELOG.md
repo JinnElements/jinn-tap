@@ -1,3 +1,15 @@
+# [1.4.0](https://github.com/JinnElements/jinn-tap/compare/v1.3.0...v1.4.0) (2025-04-16)
+
+
+### Bug Fixes
+
+* allow a slot to be addressed more than once ([85b9205](https://github.com/JinnElements/jinn-tap/commit/85b92059e724cffb3e4c3564d227feb2963d5d69))
+
+
+### Features
+
+* add copy tei to clipboard action ([89be0a0](https://github.com/JinnElements/jinn-tap/commit/89be0a04d0de12667f6de56fb721117565583ea2))
+
 # [1.3.0](https://github.com/JinnElements/jinn-tap/compare/v1.2.0...v1.3.0) (2025-04-16)
 
 
