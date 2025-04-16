@@ -302,6 +302,28 @@
                 }
             }
         },
+        "opener": {
+            "type": "block",
+            "content": "block*",
+            "toolbar": {
+                "Opener": {
+                    "select": "Blocks",
+                    "attributes": {},
+                    "label": "<i class='bi bi-envelope-open'></i>"
+                }
+            }
+        },
+        "closer": {
+            "type": "block",
+            "content": "block*",
+            "toolbar": {
+                "Closer": {
+                    "select": "Blocks",
+                    "attributes": {},
+                    "label": "<i class='bi bi-envelope'></i>"
+                }
+            }
+        },
         "noteGrp": {
             "type": "list",
             "group": "",
@@ -363,6 +385,19 @@
                 "PageBreak": {
                     "attributes": { "n": "22" },
                     "label": "<i class='bi bi-file-earmark-break'></i>"
+                }
+            }
+        },
+        "lb": {
+            "type": "empty",
+            "label": "&#x21B5;",
+            "attributes": {
+                "n": { "type": "string" }
+            },
+            "toolbar": {
+                "LineBreak": {
+                    "attributes": {},
+                    "label": "<i class='bi bi-arrow-return-left'></i>"
                 }
             }
         }

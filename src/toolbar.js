@@ -111,22 +111,31 @@ export class Toolbar {
             }
         }
 
+        const chain = this.editor.chain().focus();
         if (toolbarDef.command) {
-            this.editor.chain().focus()[toolbarDef.command](name, toolbarDef.attributes).run();
+            chain[toolbarDef.command](name, toolbarDef.attributes);
         } else if (def.type === 'inline') {
-            this.editor.chain().focus().toggleMark(name, toolbarDef.attributes).run();
+            chain.toggleMark(name, toolbarDef.attributes);
         } else if (def.type === 'list') {
-            this.editor.chain().focus().toggleList(toolbarDef.attributes).run();
+            chain.toggleList(toolbarDef.attributes);
         } else if (def.type === 'anchor') {
-            this.editor.chain().focus().addAnchor(toolbarDef.attributes).run();
+            chain.addAnchor(toolbarDef.attributes);
         } else if (def.type === 'empty') {
-            this.editor.chain().focus().insertContent({
+            chain.insertContent({
                 type: name,
                 attrs: toolbarDef.attributes
-            }).run();
+            });
         } else {
-            this.editor.chain().focus().setNode(name, toolbarDef.attributes).run();
+            // Check if the node's content model is a textBlock
+            const nodeType = this.editor.schema.nodes[name];
+            if (nodeType && nodeType.isTextblock) {
+                chain.setNode(name, toolbarDef.attributes);
+            } else {
+                chain.wrapIn(name, toolbarDef.attributes);
+            }
         }
+
+        chain.run();
     }
 
     createButton(name, label, def) {

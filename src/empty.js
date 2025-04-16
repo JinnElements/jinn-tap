@@ -34,10 +34,6 @@ export const TeiEmptyElement = TeiBlock.extend({
             const dom = document.createElement(`tei-${this.name}`);
             dom.classList.add('empty-element');
             dom.innerHTML = this.options.label;
-            const attrString = getAttributeString(node.attrs);
-            if (attrString) {
-                dom.setAttribute('data-tooltip', attrString);
-            }
             // Set all attributes on the DOM element
             Object.entries(node.attrs).forEach(([key, value]) => {
                 if (value) {
