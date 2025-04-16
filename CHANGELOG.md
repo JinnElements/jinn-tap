@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/JinnElements/jinn-tap/compare/v1.2.0...v1.3.0) (2025-04-16)
+
+
+### Features
+
+* add support for opener, closer and lb ([55b9a04](https://github.com/JinnElements/jinn-tap/commit/55b9a04cc07fa3f8cf191e0e128a8d101779977b))
+
 # [1.2.0](https://github.com/JinnElements/jinn-tap/compare/v1.1.3...v1.2.0) (2025-04-15)
 
 
