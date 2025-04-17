@@ -5,6 +5,7 @@ import { serializeToTEI } from './serialize.js';
 import { createFromSchema } from './extensions.js';
 import { FootnoteRules } from './footnote.js';
 import { InputRules } from './input-rules.js';
+import { JinnTapCommands } from './commands.js';
 import { AttributePanel } from './attribute-panel.js';
 import { NavigationPanel } from './navigator.js';
 import { Toolbar } from './toolbar.js';
@@ -207,6 +208,7 @@ export class JinnTap extends HTMLElement {
             extensions: [
                 ...extensions,
                 InputRules,
+                JinnTapCommands,
                 FootnoteRules,
                 History,
                 Placeholder.configure({
@@ -226,15 +228,15 @@ export class JinnTap extends HTMLElement {
             },
             onUpdate: () => this.dispatchContentChange()
         });
-
-        // Initialize toolbar
-        this.toolbar = new Toolbar(this, schema);
-
+        
         // Initialize attribute panel
         this.attributePanel = new AttributePanel(this, schema);
-
+        
         // Initialize navigation panel
         this.navigationPanel = new NavigationPanel(this, this.attributePanel);
+        
+        // Initialize toolbar
+        this.toolbar = new Toolbar(this, schema);
 
         // Check if URL attribute is present
         const url = this.getAttribute('url');

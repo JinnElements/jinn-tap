@@ -67,14 +67,8 @@ export const TeiBlock = Node.create({
     addCommands() {
         const ucName = this.name.charAt(0).toUpperCase() + this.name.slice(1);
         return {
-            [`set${ucName}`]: () => ({ commands, attributes }) => {
-                return commands.setNode(this.name, attributes);
-            },
             [`wrap${ucName}`]: () => ({ commands, attributes }) => {
                 return commands.wrapIn(this.name, attributes);
-            },
-            [`lift${ucName}`]: () => ({ commands, attributes }) => {
-                return commands.lift(this.name, attributes);
             }
         }
     }

@@ -90,17 +90,33 @@
                <p>Apply inline markup by selecting some text and pressing a corresponding button.
                   Note that those buttons are toggles, i.e. pressing again will <hi rend="b">remove</hi>
                   the inline markup.</p>
+               <div>
+                  <head>Changing attributes</head>
+                  <p>Whenever you move around the document, you'll see how the right-hand panel of
+                     the editor changes, showing a form with different fields. Those are the
+                     attributes which can be applied to the current element. You can change them any
+                     time and the attributes of the element will change accordingly.</p>
+                  <p>For example, if you marked something as <hi rend="b">bold</hi> text, you can
+                     change it later to <hi rend="u">underline</hi> by placing the cursor inside the
+                     element and choosing <hi rend="i">underline</hi> from the dropdown. Don't
+                     forget to click the apply button though.</p>
+                  <p>To change the attributes of a node which is an ancestor of the node the cursor
+                     is currently in, use the breadcrumbs navigation bar on the upper right of the
+                     editor. This shows all the ancestor nodes down to the currently active node.
+                     Clicking on any of the breadcrumb links will select the corresponding node and
+                     the attribute panel will show the attributes assigned to this node.</p>
+               </div>
             </div>
             <div>
-               <head>Changing attributes</head>
-               <p>Whenever you move around the document, you'll see how the right-hand panel of the
-                  editor changes, showing a form with different fields. Those are the attributes
-                  which can be applied to the current element. You can change them any time and the
-                  attributes of the element will change accordingly.</p>
-               <p>For example, if you marked something as <hi rend="b">bold</hi> text, you can
-                  change it later to <hi rend="u">underline</hi> by placing the cursor inside the
-                  element and choosing <hi rend="i">underline</hi> from the dropdown. Don't forget
-                  to click the apply button though.</p>
+               <head>Divisions</head>
+               <p>Use the <hi rend="i">Division </hi>toolbar button to create a <hi rend="code">div</hi>.
+                  The new division will always be a child of the division you are currently in. To
+                  move the division one level up, position the cursor anywhere inside it, then use
+                  the breadcrumb navigation bar to select the division. Next, click on the <hi
+                     rend="i">move block up</hi> button in the toolbar.</p>
+               <p>You may also move other block-level nodes one level up by following the same
+                  procedure. However, please note that moving up a block, which has a following
+                  block within the same parent, will split the division.</p>
             </div>
             <div>
                <head>Semantic annotations</head>

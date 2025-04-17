@@ -6,7 +6,6 @@ import { findParentNodeClosestToPos } from '@tiptap/core';
  * @class Toolbar
  * @param {Object} editor - The editor instance.
  * @param {Object} schemaDef - The schema definition.
- * @param {Element} toolbarSlot - The toolbar slot element.
  */
 export class Toolbar {
     /**
@@ -14,13 +13,28 @@ export class Toolbar {
      * 
      * @param {Object} editor - The editor instance.
      * @param {Object} schemaDef - The schema definition.
-     * @param {Element} toolbarSlot - The toolbar slot element.
      */
     constructor(editor, schemaDef) {
         this.editor = editor.tiptap;
         this.toolbar = editor.querySelector('.toolbar');
         this.schemaDef = schemaDef;
         this.addButtons(schemaDef);
+
+        // Add global toolbar buttons from schema.json
+        if (schemaDef.toolbar) {
+            Object.entries(schemaDef.toolbar).forEach(([name, def]) => {
+                const button = this.createButton(name, name, def);
+                button.addEventListener('click', (ev) => {
+                    ev.preventDefault();
+                    if (def.command) {
+                        this.editor.chain().focus()[def.command]().run();
+                    }
+                });
+                const li = document.createElement('li');
+                li.appendChild(button);
+                this.toolbar.appendChild(li);
+            });
+        }
 
         // Add debug toggle button
         const debugButton = document.createElement('a');

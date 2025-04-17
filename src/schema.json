@@ -7,6 +7,12 @@
             "type": "string"
         }
     },
+    "toolbar": {
+        "Move Up": {
+            "command": "moveUp",
+            "label": "<i class='bi bi-unindent'></i>"
+        }
+    },
     "schema": {
         "div": {
             "type": "block",
@@ -24,22 +30,14 @@
                 "Mod-Shift-e": {
                     "attributes": {},
                     "command": "wrapDiv"
-                },
-                "Mod-Alt-e": {
-                    "attributes": {},
-                    "command": "liftDiv"
                 }
             },
             "toolbar": {
                 "Division": {
+                    "select": "Blocks",
                     "attributes": {},
                     "command": "wrapDiv",
                     "label": "<i class='bi bi-body-text'></i>"
-                },
-                "Unwrap nodes in division": {
-                    "attributes": {},
-                    "command": "liftDiv",
-                    "label": "<i class='bi bi-arrow-up-left'></i>"
                 }
             }
         },

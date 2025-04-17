@@ -31,6 +31,37 @@ export function marksInRange(editor, from, to) {
     return matchingMarks;
 }
 
+export function moveUp(editor, node) {
+    // Find the node's position in the document
+    let nodePos = null;
+    editor.state.doc.descendants((node_, pos) => {
+        if (node_ === node) {
+            nodePos = pos;
+            return false; // Stop traversal
+        }
+    });
+
+    if (nodePos === null) return false;
+
+    // Get the $pos to access node hierarchy
+    const $pos = editor.state.doc.resolve(nodePos);
+    
+    // Need at least a parent and grandparent depth
+    if ($pos.depth < 2) return false;
+
+    const $parentStart = editor.state.doc.resolve($pos.start($pos.depth - 1));
+    const $parentEnd = editor.state.doc.resolve($pos.end($pos.depth - 1));
+    console.log($parentStart, $parentEnd);
+
+    // Create and dispatch the transaction
+    const tr = editor.state.tr;
+    tr.delete($pos.start(), $pos.end());
+    // tr.insert($parentEnd.pos, node);
+      
+    editor.view.dispatch(tr);
+    return true;
+}
+
 export function occurrences(editor, strings = []) {
     const occurrences = {};
     const foundPositions = [];
