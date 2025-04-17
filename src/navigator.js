@@ -57,7 +57,11 @@ export class NavigationPanel {
             link.textContent = nodeInfo.type;
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                this.editor.chain().focus().setTextSelection(nodeInfo.pos).run();
+                // Set selection just before and after the node
+                this.editor.chain()
+                    .focus()
+                    .setTextSelection({ from: nodeInfo.pos.from - 1, to: nodeInfo.pos.to + 1 })
+                    .run();
                 this.attributePanel.showNodeAttributes(nodeInfo.node);
             });
             li.appendChild(link);
