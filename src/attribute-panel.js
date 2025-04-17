@@ -1,5 +1,7 @@
 import { marksInRange, occurrences } from './util.js';
 import { kwicText } from './kwic.js';
+import { Mark, Node } from '@tiptap/pm/model';
+
 export class AttributePanel {
 
     constructor(editor, schemaDef) {
@@ -228,21 +230,40 @@ export class AttributePanel {
 
         console.log('<jinn-tap> pendingChanges: %o, cleared: %o', pendingChanges, clearedAttributes);
         const { from, to } = this.editor.state.selection;
-        this.editor.chain()
-            .focus()
-            .extendMarkRange(nodeOrMark.type)
-            .run();
-
-        if (clearedAttributes.length > 0) {
-            this.editor.commands.resetAttributes(nodeOrMark.type, clearedAttributes);
+        if (nodeOrMark instanceof Mark) {
+            this.editor.chain()
+                .focus()
+                .extendMarkRange(nodeOrMark.type)
+                .run();
         }
 
         if (Object.keys(pendingChanges).length > 0) {
-            this.editor.chain()
-                .focus()
-                .updateAttributes(nodeOrMark.type, pendingChanges)
-                .setTextSelection({ from, to })
-                .run();
+            if (nodeOrMark instanceof Mark) {
+                if (clearedAttributes.length > 0) {
+                    this.editor.commands.resetAttributes(nodeOrMark.type, clearedAttributes);
+                }
+                this.editor.chain()
+                    .focus()
+                    .updateAttributes(nodeOrMark.type, pendingChanges)
+                    .setTextSelection({ from, to })
+                    .run();
+            } else {
+                // Find the position of the node or mark in the document
+                let pos = null;
+                this.editor.state.doc.nodesBetween(0, this.editor.state.doc.content.size, (node, nodePos) => {
+                    // For nodes, check if this is the node we're looking for
+                    if (node.eq(nodeOrMark)) {
+                        pos = nodePos;
+                        return false; // Stop traversal
+                    }
+                });
+                
+                if (pos !== null) {
+                    const tr = this.editor.state.tr;
+                    tr.setNodeMarkup(pos, nodeOrMark.type, { ...nodeOrMark.attrs, ...pendingChanges });
+                    this.editor.view.dispatch(tr);
+                }
+            }
         }
     }
 
