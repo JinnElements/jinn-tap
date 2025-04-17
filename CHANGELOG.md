@@ -1,3 +1,16 @@
+# [1.6.0](https://github.com/JinnElements/jinn-tap/compare/v1.5.0...v1.6.0) (2025-04-17)
+
+
+### Bug Fixes
+
+* applying attribute changes to higher level blocks ([49e848a](https://github.com/JinnElements/jinn-tap/commit/49e848abad30f1eef94ea8dafd9172d2fd8b5221))
+* **navigator:** fix selection of high-level blocks ([04075a4](https://github.com/JinnElements/jinn-tap/commit/04075a4bc7ab4242fd9964f7d53abb7ed591fc72))
+
+
+### Features
+
+* add command to move up a division into its parent ([cd9e6f4](https://github.com/JinnElements/jinn-tap/commit/cd9e6f4a8cfbbac5dc2ef9ce09ddde2ce228bfe7))
+
 # [1.5.0](https://github.com/JinnElements/jinn-tap/compare/v1.4.0...v1.5.0) (2025-04-16)
 
 
