@@ -1,3 +1,11 @@
+## [1.7.1](https://github.com/JinnElements/jinn-tap/compare/v1.7.0...v1.7.1) (2025-04-18)
+
+
+### Bug Fixes
+
+* check type of data loaded from url ([efd2292](https://github.com/JinnElements/jinn-tap/commit/efd229259911151202e187f93654a6c58ab0cd06))
+* test configuration ([cdbbd1a](https://github.com/JinnElements/jinn-tap/commit/cdbbd1a6538abbca276b47fc8144cb2c81f016a8))
+
 # [1.7.0](https://github.com/JinnElements/jinn-tap/compare/v1.6.0...v1.7.0) (2025-04-18)
 
 
