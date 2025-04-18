@@ -1,3 +1,11 @@
+# [1.7.0](https://github.com/JinnElements/jinn-tap/compare/v1.6.0...v1.7.0) (2025-04-18)
+
+
+### Features
+
+* also support open attribute values using datalist ([84ec945](https://github.com/JinnElements/jinn-tap/commit/84ec94505a11698a1f0338f64a1c49cb082bf8d2))
+* support dynamic loading of the schema ([0220465](https://github.com/JinnElements/jinn-tap/commit/0220465eaa108fc7e2eb6d86512e669788758dbb))
+
 # [1.6.0](https://github.com/JinnElements/jinn-tap/compare/v1.5.0...v1.6.0) (2025-04-17)
 
 
