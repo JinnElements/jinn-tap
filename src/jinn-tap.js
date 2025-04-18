@@ -198,13 +198,23 @@ export class JinnTap extends HTMLElement {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            const content = await response.text();
-            const html = fromXml(content);            
+            const contentType = response.headers.get('content-type');
+            let content;
+            
+            if (contentType?.includes('application/xml') || contentType?.includes('text/xml')) {
+                const xml = await response.text();
+                content = fromXml(xml);
+            } else if (contentType?.includes('text/html')) {
+                content = await response.text();
+            } else {
+                throw new Error(`Unsupported content type: ${contentType}`);
+            }
+            
             if (this.editor) {
-                this.content = html;
+                this.content = content;
             } else {
                 // Store the content to be used when editor is initialized
-                this._pendingContent = html;
+                this._pendingContent = content;
             }
         } catch (error) {
             console.error('Error loading content from URL:', error);
