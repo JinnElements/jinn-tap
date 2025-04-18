@@ -119,17 +119,35 @@ if (!document.querySelector('#jinn-tap-styles')) {
  * 
  * @element jinn-tap
  * 
- * @attr {string} content - Initial TEI XML content for the editor. If not provided,
- *                         a default template with a basic TEI structure will be used.
+ * @attr {string} url - URL to load the initial content from. The content will be fetched
+ *                      and loaded into the editor when this attribute is set.
+ * @attr {string} schema - URL to load the TEI schema from. The schema will be fetched
+ *                         and used to configure the editor's capabilities. If not provided,
+ *                         a default schema will be used.
+ * @attr {boolean} debug - When present, enables debug mode which adds a debug class
+ *                         to the component for styling purposes.
+ * 
+ * @property {string} content - The current text content of the editor. Can be set to update
+ *                             the editor's content programmatically.
+ * @property {string} xml - The current TEI XML content of the editor.
+ * 
+ * @slot toolbar - Content to be placed in the toolbar area at the top of the editor.
+ *                This slot is intended for custom toolbar buttons or controls.
+ * @slot aside - Content to be placed in the sidebar area on the right side of the editor.
+ *              This slot is intended for additional panels or controls.
  * 
  * @fires {CustomEvent} content-change - Fired when the editor content changes.
  *                                      The event detail contains:
- *                                      {string} teiXml - The current editor content as TEI XML
+ *                                      {string} content - The current text content
+ *                                      {string} xml - The current TEI XML content
  * @fires {CustomEvent} ready - Fired when the component and the editor are ready.
+ * @fires {CustomEvent} error - Fired when an error occurs, such as failing to load
+ *                             content or schema from a URL. The event detail contains:
+ *                             {string} error - The error message
  */
 export class JinnTap extends HTMLElement {
     static get observedAttributes() {
-        return ['debug', 'url'];
+        return ['debug', 'url', 'schema'];
     }
 
     constructor() {
@@ -137,6 +155,7 @@ export class JinnTap extends HTMLElement {
         this.editor = null;
         this.toolbar = null;
         this.attributePanel = null;
+        this._schema = schema; // Default schema
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -148,6 +167,28 @@ export class JinnTap extends HTMLElement {
             }
         } else if (name === 'url' && newValue) {
             this.loadFromUrl(newValue);
+        } else if (name === 'schema' && newValue) {
+            this.loadSchema(newValue);
+        }
+    }
+
+    async loadSchema(url) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            this._schema = await response.json();
+            
+            // If editor is already initialized, recreate it with new schema
+            if (this.editor) {
+                this.setupEditor();
+            }
+        } catch (error) {
+            console.error('Error loading schema from URL:', error);
+            this.dispatchEvent(new CustomEvent('error', {
+                detail: { error: error.message }
+            }));
         }
     }
 
@@ -202,7 +243,7 @@ export class JinnTap extends HTMLElement {
         const initialContent = temp.innerHTML.trim();
 
         // Initialize the editor
-        const extensions = createFromSchema(schema);
+        const extensions = createFromSchema(this._schema);
         this.editor = new Editor({
             element: this.querySelector('.editor-area'),
             extensions: [
@@ -230,13 +271,13 @@ export class JinnTap extends HTMLElement {
         });
         
         // Initialize attribute panel
-        this.attributePanel = new AttributePanel(this, schema);
+        this.attributePanel = new AttributePanel(this, this._schema);
         
         // Initialize navigation panel
         this.navigationPanel = new NavigationPanel(this, this.attributePanel);
         
         // Initialize toolbar
-        this.toolbar = new Toolbar(this, schema);
+        this.toolbar = new Toolbar(this, this._schema);
 
         // Check if URL attribute is present
         const url = this.getAttribute('url');

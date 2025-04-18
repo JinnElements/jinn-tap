@@ -279,7 +279,8 @@
             "attributes": {
                 "rend": {
                     "type": "string",
-                    "enum": ["ordered", "unordered"]
+                    "enum": ["ordered", "unordered"],
+                    "open": true
                 }
             },
             "keyboard": {
