@@ -1,6 +1,6 @@
 describe('JinnTap Component', () => {
     beforeEach(() => {
-        cy.visit('/jinn-tap/test.html')
+        cy.visit('/test.html')
 
         // Wait for the component to be defined
         cy.window().then((win) => {
@@ -100,7 +100,7 @@ describe('JinnTap Component', () => {
 
                 // Set the content
                 $component[0].content = testContent
-
+                
                 // Wait for the content-change event
                 cy.get('@contentChangeSpy')
                     .should('have.been.called')
