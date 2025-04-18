@@ -15,11 +15,15 @@
   "files": [
     "dist/jinn-tap.es.js",
     "dist/jinn-tap.umd.js",
-    "dist/jinn-tap.d.ts"
+    "dist/jinn-tap.d.ts",
+    "dist/editor-styles.css",
+    "dist/jinntap-logo.png",
+    "dist/jinntap-logo-128.png"
   ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "postbuild": "node scripts/copy-assets.js",
     "build:demo": "vite build --config vite.demo.config.js",
     "preview": "vite preview",
     "cypress:open": "cypress open",
