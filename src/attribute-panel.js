@@ -88,13 +88,27 @@ export class AttributePanel {
 
         let input;
         if (attrDef.enum) {
-            input = document.createElement('select');
-            attrDef.enum.forEach(value => {
-                const option = document.createElement('option');
-                option.value = value;
-                option.textContent = value;
-                input.appendChild(option);
-            });
+            if (attrDef.open) {
+                input = document.createElement('input');
+                input.type = 'text';
+                input.setAttribute('list', `${attrName}-list`);
+                const datalist = document.createElement('datalist');
+                datalist.id = `${attrName}-list`;
+                attrDef.enum.forEach(value => {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    datalist.appendChild(option);
+                });
+                form.appendChild(datalist);
+            } else {
+                input = document.createElement('select');
+                attrDef.enum.forEach(value => {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = value;
+                    input.appendChild(option);
+                });
+            }
         } else {
             input = document.createElement('input');
             input.type = 'text';
