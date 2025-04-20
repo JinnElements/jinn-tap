@@ -155,6 +155,16 @@ tei-anchor {
     cursor: pointer;
 }
 
+tei-abbr {
+    background-color: #9236A4;
+    color: white;
+}
+
+tei-expan {
+    background-color: #DB90E8;
+    color: white;
+}
+
 tei-pb, tei-lb {
     display: inline-block;
     background-color: #ffa500;

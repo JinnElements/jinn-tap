@@ -11,6 +11,13 @@
         "Move Up": {
             "command": "moveUp",
             "label": "<i class='bi bi-unindent'></i>"
+        },
+        "Abbreviation": {
+            "command": "insertSnippet",
+            "args": [
+                "<tei-choice><tei-abbr>{abbrev}</tei-abbr><tei-expan>{expansion}</tei-expan></tei-choice>"
+            ],
+            "label": "<i class='bi bi-three-dots'></i>"
         }
     },
     "schema": {
@@ -364,6 +371,16 @@
                     "label": "<i class='bi bi-123'></i>"
                 }
             }
+        },
+        "choice": {
+            "type": "inline",
+            "content": "abbr expan"
+        },
+        "abbr": {
+            "type": "inline"
+        },
+        "expan": {
+            "type": "inline"
         },
         "pb": {
             "type": "empty",

@@ -24,7 +24,8 @@
                HTML custom elements, preserving all attributes and structural features.</p>
             <p>While it is very difficult to create a completely generic editor covering the entire
                complexity of TEI, JinnTap tries to be as customizable as possible. To work properly
-               in a WYSWIG context, the editor needs to be strict with respect to the underlying
+               in a <choice><abbr>WYSIWYM</abbr><expan>What you see is what you mean</expan></choice> 
+               context, the editor needs to be strict with respect to the underlying
                schema. Many elements in TEI are ambiguous with respect to their block or inline
                nature, i.e. they can appear either way. However, the editor has a clear distinction
                between block and inline content<anchor xml:id="fn-m9ic2gkq-e2pwse" type="note" />.

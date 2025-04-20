@@ -27,7 +27,11 @@ export class Toolbar {
                 button.addEventListener('click', (ev) => {
                     ev.preventDefault();
                     if (def.command) {
-                        this.editor.chain().focus()[def.command]().run();
+                        if (def.args) {
+                            this.editor.chain().focus()[def.command](...def.args).run();
+                        } else {
+                            this.editor.chain().focus()[def.command]().run();
+                        }
                     }
                 });
                 const li = document.createElement('li');
