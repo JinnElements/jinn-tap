@@ -29,37 +29,56 @@ class Serializer {
     this.openMarks = [];
   }
 
-  serialize(node) {
+  serialize(node, previous, next) {
     if (node.type === 'text') {
       let text = '';
-      // Close any marks that are no longer active
-      this.openMarks.forEach((openMark, index) => {
-        let isStillActive = false;
-        if (node.marks) {
-          isStillActive = node.marks.find(mark => compareMarks(mark, openMark));
-        }
-        if (!isStillActive) {
-          const tagName = openMark.type.replace('tei-', '');
-          text += `</${tagName}>`;
-          this.openMarks.splice(index, 1);
-        }
-      });
-      text += node.text;
-      // Handle marks on text nodes
       if (node.marks && node.marks.length > 0) {
-        // Apply marks from innermost to outermost
+        if (previous?.marks) {
+          previous.marks.forEach(prevMark => {
+            const isStillActive = node.marks.some(mark => compareMarks(mark, prevMark));
+            if (!isStillActive) {
+              const lastOpen = this.openMarks.pop();
+              if (!compareMarks(lastOpen, prevMark)) {
+                console.error('Serialization mismatch');
+              }
+              text += `</${prevMark.type}>`;
+            }
+          });
+        }
+        let openingMarks = [];
         node.marks.forEach(mark => {
-          let isOpen = this.openMarks.find(openMark => compareMarks(mark, openMark));
-          if (!isOpen) {
-            const tagName = mark.type;
-            const attrs = mark.attrs ? Object.entries(mark.attrs)
+          const isPreviouslyActive = previous?.marks?.some(prevMark => compareMarks(prevMark, mark));
+          if (!isPreviouslyActive) {
+            openingMarks.push(mark);
+          }
+        });
+        openingMarks.sort((a, b) => {
+          const aInNext = next?.marks?.some(mark => compareMarks(mark, a)) ? 1 : 0;
+          const bInNext = next?.marks?.some(mark => compareMarks(mark, b)) ? 1 : 0;
+          return bInNext - aInNext;
+        });
+        openingMarks.forEach(mark => {
+          this.openMarks.push(mark);
+          const tagName = mark.type;
+          const attrs = mark.attrs ? Object.entries(mark.attrs)
               .filter(([_, value]) => value !== null)
               .map(([key, value]) => `${key}="${value}"`)
               .join(' ') : '';
-            text = `<${tagName}${attrs ? ' ' + attrs : ''}>${text}`;
-            this.openMarks.unshift(mark);
-          }
+          text += `<${tagName}${attrs ? ' ' + attrs : ''}>`;
         });
+        text += node.text;
+        if (!next) {
+          this.openMarks.reverse().forEach(mark => {
+            text += `</${mark.type}>`;
+          });
+          this.openMarks = [];
+        }
+      } else {
+        this.openMarks.reverse().forEach(prevMark => {
+          text += `</${prevMark.type}>`;
+        });
+        this.openMarks = [];
+        text += node.text;
       }
       return text;
     }
@@ -75,16 +94,22 @@ class Serializer {
       })
       .join(' ') : '';
   
-    const content = node.content
-      ? node.content.map(child => this.serialize(child)).join('')
-      : '';
+    let content = '';
+    if (node.content) {
+      for (let i = 0; i < node.content.length; i++) {
+        const child = node.content[i];
+        const previous = i > 0 ? node.content[i - 1] : null;
+        const next = i < node.content.length - 1 ? node.content[i + 1] : null;
+        content += this.serialize(child, previous, next);
+      }
+    }
   
     // If content is empty, output as self-closing element
     if (!content) {
       return `<${tagName}${attrs ? ' ' + attrs : ''}/>`;
     }
   
-    return `<${tagName}${attrs ? ' ' + attrs : ''}>${content}${this.closeMarks()}</${tagName}>`;
+    return `<${tagName}${attrs ? ' ' + attrs : ''}>${content}</${tagName}>`;
   }
 
   closeMarks() {

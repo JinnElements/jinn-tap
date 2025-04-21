@@ -86,6 +86,35 @@ describe('JinnTap Component', () => {
             })
     })
 
+    it('handle choice/abbr/expan', () => {
+        const testContent = '<tei-div><tei-p><tei-choice><tei-abbr>WYSIWYM</tei-abbr><tei-expan>What you see is what you mean</tei-expan></tei-choice>.</tei-p></tei-div>'
+
+        // Get the component instance
+        cy.get('jinn-tap')
+            .then(($component) => {
+                // Create a spy for the content-change event
+                const contentChangeSpy = cy.spy().as('contentChangeSpy')
+
+                // Add event listener for content-change event
+                $component[0].addEventListener('content-change', contentChangeSpy)
+
+                // Set the content
+                $component[0].content = testContent
+
+                // Wait for the content-change event
+                cy.get('@contentChangeSpy')
+                    .should('have.been.called')
+                    .then((spy) => {
+                        // Get the event detail from the spy
+                        const eventDetail = spy.getCall(0).args[0].detail
+
+                        // Compare XML using chai-xml
+                        expect(eventDetail.xml).to.be.xml
+                        expect(eventDetail.xml).to.equal('<div><p><choice><abbr>WYSIWYM</abbr><expan>What you see is what you mean</expan></choice>.</p></div>')
+                    })
+            })
+    })
+
     it('should apply bold formatting to selected text', () => {
         const testContent = '<tei-div><tei-p>Hello world!</tei-p></tei-div>'
 
@@ -125,6 +154,5 @@ describe('JinnTap Component', () => {
                         })
                     })
             })
-        // Select the word "world" using proper TipTap commands
     })
 })
