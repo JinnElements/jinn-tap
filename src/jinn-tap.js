@@ -19,7 +19,7 @@ style.textContent = `
     jinn-tap {
         display: grid;
         grid-template-rows: min-content 1fr;
-        grid-template-columns: 1fr minmax(30vw, 460px);
+        grid-template-columns: 1fr minmax(220px, 460px);
         grid-template-areas:
             "toolbar aside"
             "editor aside";
