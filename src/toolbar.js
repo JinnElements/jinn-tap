@@ -18,27 +18,129 @@ export class Toolbar {
         this.editor = editor.tiptap;
         this.toolbar = editor.querySelector('.toolbar');
         this.schemaDef = schemaDef;
-        this.addButtons(schemaDef);
+        this.selectElements = new Map();
 
-        // Add global toolbar buttons from schema.json
+        // Collect all toolbar items
+        const allItems = [];
+        const selectItems = new Map();
+
+        // Add global toolbar items
         if (schemaDef.toolbar) {
             Object.entries(schemaDef.toolbar).forEach(([name, def]) => {
-                const button = this.createButton(name, name, def);
-                button.addEventListener('click', (ev) => {
-                    ev.preventDefault();
-                    if (def.command) {
-                        if (def.args) {
-                            this.editor.chain().focus()[def.command](...def.args).run();
-                        } else {
-                            this.editor.chain().focus()[def.command]().run();
-                        }
+                if (def.select) {
+                    if (!selectItems.has(def.select)) {
+                        selectItems.set(def.select, []);
                     }
-                });
-                const li = document.createElement('li');
-                li.appendChild(button);
-                this.toolbar.appendChild(li);
+                    selectItems.get(def.select).push({ name, def, isGlobal: true });
+                    // Add select to all items if not already added
+                    if (!allItems.some(item => item.type === 'select' && item.name === def.select)) {
+                        allItems.push({
+                            type: 'select',
+                            name: def.select,
+                            order: this.schemaDef.selects[def.select]?.order ?? 0
+                        });
+                    }
+                } else {
+                    allItems.push({ 
+                        type: 'button',
+                        name,
+                        def,
+                        isGlobal: true,
+                        order: def.order ?? 0
+                    });
+                }
             });
         }
+
+        // Add node-specific toolbar items
+        const sortedEntries = Object.entries(schemaDef.schema).sort(([, a], [, b]) => {
+            const getTypeOrder = (type) => {
+                if (type === 'block' || type === 'list' || type === 'empty') return 0;
+                if (type === 'inline') return 1;
+                return 2;
+            };
+            return getTypeOrder(a.type) - getTypeOrder(b.type);
+        });
+
+        sortedEntries.forEach(([name, def]) => {
+            if (!def.toolbar) return;
+            Object.entries(def.toolbar).forEach(([label, toolbarDef]) => {
+                if (toolbarDef.select) {
+                    if (!selectItems.has(toolbarDef.select)) {
+                        selectItems.set(toolbarDef.select, []);
+                    }
+                    selectItems.get(toolbarDef.select).push({ name, def, label, toolbarDef, isGlobal: false });
+                    // Add select to all items if not already added
+                    if (!allItems.some(item => item.type === 'select' && item.name === toolbarDef.select)) {
+                        allItems.push({
+                            type: 'select',
+                            name: toolbarDef.select,
+                            order: this.schemaDef.selects[toolbarDef.select]?.order ?? 0
+                        });
+                    }
+                } else {
+                    allItems.push({ 
+                        type: 'button',
+                        name,
+                        def,
+                        label,
+                        toolbarDef,
+                        isGlobal: false,
+                        order: toolbarDef.order ?? 0
+                    });
+                }
+            });
+        });
+
+        // Sort all items by order
+        const sortedItems = allItems.sort((a, b) => a.order - b.order);
+
+        // Create toolbar items in order
+        sortedItems.forEach(item => {
+            if (item.type === 'select') {
+                const selectDef = this.schemaDef.selects[item.name];
+                const select = this.createSelect(selectDef?.label || item.name);
+                this.selectElements.set(item.name, select);
+                const li = document.createElement('li');
+                li.appendChild(select);
+                this.toolbar.appendChild(li);
+
+                // Add items to select
+                selectItems.get(item.name).forEach(selectItem => {
+                    if (selectItem.isGlobal) {
+                        this.addOptionToSelect(select, selectItem.name, selectItem.def, selectItem.name, selectItem.def);
+                    } else {
+                        this.addOptionToSelect(select, selectItem.name, selectItem.def, selectItem.label, selectItem.toolbarDef);
+                    }
+                });
+            } else {
+                if (item.isGlobal) {
+                    const button = this.createButton(item.name, item.name, item.def);
+                    button.addEventListener('click', (ev) => {
+                        ev.preventDefault();
+                        if (item.def.command) {
+                            if (item.def.args) {
+                                this.editor.chain().focus()[item.def.command](...item.def.args).run();
+                            } else {
+                                this.editor.chain().focus()[item.def.command]().run();
+                            }
+                        }
+                    });
+                    const li = document.createElement('li');
+                    li.appendChild(button);
+                    this.toolbar.appendChild(li);
+                } else {
+                    const button = this.createButton(item.name, item.label, item.toolbarDef);
+                    button.addEventListener('click', (ev) => {
+                        ev.preventDefault();
+                        this.handleNodeAction(item.name, item.def, item.toolbarDef);
+                    });
+                    const li = document.createElement('li');
+                    li.appendChild(button);
+                    this.toolbar.appendChild(li);
+                }
+            }
+        });
 
         // Add debug toggle button
         const debugButton = document.createElement('a');
@@ -60,51 +162,6 @@ export class Toolbar {
         const li = document.createElement('li'); 
         li.appendChild(debugButton);
         this.toolbar.appendChild(li);
-    }
-
-    addButtons(schemaDef) {
-        // Sort nodes by type - blocks and lists first, then inline nodes
-        const sortedEntries = Object.entries(schemaDef.schema).sort(([, a], [, b]) => {
-            // Define type order: blocks/lists first, then inline
-            const getTypeOrder = (type) => {
-                if (type === 'block' || type === 'list' || type === 'empty') return 0;
-                if (type === 'inline') return 1;
-                return 2; // Other types
-            };
-            return getTypeOrder(a.type) - getTypeOrder(b.type);
-        });
-
-        // Create a map to store select elements
-        const selectElements = new Map();
-
-        sortedEntries.forEach(([name, def]) => {
-            if (!def.toolbar) return;
-            Object.entries(def.toolbar).forEach(([label, toolbarDef]) => {
-                if (toolbarDef.select) {
-                    // Handle select elements
-                    const selectName = toolbarDef.select;
-                    let select = selectElements.get(selectName);
-                    if (!select) {
-                        select = this.createSelect(selectName);
-                        selectElements.set(selectName, select);
-                        const li = document.createElement('li');
-                        li.appendChild(select);
-                        this.toolbar.appendChild(li);
-                    }
-                    this.addOptionToSelect(select, name, def, label, toolbarDef);
-                } else {
-                    // Handle regular buttons
-                    const button = this.createButton(name, label, toolbarDef);
-                    button.addEventListener('click', (ev) => {
-                        ev.preventDefault();
-                        this.handleNodeAction(name, def, toolbarDef);
-                    });
-                    const li = document.createElement('li');
-                    li.appendChild(button);
-                    this.toolbar.appendChild(li);
-                }
-            });
-        });
     }
 
     /**
@@ -231,7 +288,7 @@ export class Toolbar {
         select.className = 'dropdown';
         
         const summary = document.createElement('summary');
-        summary.textContent = name;
+        summary.innerHTML = name;
         select.appendChild(summary);
 
         const menu = document.createElement('ul');
