@@ -12,12 +12,23 @@
             "command": "moveUp",
             "label": "<i class='bi bi-unindent'></i>"
         },
-        "Abbreviation": {
+        "choice/abbr/expan": {
             "command": "insertSnippet",
             "args": [
                 "<tei-choice><tei-abbr>{abbrev}</tei-abbr><tei-expan>{expansion}</tei-expan></tei-choice>"
             ],
+            "select": "Textcritical",
             "label": "<i class='bi bi-three-dots'></i>"
+        }
+    },
+    "selects": {
+        "Blocks": {
+            "label": "<i class='bi bi-text-paragraph'></i>",
+            "order": 0
+        },
+        "Textcritical": {
+            "label": "<i class='bi bi-highlighter'></i>",
+            "order": 9
         }
     },
     "schema": {
@@ -71,15 +82,18 @@
             "toolbar": {
                 "Bold": {
                     "attributes": { "rend": "b" },
-                    "label": "<i class='bi bi-type-bold'></i>"
+                    "label": "<i class='bi bi-type-bold'></i>",
+                    "order": 1
                 },
                 "Italic": {
                     "attributes": { "rend": "i" },
-                    "label": "<i class='bi bi-type-italic'></i>"
+                    "label": "<i class='bi bi-type-italic'></i>",
+                    "order": 1
                 },
                 "Underline": {
                     "attributes": { "rend": "u" },
-                    "label": "<i class='bi bi-type-underline'></i>"
+                    "label": "<i class='bi bi-type-underline'></i>",
+                    "order": 1
                 }
             }
         },
@@ -98,7 +112,8 @@
             "toolbar": {
                 "Reference": {
                     "attributes": {},
-                    "label": "<i class='bi bi-link'></i>"
+                    "label": "<i class='bi bi-link'></i>",
+                    "order": 2
                 }
             }
         },
@@ -118,7 +133,8 @@
             "toolbar": {
                 "Title": {
                     "attributes": { "level": "m" },
-                    "label": "<i class='bi bi-quote'></i>"
+                    "label": "<i class='bi bi-quote'></i>",
+                    "order": 2
                 }
             }
         },
@@ -142,7 +158,8 @@
             "toolbar": {
                 "Person": {
                     "attributes": {},
-                    "label": "<i class='bi bi-person'></i>"
+                    "label": "<i class='bi bi-person'></i>",
+                    "order": 11
                 }
             }
         },
@@ -161,7 +178,8 @@
             "toolbar": {
                 "Organization": {
                     "attributes": {},
-                    "label": "<i class='bi bi-people'></i>"
+                    "label": "<i class='bi bi-people'></i>",
+                    "order": 11
                 }
             }
         },
@@ -186,7 +204,8 @@
             "toolbar": {
                 "Place": {
                     "attributes": {},
-                    "label": "<i class='bi bi-geo-alt'></i>"
+                    "label": "<i class='bi bi-geo-alt'></i>",
+                    "order": 11
                 }
             }
         },
@@ -210,7 +229,8 @@
             "toolbar": {
                 "Term": {
                     "attributes": {},
-                    "label": "<i class='bi bi-bookmark'></i>"
+                    "label": "<i class='bi bi-bookmark'></i>",
+                    "order": 11
                 }
             }
         },
@@ -236,7 +256,8 @@
             "toolbar": {
                 "Date": {
                     "attributes": {},
-                    "label": "<i class='bi bi-calendar-date'></i>"
+                    "label": "<i class='bi bi-calendar-date'></i>",
+                    "order": 12
                 }
             }
         },
@@ -368,19 +389,82 @@
                     "attributes": {
                         "type": "note"
                     },
-                    "label": "<i class='bi bi-123'></i>"
+                    "label": "<i class='bi bi-123'></i>",
+                    "order": 2
                 }
             }
         },
         "choice": {
             "type": "inline",
-            "content": "abbr expan"
+            "content": "abbr expan",
+            "toolbar": {
+                "Choice": {
+                    "select": "Textcritical",
+                    "label": "<i class='bi bi-alt'></i>"
+                }
+            }
         },
         "abbr": {
-            "type": "inline"
+            "type": "inline",
+            "toolbar": {
+                "Abbreviation": {
+                    "select": "Textcritical",
+                    "label": "<i class='bi bi-three-dots'></i>"
+                }
+            }
         },
         "expan": {
-            "type": "inline"
+            "type": "inline",
+            "toolbar": {
+                "Expansion": {
+                    "select": "Textcritical",
+                    "label": "<i class='bi bi-arrows-expand-vertical'></i>"
+                }
+            }
+        },
+        "gap": {
+            "type": "empty",
+            "label": "[...]",
+            "attributes": {
+                "unit": {
+                    "type": "string",
+                    "default": "chars",
+                    "enum": ["chars", "lines", "words"]
+                },
+                "quantity": {
+                    "type": "string"
+                }
+            },
+            "toolbar": {
+                "Gap": {
+                    "select": "Textcritical",
+                    "label": "<i class='bi bi-braces-asterisk'></i>"
+                }
+            }
+        },
+        "unclear": {
+            "type": "inline",
+            "attributes": {
+                "rend": { "type": "string", "default": "unclear" }
+            },
+            "toolbar": {
+                "Unclear": {
+                    "select": "Textcritical",
+                    "label": "<i class='bi bi-patch-question'></i>"
+                }
+            }
+        },
+        "supplied": {
+            "type": "inline",
+            "attributes": {
+                "reason": { "type": "string" }
+            },
+            "toolbar": {
+                "Supplied": {
+                    "select": "Textcritical",
+                    "label": "<i class='bi bi-plus-circle-dotted'></i>"
+                }
+            }
         },
         "pb": {
             "type": "empty",
@@ -400,7 +484,8 @@
             "toolbar": {
                 "PageBreak": {
                     "attributes": { "n": "22" },
-                    "label": "<i class='bi bi-file-earmark-break'></i>"
+                    "label": "<i class='bi bi-file-earmark-break'></i>",
+                    "order": 3
                 }
             }
         },
@@ -413,7 +498,8 @@
             "toolbar": {
                 "LineBreak": {
                     "attributes": {},
-                    "label": "<i class='bi bi-arrow-return-left'></i>"
+                    "label": "<i class='bi bi-arrow-return-left'></i>",
+                    "order": 3
                 }
             }
         }

@@ -81,11 +81,11 @@
                               item into a <hi rend="code">head</hi> by placing the cursor inside the
                               item and choosing <hi rend="i">Head</hi> from the toolbar.</p>
                         </item>
-                        <item>
-                           <p>to enter an en dash (–), use two hyphens, to create an mdash (—), type
-                              three hyphens</p>
-                        </item>
                      </list>
+                  </item>
+                  <item>
+                     <p>to enter an en dash (–), use two hyphens, to create an mdash (—), type
+                        three hyphens</p>
                   </item>
                </list>
                <p>Apply inline markup by selecting some text and pressing a corresponding button.

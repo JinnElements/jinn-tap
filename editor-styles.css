@@ -165,6 +165,19 @@ tei-expan {
     color: white;
 }
 
+tei-gap {
+    color: #9E9E9E;
+}
+
+tei-supplied {
+    text-decoration: underline dotted;
+    color: #9E9E9E;
+}
+
+tei-unclear {
+    color: #F06048;
+}
+
 tei-pb, tei-lb {
     display: inline-block;
     background-color: #ffa500;
