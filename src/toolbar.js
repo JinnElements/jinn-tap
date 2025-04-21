@@ -53,16 +53,7 @@ export class Toolbar {
         }
 
         // Add node-specific toolbar items
-        const sortedEntries = Object.entries(schemaDef.schema).sort(([, a], [, b]) => {
-            const getTypeOrder = (type) => {
-                if (type === 'block' || type === 'list' || type === 'empty') return 0;
-                if (type === 'inline') return 1;
-                return 2;
-            };
-            return getTypeOrder(a.type) - getTypeOrder(b.type);
-        });
-
-        sortedEntries.forEach(([name, def]) => {
+        Object.entries(schemaDef.schema).forEach(([name, def]) => {
             if (!def.toolbar) return;
             Object.entries(def.toolbar).forEach(([label, toolbarDef]) => {
                 if (toolbarDef.select) {
