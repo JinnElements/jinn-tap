@@ -1,3 +1,17 @@
+# [1.8.0](https://github.com/JinnElements/jinn-tap/compare/v1.7.1...v1.8.0) (2025-04-21)
+
+
+### Bug Fixes
+
+* correct serialization of nested marks ([006e0aa](https://github.com/JinnElements/jinn-tap/commit/006e0aaf7931a641ef0346f5879dbab775a12af8))
+* order toolbar buttons ([ff73c48](https://github.com/JinnElements/jinn-tap/commit/ff73c483331fba101855691a15b57568dcc240ef))
+
+
+### Features
+
+* add gap/supplied/unclear/choice/abbr/expan ([b04fe28](https://github.com/JinnElements/jinn-tap/commit/b04fe2896dfcc61d1a3425768b45684dc529a536))
+* add support for inserting snippets with placeholders; add choice/abbr/expan ([80b4414](https://github.com/JinnElements/jinn-tap/commit/80b4414676e0fd101e91def29b3b25b36b34ea32))
+
 ## [1.7.1](https://github.com/JinnElements/jinn-tap/compare/v1.7.0...v1.7.1) (2025-04-18)
 
 
