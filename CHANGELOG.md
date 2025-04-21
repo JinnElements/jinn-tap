@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/JinnElements/jinn-tap/compare/v1.8.0...v1.8.1) (2025-04-21)
+
+
+### Bug Fixes
+
+* styling improvements ([03f0f13](https://github.com/JinnElements/jinn-tap/commit/03f0f13b954224e3ed4a287cb2eed28e0fc6b051))
+
 # [1.8.0](https://github.com/JinnElements/jinn-tap/compare/v1.7.1...v1.8.0) (2025-04-21)
 
 
