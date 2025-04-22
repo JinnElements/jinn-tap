@@ -178,9 +178,10 @@ export class AttributePanel {
                 details.appendChild(summary);
 
                 const lookup = document.createElement('pb-authority-lookup');
+                const needsLookup = nodeOrMark.attrs[attrName] || nodeOrMark.attrs[attrName] === '';
                 lookup.setAttribute('type', attrDef.connector.type);
                 lookup.setAttribute('query', text);
-                lookup.setAttribute('auto', nodeOrMark.attrs[attrName] ? 'true' : 'false');
+                lookup.setAttribute('auto', needsLookup);
                 lookup.setAttribute('no-occurrences', true);
                 const authority = document.createElement('pb-authority');
                 authority.setAttribute('connector', attrDef.connector.name);
