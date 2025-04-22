@@ -1,3 +1,10 @@
+## [1.9.3](https://github.com/JinnElements/jinn-tap/compare/v1.9.2...v1.9.3) (2025-04-22)
+
+
+### Bug Fixes
+
+* authority lookup initialization ([08e02a8](https://github.com/JinnElements/jinn-tap/commit/08e02a8088c3d402325396bc4026406fc9f23320))
+
 ## [1.9.2](https://github.com/JinnElements/jinn-tap/compare/v1.9.1...v1.9.2) (2025-04-22)
 
 
