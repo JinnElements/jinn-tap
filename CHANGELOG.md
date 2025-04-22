@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/JinnElements/jinn-tap/compare/v1.9.0...v1.9.1) (2025-04-22)
+
+
+### Bug Fixes
+
+* make empty nodes selectable ([5ebd143](https://github.com/JinnElements/jinn-tap/commit/5ebd14362c70aa83c3363bf5789191f527f8d247))
+
 # [1.9.0](https://github.com/JinnElements/jinn-tap/compare/v1.8.1...v1.9.0) (2025-04-22)
 
 
