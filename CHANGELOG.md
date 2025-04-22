@@ -1,3 +1,10 @@
+## [1.9.2](https://github.com/JinnElements/jinn-tap/compare/v1.9.1...v1.9.2) (2025-04-22)
+
+
+### Bug Fixes
+
+* choice/abbr/expan broken by toolbar refactoring ([b6c1665](https://github.com/JinnElements/jinn-tap/commit/b6c16658d85bf148b6666a2bcdfa9239958c8e68))
+
 ## [1.9.1](https://github.com/JinnElements/jinn-tap/compare/v1.9.0...v1.9.1) (2025-04-22)
 
 
