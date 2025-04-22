@@ -105,31 +105,14 @@ export class Toolbar {
                     }
                 });
             } else {
-                if (item.isGlobal) {
-                    const button = this.createButton(item.name, item.name, item.def);
-                    button.addEventListener('click', (ev) => {
-                        ev.preventDefault();
-                        if (item.def.command) {
-                            if (item.def.args) {
-                                this.editor.chain().focus()[item.def.command](...item.def.args).run();
-                            } else {
-                                this.editor.chain().focus()[item.def.command]().run();
-                            }
-                        }
-                    });
-                    const li = document.createElement('li');
-                    li.appendChild(button);
-                    this.toolbar.appendChild(li);
-                } else {
-                    const button = this.createButton(item.name, item.label, item.toolbarDef);
-                    button.addEventListener('click', (ev) => {
-                        ev.preventDefault();
-                        this.handleNodeAction(item.name, item.def, item.toolbarDef);
-                    });
-                    const li = document.createElement('li');
-                    li.appendChild(button);
-                    this.toolbar.appendChild(li);
-                }
+                const button = this.createButton(item.name, item.label, item.toolbarDef || item.def);
+                button.addEventListener('click', (ev) => {
+                    ev.preventDefault();
+                    this.handleNodeAction(item.name, item.def, item.toolbarDef || item.def);
+                });
+                const li = document.createElement('li');
+                li.appendChild(button);
+                this.toolbar.appendChild(li);
             }
         });
 
@@ -179,7 +162,11 @@ export class Toolbar {
 
         const chain = this.editor.chain().focus();
         if (toolbarDef.command) {
-            chain[toolbarDef.command](name, toolbarDef.attributes);
+            if (toolbarDef.args) {
+                chain[toolbarDef.command](...toolbarDef.args);
+            } else {
+                chain[toolbarDef.command](name, toolbarDef.attributes);
+            }
         } else if (def.type === 'inline') {
             chain.toggleMark(name, toolbarDef.attributes);
         } else if (def.type === 'list') {

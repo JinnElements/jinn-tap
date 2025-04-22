@@ -150,7 +150,8 @@
         },
         "figDesc": {
             "type": "block",
-            "content": "inline*"
+            "content": "inline*",
+            "priority": 99
         },
         "graphic": {
             "type": "graphic",
