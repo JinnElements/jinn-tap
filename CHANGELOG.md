@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/JinnElements/jinn-tap/compare/v1.8.1...v1.9.0) (2025-04-22)
+
+
+### Features
+
+* support figure/graphic/figDesc ([f267414](https://github.com/JinnElements/jinn-tap/commit/f267414f0315bd96dc98b8ed7a7d5a8cd66d614f))
+
 ## [1.8.1](https://github.com/JinnElements/jinn-tap/compare/v1.8.0...v1.8.1) (2025-04-21)
 
 
