@@ -28,14 +28,15 @@
             </figure>
             <p>While it is very difficult to create a completely generic editor covering the entire
                complexity of TEI, JinnTap tries to be as customizable as possible. To work properly
-               in a <choice>
-                  <abbr>WYSIWYM</abbr><expan>What you see is what you mean</expan>
-               </choice> context, the editor needs to be strict about the underlying schema. Many
+               in a <choice><abbr>WYSIWYM</abbr><expan>What you see is what you mean</expan></choice> context, 
+               the editor needs to be strict about the underlying schema. Many
                elements in TEI are ambiguous with respect to their block or inline nature, i.e. they
                can appear either way. However, the editor has a clear distinction between block and
                inline content<anchor xml:id="fn-m9ic2gkq-e2pwse" type="note"/>. Therefore JinnTap
-               uses its own schema to define what is allowed in which position. It extends the
-               schema used by the underlying editor (<ref target="https://prosemirror.net/"
+               uses its own <ref
+                  target="https://github.com/JinnElements/jinn-tap/blob/main/src/schema.json"
+                  >schema</ref> to define what is allowed in which position. It extends the schema
+               used by the underlying editor (<ref target="https://prosemirror.net/"
                   >ProseMirror</ref>) to configure additional features like toolbar buttons,
                keyboard shortcuts etc. and is written in JSON.</p>
             <p>Out of the box, the default schema supports:</p>
@@ -119,9 +120,8 @@
                   >key</hi> form field.</p>
             <p>Note that selecting an entry from the registry will automatically apply the
                attribute, so if this is your only change, you don't have to press the <hi rend="i"
-                  >apply-all</hi> button manually. After selecting, you should also see some
-               additional information about the entity displayed at the very top of the attribute
-               panel.</p>
+                  >apply</hi> button manually. After selecting, you should also see some additional
+               information about the entity displayed at the very top of the attribute panel.</p>
          </div>
          <div>
             <head>Customization</head>
