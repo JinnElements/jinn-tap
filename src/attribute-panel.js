@@ -222,7 +222,12 @@ export class AttributePanel {
             const applyButton = document.createElement('button');
             applyButton.dataset.tooltip = 'Apply Changes';
             applyButton.type = 'submit';
-            applyButton.innerHTML = '<i class="bi bi-check-all"></i>';
+            applyButton.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+                    <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0"/>
+                    <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z"/>
+                </svg>
+                Apply`;
             applyButton.addEventListener('click', (ev) => {
                 ev.preventDefault();
                 this.handleAttributeUpdate(nodeOrMark);

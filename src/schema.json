@@ -19,6 +19,11 @@
             ],
             "select": "Textcritical",
             "label": "<i class='bi bi-three-dots'></i>"
+        },
+        "figure/graphic": {
+            "command": "insertFigure",
+            "label": "<i class='bi bi-images'></i>",
+            "select": "Blocks"
         }
     },
     "selects": {
@@ -134,7 +139,31 @@
                 "Title": {
                     "attributes": { "level": "m" },
                     "label": "<i class='bi bi-quote'></i>",
+                    "select": "Textcritical",
                     "order": 2
+                }
+            }
+        },
+        "figure": {
+            "type": "block",
+            "content": "(graphic|figDesc)*"
+        },
+        "figDesc": {
+            "type": "block",
+            "content": "inline*"
+        },
+        "graphic": {
+            "type": "graphic",
+            "attributes": {
+                "url": { 
+                    "type": "string",
+                    "default": "https://placehold.co/320x200"
+                }
+            },
+            "toolbar": {
+                "Graphic": {
+                    "label": "<i class='bi bi-image'></i>",
+                    "select": "Blocks"
                 }
             }
         },

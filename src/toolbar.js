@@ -186,7 +186,7 @@ export class Toolbar {
             chain.toggleList(toolbarDef.attributes);
         } else if (def.type === 'anchor') {
             chain.addAnchor(toolbarDef.attributes);
-        } else if (def.type === 'empty') {
+        } else if (def.type === 'empty' || def.type === 'graphic') {
             chain.insertContent({
                 type: name,
                 attrs: toolbarDef.attributes

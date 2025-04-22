@@ -51,6 +51,17 @@ export const JinnTapCommands = Extension.create({
 
                 dispatch(tr);
                 return true;
+            },
+            insertFigure: (snippet) => ({ state, commands }) => {
+                commands.insertContent({
+                    type: 'figure',
+                    attrs: {},
+                    content: [
+                        { type: 'graphic', attrs: { url: 'https://placehold.co/320x200' } },
+                        { type: "figDesc", content: [ { type: "text", text: "Description" } ] },
+                    ]
+                });
+                return true;
             }
         };
     }

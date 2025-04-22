@@ -3,8 +3,8 @@ import { dirname } from 'path';
 
 const FILES_TO_COPY = [
     { source: 'editor-styles.css', dest: 'dist/editor-styles.css' },
-    { source: 'jinntap-logo.png', dest: 'dist/jinntap-logo.png' },
-    { source: 'jinntap-logo-128.png', dest: 'dist/jinntap-logo-128.png' }
+    { source: 'public/jinntap-logo.png', dest: 'dist/jinntap-logo.png' },
+    { source: 'public/jinntap-logo-128.png', dest: 'dist/jinntap-logo-128.png' }
 ];
 
 async function copyAssets() {
@@ -28,4 +28,4 @@ async function copyAssets() {
     }
 }
 
-copyAssets(); 
+copyAssets();
