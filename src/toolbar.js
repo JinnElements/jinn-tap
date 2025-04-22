@@ -105,10 +105,10 @@ export class Toolbar {
                     }
                 });
             } else {
-                const button = this.createButton(item.name, item.label, item.toolbarDef || item.def);
+                const button = this.createButton(item.name, item.isGlobal ? item.name : item.label, item.isGlobal ? item.def : (item.toolbarDef || item.def));
                 button.addEventListener('click', (ev) => {
                     ev.preventDefault();
-                    this.handleNodeAction(item.name, item.def, item.toolbarDef || item.def);
+                    this.nodeAction(item.name, item.def, item.toolbarDef || item.def);
                 });
                 const li = document.createElement('li');
                 li.appendChild(button);
@@ -136,6 +136,9 @@ export class Toolbar {
         const li = document.createElement('li'); 
         li.appendChild(debugButton);
         this.toolbar.appendChild(li);
+
+        // Update active state based on current selection
+        this.editor.on('selectionUpdate', this.updateButtonStates.bind(this));
     }
 
     /**
@@ -144,8 +147,9 @@ export class Toolbar {
      * @param {string} name - The name of the node.
      * @param {Object} def - The definition of the node.
      * @param {Object} toolbarDef - The definition of the toolbar item.
+     * @param {boolean} checkOnly - Whether to only check if the action can be performed.
      */
-    handleNodeAction(name, def, toolbarDef) {
+    nodeAction(name, def, toolbarDef, checkOnly = false) {
         if (name === 'head') {
             // Check if we're in a list item
             const { state } = this.editor;
@@ -155,26 +159,35 @@ export class Toolbar {
             
             if (listItem) {
                 // If in a list item, use transformToHead
+                if (checkOnly) {
+                    return this.editor.can().transformToHead();
+                }
                 this.editor.chain().focus().transformToHead().run();
                 return;
             }
         }
 
-        const chain = this.editor.chain().focus();
+        let chain;
+        if (checkOnly) {
+            chain = this.editor.can();
+        } else {
+            chain = this.editor.chain().focus();
+        }
+
         if (toolbarDef.command) {
             if (toolbarDef.args) {
-                chain[toolbarDef.command](...toolbarDef.args);
+                chain = chain[toolbarDef.command](...toolbarDef.args);
             } else {
-                chain[toolbarDef.command](name, toolbarDef.attributes);
+                chain = chain[toolbarDef.command](name, toolbarDef.attributes);
             }
         } else if (def.type === 'inline') {
-            chain.toggleMark(name, toolbarDef.attributes);
+            chain = chain.toggleMark(name, toolbarDef.attributes);
         } else if (def.type === 'list') {
-            chain.toggleList(toolbarDef.attributes);
+            chain = chain.toggleList(toolbarDef.attributes);
         } else if (def.type === 'anchor') {
-            chain.addAnchor(toolbarDef.attributes);
+            chain = chain.addAnchor(toolbarDef.attributes);
         } else if (def.type === 'empty' || def.type === 'graphic') {
-            chain.insertContent({
+            chain = chain.insertContent({
                 type: name,
                 attrs: toolbarDef.attributes
             });
@@ -182,12 +195,15 @@ export class Toolbar {
             // Check if the node's content model is a textBlock
             const nodeType = this.editor.schema.nodes[name];
             if (nodeType && nodeType.isTextblock) {
-                chain.setNode(name, toolbarDef.attributes);
+                chain = chain.setNode(name, toolbarDef.attributes);
             } else {
-                chain.wrapIn(name, toolbarDef.attributes);
+                chain = chain.wrapIn(name, toolbarDef.attributes);
             }
         }
 
+        if (checkOnly) {
+            return chain;
+        }
         chain.run();
     }
 
@@ -204,61 +220,38 @@ export class Toolbar {
         // Add tooltip
         button.dataset.tooltip = label;
         button.dataset.placement = 'bottom';
+        button.dataset.name = name;
         
         // Add active state styling
         button.addEventListener('mousedown', (e) => {
             e.preventDefault(); // Prevent editor from losing focus
         });
 
-        // Update active state based on current selection
-        this.editor.on('selectionUpdate', ({ editor }) => {
-            this.updateButtonState(button, name, def, editor);
-        });
 
         return button;
     }
 
     /**
-     * Update the state of a button based on the current selection.
-     * 
-     * @param {Element} button - The button or linkelement.
-     * @param {string} name - The name of the node.
-     * @param {Object} def - The definition of the node.
-     * @param {Object} editor - The editor instance.
+     * Update the state of buttons based on the current selection.
      */
-    updateButtonState(button, name, def, editor) {
-        const nodeType = this.schemaDef[name];
-        
-        if (!nodeType) return;
-        
-        let isValid = true;
-        
-        if (def.command) {
-            isValid = editor.can()[def.command](name, def.attributes);
-        } else if (nodeType.type === 'inline') {
-            // For inline marks, check if they can be applied to the current selection
-            isValid = editor.can().toggleMark(name, def.attributes);
-        } else if (nodeType.type === 'block') {
-            // For block nodes, check if they can be set at the current position
-            isValid = editor.can().setNode(name, def.attributes);
-        } else if (nodeType.type === 'list') {
-            // For lists, check if they can be toggled
-            isValid = editor.can().toggleList(name, def.attributes);
-        } else if (nodeType.type === 'empty' || nodeType.type === 'anchor') {
-            // For empty nodes, check if they can be inserted
-            isValid = editor.can().insertContent({
-                type: name,
-                attrs: def.attributes
-            });
-        }
-        
-        button.disabled = !isValid;
-        if (!isValid) {
-            button.classList.add('disabled');
-        } else {
-            button.classList.remove('disabled');
-        }
-        button.classList.toggle('active', editor.isActive(name));
+    updateButtonStates() {
+        const buttons = this.toolbar.querySelectorAll('a[data-name]');
+        buttons.forEach(button => {
+            const nodeType = this.schemaDef.schema[button.dataset.name];
+            
+            if (!nodeType) return;
+            
+            // Use nodeAction with checkOnly=true to determine if the action can be performed
+            const isValid = this.nodeAction(button.dataset.name, nodeType, nodeType, true);
+            
+            button.disabled = !isValid;
+            if (!isValid) {
+                button.classList.add('disabled');
+            } else {
+                button.classList.remove('disabled');
+            }
+            button.classList.toggle('active', this.editor.isActive(button.dataset.name));
+        });
     }
 
     createSelect(name) {
@@ -278,18 +271,14 @@ export class Toolbar {
         const li = document.createElement('li');
         const link = document.createElement('a');
         link.innerHTML = toolbarDef.label;
+        link.dataset.name = name;
         link.appendChild(document.createTextNode(' ' + label));
         link.href = '#';
         li.appendChild(link);
         link.addEventListener('click', (ev) => {
             ev.preventDefault();
             select.open = false;
-            this.handleNodeAction(name, def, toolbarDef);
-        });
-
-        // Update active state based on current selection
-        this.editor.on('selectionUpdate', ({ editor }) => {
-            this.updateButtonState(link, name, def, editor);
+            this.nodeAction(name, def, toolbarDef);
         });
 
         select.querySelector('ul').appendChild(li);
