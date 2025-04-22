@@ -4,7 +4,7 @@ tei-div, tei-p, tei-item {
 
 tei-head {
     font-size: 2rem;
-    font-weight: bold;
+    font-weight: 700;
     line-height: 1.125;
     margin-top: 3rem;
 }
