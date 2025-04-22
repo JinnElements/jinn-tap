@@ -20,7 +20,7 @@
             "select": "Textcritical",
             "label": "<i class='bi bi-three-dots'></i>"
         },
-        "figure/graphic": {
+        "Figure": {
             "command": "insertFigure",
             "label": "<i class='bi bi-images'></i>",
             "select": "Blocks"

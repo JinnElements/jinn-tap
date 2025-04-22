@@ -42,7 +42,8 @@ export const TeiEmptyElement = TeiBlock.extend({
             });
             
             dom.addEventListener('click', () => {
-                this.editor.options.element.dispatchEvent(new CustomEvent('empty-element-clicked', { detail: { node } }));
+                const pos = this.editor.view.posAtDOM(dom);
+                this.editor.options.element.dispatchEvent(new CustomEvent('empty-element-clicked', { detail: { node, pos } }));
             });
             return {
                 dom,

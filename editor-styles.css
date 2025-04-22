@@ -236,6 +236,10 @@ tei-ref {
     cursor: pointer;
 }
 
+.ProseMirror-selectednode {
+    outline: 2px solid var(--pico-primary);
+}
+
 .debug tei-div, .debug tei-p, .debug tei-item {
     margin-right: 2px;
     padding-right: 2px;

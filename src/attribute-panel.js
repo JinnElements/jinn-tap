@@ -33,7 +33,12 @@ export class AttributePanel {
         });
 
         this.editor.options.element.addEventListener('empty-element-clicked', ({ detail }) => {
-            this.showNodeAttributes(detail.node);
+            const { node, pos } = detail;
+            this.editor.chain()
+                .focus()
+                .setNodeSelection(pos)
+                .run();
+            this.showNodeAttributes(node);
         });
     }
 
