@@ -355,11 +355,11 @@ export class AttributePanel {
                     const domNode = editor.view.nodeDOM(pos.pos);
                     if (domNode) {
                         // Ensure the highlighted element is visible in the viewport
-                        const scrollTarget = domNode.nodeType === Node.TEXT_NODE ? domNode.parentNode : domNode;
+                        const scrollTarget = domNode.nodeType === window.Node.TEXT_NODE ? domNode.parentNode : domNode;
                         scrollTarget.scrollIntoView({ behavior: 'instant', block: 'center' });
 
                         let rect;
-                        if (domNode.nodeType === Node.TEXT_NODE) {
+                        if (domNode.nodeType === window.Node.TEXT_NODE) {
                             const range = document.createRange();
                             range.setStart(domNode, pos.index);
                             range.setEnd(domNode, pos.index + pos.length);
