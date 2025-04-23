@@ -27,11 +27,10 @@
                <figDesc>JinnTap Logo</figDesc>
             </figure>
             <p>While it is very difficult to create a completely generic editor covering the entire
-               complexity of TEI, JinnTap tries to be as customizable as possible. To work properly
-               in a <choice>
-                  <abbr>WYSIWYM</abbr>
-                  <expan>What you see is what you mean</expan>
-               </choice>context, the editor needs to be strict about the underlying schema. Many
+               complexity of TEI, JinnTap tries to be as customizable as possible to cover a wide
+               range of use cases. To work properly in a <choice>
+                  <abbr>WYSIWYM</abbr><expan>What you see is what you mean</expan>
+               </choice> context, the editor needs to be strict about the underlying schema. Many
                elements in TEI are ambiguous with respect to their block or inline nature, i.e. they
                can appear either way. However, the editor has a clear distinction between block and
                inline content<anchor xml:id="fn-m9ic2gkq-e2pwse" type="note"/>. Therefore JinnTap
@@ -39,8 +38,8 @@
                   target="https://github.com/JinnElements/jinn-tap/blob/main/src/schema.json"
                   >schema</ref> to define what is allowed in which position. It extends the schema
                used by the underlying editor (<ref target="https://prosemirror.net/"
-                  >ProseMirror</ref>) to configure additional features like toolbar buttons,
-               keyboard shortcuts etc. and is written in JSON.</p>
+                  >ProseMirror</ref>) with custom node types and configures additional features like
+               toolbar buttons or keyboard shortcuts. The schema is provided in JSON.</p>
             <p>Out of the box, the default schema supports:</p>
             <list rend="unordered">
                <item><p>block level elements like headings, paragraphs, lists</p></item>
@@ -53,6 +52,10 @@
                         >choice</hi>/<hi rend="code">abbr</hi>/<hi rend="code">expan</hi></p></item>
                <item><p>figures, figure descriptions and graphics</p></item>
             </list>
+            <p><hi rend="b">Important</hi>: being strict, the editor will <hi rend="u">ignore any
+                  elements it can't find</hi> in the schema. It will not preserve them! If you plan
+               to use JinnTap to edit existing TEI documents, make sure all your elements are
+               covered.</p>
          </div>
          <div>
             <head>How to edit</head>
