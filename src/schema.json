@@ -400,7 +400,7 @@
                 }
             }
         },
-        "noteGrp": {
+        "listAnnotation": {
             "type": "list",
             "group": "",
             "defining": true,

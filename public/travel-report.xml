@@ -48,7 +48,7 @@
         <p>Farewell!</p>
         <p>Your friend, <persName>Lucius Septimius Aquilinus</persName></p>
     </div>
-    <noteGrp>
+    <listAnnotation>
         <note target="#fn-gaius-balneator">Gaius Balneator - A bath master of questionable reputation, known for his tendency to "accidentally" mix up the hot and cold baths, much to the amusement (or horror) of his patrons.</note>
         <note target="#fn-marcus-vinarius">Marcus Vinarius - A wine merchant who claims to have served every emperor since <persName>Romulus</persName>, though his memory seems to improve with each cup of wine he serves.</note>
         <note target="#fn-emperor-trajan"><persName key="gnd-118623567">Emperor Trajan</persName> - Famous for his military campaigns and public works, though not particularly known for his sense of humor. The story of him dining in a small <term key="gnd-4071600-4">tavern</term> is about as likely as <persName>Jupiter</persName> taking up pottery.</note>
@@ -58,7 +58,7 @@
         <note target="#fn-tiberius-vitis">Tiberius Vitis - A wine merchant who claims his family has been making wine since before <persName>Bacchus</persName> was born. His wine is excellent, but his stories are even better.</note>
         <note target="#fn-claudius-mysticus">Claudius Mysticus - A high priest known for his "mystical visions" that always seem to involve expensive donations to the temple. His wine cellar is more impressive than his spiritual insights.</note>
         <note target="#fn-gaius-gallicus"><persName key="gnd-120871459">Gaius Gallicus</persName> - A merchant who claims to have traded with every barbarian tribe north of the <placeName key="geo-2661786">Alps</placeName>. His stories grow taller with each telling, much like the mythical creatures he claims to have encountered.</note>
-    </noteGrp>
+    </listAnnotation>
       </body>
    </text>
 </TEI> 

@@ -126,7 +126,7 @@ tei-term {
     color: #9236A4;
 }
 
-tei-list, tei-noteGrp {
+tei-list, tei-listAnnotation {
     display: block;
     list-style-type: disc;
     margin: 1em 0;
@@ -147,12 +147,12 @@ tei-item, tei-note {
     margin: 0.5em 0;
 }
 
-tei-noteGrp {
+tei-listAnnotation {
     list-style-type: none;
     padding-left: 0;
 }
 
-tei-noteGrp::before {
+tei-listAnnotation::before {
     padding: 1rem 0 0;
     margin-top: 2rem;
     border-top: 1px solid #ccc;

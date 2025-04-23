@@ -81,5 +81,5 @@ export function createFromSchema(schemaDef) {
 
 // Custom document extension that requires tei-div
 const TeiDocument = Document.extend({
-    content: 'block+ noteGrp?'
+    content: 'block+ listAnnotation?'
 });

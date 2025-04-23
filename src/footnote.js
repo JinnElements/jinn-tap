@@ -66,25 +66,25 @@ function updateNoteReferences(tr, doc) {
 
 // Function to reorder notes according to their reference numbers
 function reorderNotes(tr, doc, targetNoteId = null) {
-    // Find the noteGrp
-    let noteGrpPos = null;
+    // Find the listAnnotation
+    let listAnnotationPos = null;
     doc.descendants((node, pos) => {
-        if (node.type.name === 'noteGrp') {
-            noteGrpPos = pos;
+        if (node.type.name === 'listAnnotation') {
+            listAnnotationPos = pos;
             return false;
         }
     });
 
-    if (noteGrpPos === null) return tr;
+    if (listAnnotationPos === null) return tr;
 
-    const noteGrpNode = doc.nodeAt(noteGrpPos);
-    if (!noteGrpNode) return tr;
+    const listAnnotationNode = doc.nodeAt(listAnnotationPos);
+    if (!listAnnotationNode) return tr;
 
     // Collect all notes with their reference numbers and positions
     const notes = [];
     let targetNoteIndex = -1;
     
-    noteGrpNode.content.forEach((node, offset) => {
+    listAnnotationNode.content.forEach((node, offset) => {
         if (node.type.name === 'note') {
             const target = node.attrs.target;
             if (target && target.startsWith('#')) {
@@ -109,18 +109,18 @@ function reorderNotes(tr, doc, targetNoteId = null) {
         newTargetIndex = notes.findIndex(n => n.originalIndex === targetNoteIndex);
     }
 
-    // Create a new noteGrp with sorted notes
-    const newNoteGrp = noteGrpNode.type.create(
-        noteGrpNode.attrs,
+    // Create a new listAnnotation with sorted notes
+    const newlistAnnotation = listAnnotationNode.type.create(
+        listAnnotationNode.attrs,
         notes.map(n => n.node)
     );
 
-    // Replace the old noteGrp with the new one
-    tr = tr.replaceWith(noteGrpPos, noteGrpPos + noteGrpNode.nodeSize, newNoteGrp);
+    // Replace the old listAnnotation with the new one
+    tr = tr.replaceWith(listAnnotationPos, listAnnotationPos + listAnnotationNode.nodeSize, newlistAnnotation);
 
     // If we had a target note, update the selection to its new position
     if (newTargetIndex !== -1) {
-        const newNotePos = noteGrpPos + 1; // +1 to skip the noteGrp opening tag
+        const newNotePos = listAnnotationPos + 1; // +1 to skip the listAnnotation opening tag
         let currentPos = newNotePos;
         
         // Move through notes until we reach our target
@@ -394,33 +394,33 @@ export const FootnoteRules = Extension.create({
                         if (noteExists) {
                             return null;
                         }
-                        // Find existing noteGrp or create one at end
-                        let noteGrpPos = null;
+                        // Find existing listAnnotation or create one at end
+                        let listAnnotationPos = null;
                         newState.doc.descendants((node, pos) => {
-                            if (node.type.name === 'noteGrp') {
-                                noteGrpPos = pos;
+                            if (node.type.name === 'listAnnotation') {
+                                listAnnotationPos = pos;
                                 return false;
                             }
                         });
 
-                        if (noteGrpPos === null) {
-                            // Create noteGrp at end of document
-                            noteGrpPos = newState.doc.content.size;
-                            newTr = newTr.insert(noteGrpPos, newState.schema.nodes.noteGrp.create());
+                        if (listAnnotationPos === null) {
+                            // Create listAnnotation at end of document
+                            listAnnotationPos = newState.doc.content.size;
+                            newTr = newTr.insert(listAnnotationPos, newState.schema.nodes.listAnnotation.create());
                         }
 
-                        // Get the noteGrp node after the transaction
-                        const noteGrpNode = newTr.doc.nodeAt(noteGrpPos);
-                        if (!noteGrpNode) {
+                        // Get the listAnnotation node after the transaction
+                        const listAnnotationNode = newTr.doc.nodeAt(listAnnotationPos);
+                        if (!listAnnotationNode) {
                             return null;
                         }
 
-                        // Insert a new note at the end of the noteGrp with a reference to the anchor
+                        // Insert a new note at the end of the listAnnotation with a reference to the anchor
                         const noteNode = newState.schema.nodes.note.create({ 
                             'target': `#${anchorId}`,
                             '_reference': '1' // Will be updated later
                         });
-                        const insertPos = noteGrpPos + noteGrpNode.nodeSize - 1;
+                        const insertPos = listAnnotationPos + listAnnotationNode.nodeSize - 1;
                         
                         // Insert the note and create a paragraph inside it
                         newTr = newTr.insert(insertPos, noteNode);

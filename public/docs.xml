@@ -152,14 +152,14 @@
                      >editor-styles.css</ref>
                </hi>file.</p>
          </div>
-         <noteGrp>
+         <listAnnotation>
             <note target="#fn-m9tl85r7-ta5gce">TEI elements are converted to HTML custom elements,
                preserving all attributes and structural features.</note>
             <note target="#fn-m9ic2gkq-e2pwse">In more technical terms, the editor distinguishes
                between <hi rend="i">nodes</hi> and <hi rend="i">marks</hi>: while nodes are mostly
                block-level elements (with some exceptions), marks are lightweight markers attached
                to a piece of text.</note>
-         </noteGrp>
+         </listAnnotation>
       </body>
    </text>
 </TEI>
