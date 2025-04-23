@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/JinnElements/jinn-tap/compare/v1.10.1...v1.11.0) (2025-04-23)
+
+
+### Features
+
+* add toolbar button "clear formatting" ([41575c2](https://github.com/JinnElements/jinn-tap/commit/41575c2d400dd6c4bbe58a028207f49d9447bbb4))
+
 ## [1.10.1](https://github.com/JinnElements/jinn-tap/compare/v1.10.0...v1.10.1) (2025-04-23)
 
 
