@@ -1,3 +1,10 @@
+## [1.10.1](https://github.com/JinnElements/jinn-tap/compare/v1.10.0...v1.10.1) (2025-04-23)
+
+
+### Bug Fixes
+
+* use listAnnotation instead of noteGrp for footnotes ([7ac3a96](https://github.com/JinnElements/jinn-tap/commit/7ac3a96b41d6297e75948caad59923c301791b1f))
+
 # [1.10.0](https://github.com/JinnElements/jinn-tap/compare/v1.9.3...v1.10.0) (2025-04-23)
 
 
