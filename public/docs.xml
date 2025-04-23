@@ -20,16 +20,18 @@
             <p>Edit <ref target="https://tei-c.org/">TEI XML</ref> documents using a rich text
                editor. JinnTap preserves the structure of the XML in the editor. There's no need for
                complex transformation steps from TEI to HTML and back. The representation of the
-               document in the editor corresponds directly to the XML. TEI elements are converted to
-               HTML custom elements, preserving all attributes and structural features.</p>
+               document in the editor corresponds directly to the XML<anchor
+                  xml:id="fn-m9tl85r7-ta5gce" type="note"/>.</p>
             <figure>
                <graphic url="jinntap-logo-128.png"/>
                <figDesc>JinnTap Logo</figDesc>
             </figure>
             <p>While it is very difficult to create a completely generic editor covering the entire
                complexity of TEI, JinnTap tries to be as customizable as possible. To work properly
-               in a <choice><abbr>WYSIWYM</abbr><expan>What you see is what you mean</expan></choice> context, 
-               the editor needs to be strict about the underlying schema. Many
+               in a <choice>
+                  <abbr>WYSIWYM</abbr>
+                  <expan>What you see is what you mean</expan>
+               </choice>context, the editor needs to be strict about the underlying schema. Many
                elements in TEI are ambiguous with respect to their block or inline nature, i.e. they
                can appear either way. However, the editor has a clear distinction between block and
                inline content<anchor xml:id="fn-m9ic2gkq-e2pwse" type="note"/>. Therefore JinnTap
@@ -72,8 +74,6 @@
                            item into a <hi rend="code">head</hi> by placing the cursor inside the
                            item and choosing <hi rend="i">Head</hi> from the toolbar.</p></item>
                   </list></item>
-               <item><p>to enter an en dash (–), use two hyphens, to create an mdash (—), type three
-                     hyphens</p></item>
             </list>
             <p>Apply inline markup by selecting some text and pressing a corresponding button. Note
                that those buttons are toggles, i.e. pressing again will <hi rend="b">remove</hi> the
@@ -93,6 +93,20 @@
                   This shows all the ancestor nodes down to the currently active node. Clicking on
                   any of the breadcrumb links will select the corresponding node and the attribute
                   panel will show the attributes assigned to this node.</p>
+            </div>
+            <div>
+               <head>Shortcodes</head>
+               <p>To quickly create certain types of elements, the following shortcodes are
+                  defined:</p>
+               <list rend="unordered">
+                  <item><p>Typing ## at the start of an empty paragraph turns it into a <hi
+                           rend="code">head</hi></p></item>
+                  <item><p>To create an unordered list, type * followed by a space</p></item>
+                  <item><p>A number followed by a dot and a space creates a numbered list (<hi
+                           rend="code">1. </hi>)</p></item>
+                  <item><p>to enter an en dash (–), use two hyphens, to create an mdash (—), type
+                        three hyphens</p></item>
+               </list>
             </div>
          </div>
          <div>
@@ -139,6 +153,8 @@
                </hi>file.</p>
          </div>
          <noteGrp>
+            <note target="#fn-m9tl85r7-ta5gce">TEI elements are converted to HTML custom elements,
+               preserving all attributes and structural features.</note>
             <note target="#fn-m9ic2gkq-e2pwse">In more technical terms, the editor distinguishes
                between <hi rend="i">nodes</hi> and <hi rend="i">marks</hi>: while nodes are mostly
                block-level elements (with some exceptions), marks are lightweight markers attached

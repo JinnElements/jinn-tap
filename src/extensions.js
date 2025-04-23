@@ -66,11 +66,15 @@ export function createFromSchema(schemaDef) {
         }
         // Merge global attributes with node-specific attributes
         const attributes = { ...schemaDef.attributes, ...def.attributes };
-        extensions.push(NodeOrMark.configure({
+        const config = {
             shortcuts: def.keyboard,
             attributes: attributes,
             label: def.label
-        }));
+        };
+        if (def.inputRules) {
+            config.inputRules = def.inputRules;
+        }
+        extensions.push(NodeOrMark.configure(config));
     });
     return extensions;
 }

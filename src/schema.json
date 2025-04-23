@@ -305,6 +305,7 @@
         "head": {
             "type": "block",
             "group": "heading",
+            "content": "inline*",
             "attributes": {
                 "type": {
                     "type": "string"
@@ -326,7 +327,13 @@
                     "attributes": {},
                     "label": "<i class='bi bi-type-h1'></i>"
                 }
-            }
+            },
+            "inputRules": [
+                {
+                    "find": "^##$",
+                    "type": "textblock"
+                }
+            ]
         },
         "item": {
             "type": "listItem"
@@ -357,7 +364,19 @@
                     "attributes": { "rend": "ordered" },
                     "label": "<i class='bi bi-list-ol'></i>"
                 }
-            }
+            },
+            "inputRules": [
+                {
+                    "find": "^\\s*([-+*])\\s$",
+                    "type": "wrapping",
+                    "attributes": { "rend": "unordered" }
+                },
+                {
+                    "find": "^\\s*(\\d+)\\.\\s$",
+                    "type": "wrapping",
+                    "attributes": { "rend": "ordered" }
+                }
+            ]
         },
         "opener": {
             "type": "block",

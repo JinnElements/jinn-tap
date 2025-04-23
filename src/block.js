@@ -1,4 +1,4 @@
-import { Node } from '@tiptap/core';
+import { Node, textblockTypeInputRule, wrappingInputRule } from '@tiptap/core';
 
 export const TeiBlock = Node.create({
     name: 'block',
@@ -9,7 +9,8 @@ export const TeiBlock = Node.create({
         return {
             tag: `tei-${this.name}`,
             shortcuts: {},
-            attributes: {}
+            attributes: {},
+            inputRules: []
         }
     },
 
@@ -71,5 +72,33 @@ export const TeiBlock = Node.create({
                 return commands.wrapIn(this.name, attributes);
             }
         }
+    },
+
+    addInputRules() {
+        if (!this.options.inputRules || this.options.inputRules.length === 0) {
+            return [];
+        }
+        return this.options.inputRules.map(rule => {
+            if (rule.type === 'textblock') {
+                return textblockTypeInputRule({
+                    find: new RegExp(rule.find),
+                    type: this.type,
+                    getAttributes: () => {
+                        return rule.attributes || {};
+                    }
+                });
+            } else if (rule.type === 'wrapping') {
+                return wrappingInputRule({
+                    find: new RegExp(rule.find),
+                    type: this.type,
+                    keepMarks: true,
+                    keepAttributes: false,
+                    getAttributes: () => {
+                        return rule.attributes || {};
+                    },
+                    editor: this.editor
+                });
+            }
+        });
     }
 }); 
