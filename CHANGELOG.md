@@ -1,3 +1,16 @@
+# [1.10.0](https://github.com/JinnElements/jinn-tap/compare/v1.9.3...v1.10.0) (2025-04-23)
+
+
+### Bug Fixes
+
+* always show division markers to avoid confusion ([62f2069](https://github.com/JinnElements/jinn-tap/commit/62f2069b7f0f14a0bf725d1f3aabc88187c80966))
+* highlighting occurrences ([f82beb2](https://github.com/JinnElements/jinn-tap/commit/f82beb28c6a9052972c8a3a26945ef1738e66c1c))
+
+
+### Features
+
+* add optional shortcodes for headings and lists ([9116659](https://github.com/JinnElements/jinn-tap/commit/9116659a5309ee25a0354803adca5e82625cb16e))
+
 ## [1.9.3](https://github.com/JinnElements/jinn-tap/compare/v1.9.2...v1.9.3) (2025-04-22)
 
 

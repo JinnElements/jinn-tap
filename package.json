@@ -1,6 +1,6 @@
 {
   "name": "@jinntec/jinntap",
-  "version": "1.9.3",
+  "version": "1.10.0",
   "type": "module",
   "main": "./dist/jinn-tap.umd.js",
   "module": "./dist/jinn-tap.es.js",
