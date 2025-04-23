@@ -12,6 +12,10 @@
             "command": "moveUp",
             "label": "<i class='bi bi-unindent'></i>"
         },
+        "Clear Formatting": {
+            "command": "unsetAllMarks",
+            "label": "<i class='bi bi-eraser'></i>"
+        },
         "choice/abbr/expan": {
             "command": "insertSnippet",
             "args": [
