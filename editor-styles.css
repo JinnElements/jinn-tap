@@ -31,27 +31,29 @@ tei-title[level="m"] {
     font-style: italic;
 }
 
-.debug tei-div {
+tei-div {
     border-right: 2px solid var(--tei-div-color-0);
+    margin-right: 2px;
+    padding-right: 2px;
 }
 
-.debug tei-div > tei-div {
+tei-div > tei-div {
     border-right: 2px solid var(--tei-div-color-1);
 }
 
-.debug tei-div > tei-div > tei-div {
+tei-div > tei-div > tei-div {
     border-right: 2px solid var(--tei-div-color-2);
 }
 
-.debug tei-div > tei-div {
+tei-div > tei-div {
     border-right: 2px solid var(--tei-div-color-3);
 }
 
-.debug tei-div > tei-div > tei-div {
+tei-div > tei-div > tei-div {
     border-right: 2px solid var(--tei-div-color-4);
 }
 
-.debug tei-div > tei-div > tei-div > tei-div {
+tei-div > tei-div > tei-div > tei-div {
     border-right: 2px solid var(--tei-div-color-5);
 }
 
@@ -59,10 +61,6 @@ tei-p {
     display: block;
     margin: 0.5em 0;
     position: relative;
-}
-
-.debug tei-p {
-    border-right: 2px solid var(--tei-p-color);
 }
 
 tei-p[rend="center"] {
@@ -147,10 +145,6 @@ tei-item, tei-note {
     display: list-item;
     list-style-position: outside;
     margin: 0.5em 0;
-}
-
-.debug tei-item {
-    border-right: 1px solid var(--tei-item-color);
 }
 
 tei-noteGrp {
@@ -240,11 +234,6 @@ tei-ref {
 
 .ProseMirror-selectednode {
     outline: 2px solid var(--pico-primary);
-}
-
-.debug tei-div, .debug tei-p, .debug tei-item {
-    margin-right: 2px;
-    padding-right: 2px;
 }
 
 .debug *::after {
