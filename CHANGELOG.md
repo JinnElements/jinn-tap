@@ -1,3 +1,15 @@
+# [1.12.0](https://github.com/JinnElements/jinn-tap/compare/v1.11.0...v1.12.0) (2025-04-24)
+
+
+### Bug Fixes
+
+* do not show bar above footnotes if empty ([c7477ae](https://github.com/JinnElements/jinn-tap/commit/c7477aea3fff05c9afe427682ae142b3dfcecf63))
+
+
+### Features
+
+* add jinn-toast for messages ([e772a8d](https://github.com/JinnElements/jinn-tap/commit/e772a8db8a6bc3b2e1b1eced136ce069cfbc7bf2))
+
 # [1.11.0](https://github.com/JinnElements/jinn-tap/compare/v1.10.1...v1.11.0) (2025-04-23)
 
 
