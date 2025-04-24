@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/JinnElements/jinn-tap/compare/v1.12.0...v1.12.1) (2025-04-24)
+
+
+### Bug Fixes
+
+* toolbar ordering ([9ee63ab](https://github.com/JinnElements/jinn-tap/commit/9ee63ab12ae269e433eb059f0ba95d2512e62ca9))
+
 # [1.12.0](https://github.com/JinnElements/jinn-tap/compare/v1.11.0...v1.12.0) (2025-04-24)
 
 
