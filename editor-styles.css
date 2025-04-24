@@ -152,6 +152,10 @@ tei-listAnnotation {
     padding-left: 0;
 }
 
+tei-listAnnotation:empty::before {
+    display: none;
+}
+
 tei-opener, tei-closer, tei-signed {
     display: block;
 }
