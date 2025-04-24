@@ -393,6 +393,17 @@
                 }
             }
         },
+        "salute": {
+            "type": "block",
+            "content": "inline*",
+            "toolbar": {
+                "Salute": {
+                    "select": "Blocks",
+                    "attributes": {},
+                    "label": "<i class='bi bi-envelope-open'></i>"
+                }
+            }
+        },
         "closer": {
             "type": "block",
             "content": "block*",
@@ -401,6 +412,17 @@
                     "select": "Blocks",
                     "attributes": {},
                     "label": "<i class='bi bi-envelope'></i>"
+                }
+            }
+        },
+        "signed": {
+            "type": "block",
+            "content": "inline*",
+            "toolbar": {
+                "Signed": {
+                    "select": "Blocks",
+                    "attributes": {},
+                    "label": "<i class='bi bi-envelope-paper'></i>"
                 }
             }
         },
