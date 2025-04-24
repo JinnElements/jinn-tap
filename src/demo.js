@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const output = document.getElementById('output');
     const fileInput = document.getElementById('xmlFile');
     const copyButton = editor.querySelector('[data-tooltip="Copy TEI to clipboard"]');
-    
+    const newButton = editor.querySelector('[data-tooltip="New Document"]');
     if (!fileInput) {
         console.error('File input element not found!');
         return;
@@ -65,6 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     copyButton.dataset.tooltip = 'Copy TEI to clipboard';
                 }, 2000);
             }
+        });
+    }
+
+    if (newButton) {
+        newButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            editor.content = '<tei-div><tei-p></tei-p></tei-div>';
         });
     }
 });
