@@ -9,11 +9,17 @@ export default defineConfig({
         'jinn-toast': 'src/components/jinn-toast.js',
         'index': 'src/index.js'
       },
-      formats: ['es']
+      formats: ['es'],
+      fileName: (format, entryName) => `${entryName}.es.js`
     },
     sourcemap: true,
     outDir: 'dist',
-    emptyOutDir: false,
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    },
     commonjsOptions: {
       sourceMap: true
     }
