@@ -15,7 +15,7 @@
         "Clear Formatting": {
             "command": "unsetAllMarks",
             "label": "<i class='bi bi-eraser'></i>",
-            "order": 1
+            "order": 5
         },
         "choice/abbr/expan": {
             "command": "insertSnippet",
@@ -90,12 +90,12 @@
                 "Bold": {
                     "attributes": { "rend": "b" },
                     "label": "<i class='bi bi-type-bold'></i>",
-                    "order": 1
+                    "order": 5
                 },
                 "Italic": {
                     "attributes": { "rend": "i" },
                     "label": "<i class='bi bi-type-italic'></i>",
-                    "order": 1
+                    "order": 5
                 }
             }
         },
@@ -283,7 +283,7 @@
             "toolbar": {
                 "Date": {
                     "attributes": {},
-                    "label": "<i class='bi bi-calendar-date'></i>",
+                    "label": "<i class='bi bi-calendar-event'></i>",
                     "order": 12
                 }
             }
@@ -383,6 +383,17 @@
                     "select": "Blocks",
                     "attributes": {},
                     "label": "<i class='bi bi-envelope-open'></i>"
+                }
+            }
+        },
+        "dateline": {
+            "type": "block",
+            "content": "inline*",
+            "toolbar": {
+                "Dateline": {
+                    "select": "Blocks",
+                    "attributes": {},
+                    "label": "<i class='bi bi-calendar-date'></i>"
                 }
             }
         },

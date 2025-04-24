@@ -34,7 +34,7 @@ tei-title[level="m"] {
 tei-div {
     border-right: 2px solid var(--tei-div-color-0);
     margin-right: 2px;
-    padding-right: 2px;
+    padding-right: 4px;
 }
 
 tei-div > tei-div {
@@ -156,8 +156,20 @@ tei-listAnnotation:empty::before {
     display: none;
 }
 
-tei-opener, tei-closer, tei-signed {
+tei-opener, tei-closer, tei-signed, tei-dateline {
     display: block;
+}
+
+tei-opener {
+    margin-bottom: 1rem;
+}
+
+tei-closer {
+    margin-top: 1rem;
+}
+
+tei-dateline {
+    text-align: right;
 }
 
 tei-listAnnotation::before {
