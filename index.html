@@ -18,6 +18,11 @@
             <jinn-tap url="docs.xml">
                 <img slot="aside" class="logo" src="jinntap-logo-128.png" alt="JinnTap">
                 <li slot="toolbar">
+                    <a href="#" class="toolbar-button" data-tooltip="New Document" data-placement="bottom">
+                        <i class="bi bi-file-earmark-plus"></i>
+                    </a>
+                </li>
+                <li slot="toolbar">
                     <label for="xmlFile" class="toolbar-button" data-tooltip="Upload XML" data-placement="bottom">
                         <i class="bi bi-upload"></i>
                         <input type="file" id="xmlFile" accept=".xml" style="display: none;">
@@ -26,11 +31,6 @@
                 <li slot="toolbar">
                     <a href="#" class="toolbar-button" data-tooltip="Copy TEI to clipboard" data-placement="bottom">
                         <i class="bi bi-clipboard-plus"></i>
-                    </a>
-                </li>
-                <li slot="toolbar">
-                    <a href="#" class="toolbar-button" data-tooltip="New Document" data-placement="bottom">
-                        <i class="bi bi-file-earmark-plus"></i>
                     </a>
                 </li>
             </jinn-tap>

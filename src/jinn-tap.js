@@ -85,6 +85,10 @@ style.textContent = `
         cursor: not-allowed;
         pointer-events: none;
     }
+
+    jinn-tap .toolbar details i {
+        padding-right: 0.5rem;
+    }
     
     jinn-tap .ProseMirror {
         outline: none;
