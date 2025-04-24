@@ -9,9 +9,7 @@ export default defineConfig({
         'jinn-toast': 'src/components/jinn-toast.js',
         'index': 'src/index.js'
       },
-      name: 'JinnTap',
-      fileName: (format, entryName) => `${entryName}.${format}.js`,
-      formats: ['es', 'umd']
+      formats: ['es']
     },
     sourcemap: true,
     outDir: 'dist',

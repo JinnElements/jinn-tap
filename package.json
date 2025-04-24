@@ -2,35 +2,29 @@
   "name": "@jinntec/jinntap",
   "version": "1.11.0",
   "type": "module",
-  "main": "./dist/index.umd.js",
+  "main": "./dist/index.es.js",
   "module": "./dist/index.es.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.es.js",
-      "require": "./dist/index.umd.js",
       "types": "./dist/index.d.ts"
     },
     "./jinn-tap": {
       "import": "./dist/jinn-tap.es.js",
-      "require": "./dist/jinn-tap.umd.js",
       "types": "./dist/jinn-tap.d.ts"
     },
     "./jinn-toast": {
       "import": "./dist/jinn-toast.es.js",
-      "require": "./dist/jinn-toast.umd.js",
       "types": "./dist/jinn-toast.d.ts"
     }
   },
   "files": [
     "dist/jinn-tap.es.js",
-    "dist/jinn-tap.umd.js",
     "dist/jinn-tap.d.ts",
     "dist/jinn-toast.es.js",
-    "dist/jinn-toast.umd.js",
     "dist/jinn-toast.d.ts",
     "dist/index.es.js",
-    "dist/index.umd.js",
     "dist/index.d.ts",
     "dist/editor-styles.css",
     "dist/jinntap-logo.png",
