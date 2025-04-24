@@ -4,9 +4,13 @@ export default defineConfig({
   base: '/jinn-tap/',
   build: {
     lib: {
-      entry: 'src/jinn-tap.js',
+      entry: {
+        'jinn-tap': 'src/jinn-tap.js',
+        'jinn-toast': 'src/components/jinn-toast.js',
+        'index': 'src/index.js'
+      },
       name: 'JinnTap',
-      fileName: (format) => `jinn-tap.${format}.js`,
+      fileName: (format, entryName) => `${entryName}.${format}.js`,
       formats: ['es', 'umd']
     },
     sourcemap: true,

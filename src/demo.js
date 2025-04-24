@@ -1,4 +1,4 @@
-import './jinn-tap.js';
+import { JinnTap, JinnToast } from './index.js';
 import { fromXml } from './util.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -53,6 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 await navigator.clipboard.writeText(xml);
                 
                 // Show success message
+                document.dispatchEvent(new CustomEvent('jinn-toast', {
+                    detail: {
+                        message: 'XML content copied to clipboard',
+                        type: 'info'
+                    }
+                }));
                 const originalTooltip = copyButton.dataset.tooltip;
                 copyButton.dataset.tooltip = 'Copied!';
                 setTimeout(() => {
