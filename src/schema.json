@@ -14,7 +14,8 @@
         },
         "Clear Formatting": {
             "command": "unsetAllMarks",
-            "label": "<i class='bi bi-eraser'></i>"
+            "label": "<i class='bi bi-eraser'></i>",
+            "order": 1
         },
         "choice/abbr/expan": {
             "command": "insertSnippet",
@@ -83,9 +84,6 @@
                 },
                 "Cmd-i": { 
                     "attributes": { "rend": "i" }
-                },
-                "Cmd-u": { 
-                    "attributes": { "rend": "u" }
                 }
             },
             "toolbar": {
@@ -97,11 +95,6 @@
                 "Italic": {
                     "attributes": { "rend": "i" },
                     "label": "<i class='bi bi-type-italic'></i>",
-                    "order": 1
-                },
-                "Underline": {
-                    "attributes": { "rend": "u" },
-                    "label": "<i class='bi bi-type-underline'></i>",
                     "order": 1
                 }
             }
