@@ -1,3 +1,10 @@
+## [1.12.2](https://github.com/JinnElements/jinn-tap/compare/v1.12.1...v1.12.2) (2025-04-25)
+
+
+### Bug Fixes
+
+* if notes should be wrapped in listAnnotation or noteGrp is now configurable ([1a2d428](https://github.com/JinnElements/jinn-tap/commit/1a2d428868781e6cc986f89f2acc08c37962b222))
+
 ## [1.12.1](https://github.com/JinnElements/jinn-tap/compare/v1.12.0...v1.12.1) (2025-04-24)
 
 
