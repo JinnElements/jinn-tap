@@ -1,6 +1,6 @@
 # JinnTap
 
-![JinnTap Logo](jinntap-logo.png)
+![JinnTap Logo](public/jinntap-logo.png)
 
 Edit TEI XML documents using a rich text editor. JinnTap preserves the structure of the XML in the editor. There's no need for complex transformation steps from TEI to HTML and back. The representation of the document in the editor corresponds directly with the XML. TEI elements are converted to HTML custom elements, preserving all attributes and structural features.
 
