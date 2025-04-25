@@ -65,11 +65,11 @@ function updateNoteReferences(tr, doc) {
 }
 
 // Function to reorder notes according to their reference numbers
-function reorderNotes(tr, doc, targetNoteId = null) {
+function reorderNotes(tr, doc, notesWrapper,targetNoteId = null) {
     // Find the listAnnotation
     let listAnnotationPos = null;
     doc.descendants((node, pos) => {
-        if (node.type.name === 'listAnnotation') {
+        if (node.type.name === notesWrapper) {
             listAnnotationPos = pos;
             return false;
         }
@@ -287,7 +287,13 @@ export const TeiAnchor = TeiEmptyElement.extend({
 export const FootnoteRules = Extension.create({
     name: "footnoteRules",
     priority: 1000,
+    addOptions() {
+        return {
+            notesWrapper: 'listAnnotation'
+        }
+    },
     addProseMirrorPlugins() {
+        const options = this.options;
         return [
             new Plugin({
                 key: new PluginKey("footnoteRules"),
@@ -397,7 +403,7 @@ export const FootnoteRules = Extension.create({
                         // Find existing listAnnotation or create one at end
                         let listAnnotationPos = null;
                         newState.doc.descendants((node, pos) => {
-                            if (node.type.name === 'listAnnotation') {
+                            if (node.type.name === options.notesWrapper) {
                                 listAnnotationPos = pos;
                                 return false;
                             }
@@ -450,7 +456,7 @@ export const FootnoteRules = Extension.create({
                         newTr = updateNoteReferences(newTr, newTr.doc);
                         
                         // Reorder notes
-                        newTr = reorderNotes(newTr, newTr.doc, anchorId);
+                        newTr = reorderNotes(newTr, newTr.doc, options.notesWrapper, anchorId);
                     }
                     
                     return newTr;

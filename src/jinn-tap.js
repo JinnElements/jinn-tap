@@ -128,6 +128,7 @@ if (!document.querySelector('#jinn-tap-styles')) {
  * @attr {string} schema - URL to load the TEI schema from. The schema will be fetched
  *                         and used to configure the editor's capabilities. If not provided,
  *                         a default schema will be used.
+ * @attr {string} notes - The wrapper element to use for notes. The default is 'listAnnotation'.
  * @attr {boolean} debug - When present, enables debug mode which adds a debug class
  *                         to the component for styling purposes.
  * 
@@ -159,6 +160,7 @@ export class JinnTap extends HTMLElement {
         this.editor = null;
         this.toolbar = null;
         this.attributePanel = null;
+        this.notesWrapper = 'listAnnotation';
         this._schema = schema; // Default schema
     }
 
@@ -229,6 +231,9 @@ export class JinnTap extends HTMLElement {
     }
 
     connectedCallback() {
+        if (this.hasAttribute('notesWrapper')) {
+            this.notesWrapper = this.getAttribute('notes');
+        }
         this.setupEditor();
     }
 
@@ -264,7 +269,9 @@ export class JinnTap extends HTMLElement {
                 ...extensions,
                 InputRules,
                 JinnTapCommands,
-                FootnoteRules,
+                FootnoteRules.configure({
+                    notesWrapper: this.notesWrapper
+                }),
                 History,
                 Placeholder.configure({
                     placeholder: 'Write something...',
