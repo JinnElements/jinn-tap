@@ -441,6 +441,9 @@ export const FootnoteRules = Extension.create({
                                 newTr.doc,
                                 notePos + 1
                             ));
+
+                            // Add scroll to the transaction
+                            newTr.scrollIntoView();
                         }
                     }
                     
