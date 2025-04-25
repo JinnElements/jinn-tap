@@ -1,3 +1,10 @@
+## [1.12.3](https://github.com/JinnElements/jinn-tap/compare/v1.12.2...v1.12.3) (2025-04-25)
+
+
+### Bug Fixes
+
+* **footnotes:** scroll added note into view ([b50aa29](https://github.com/JinnElements/jinn-tap/commit/b50aa29b087ff249d6f36174ba8f08c7907e607c))
+
 ## [1.12.2](https://github.com/JinnElements/jinn-tap/compare/v1.12.1...v1.12.2) (2025-04-25)
 
 
