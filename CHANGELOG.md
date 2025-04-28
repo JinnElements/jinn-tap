@@ -1,3 +1,16 @@
+# [1.13.0](https://github.com/JinnElements/jinn-tap/compare/v1.12.3...v1.13.0) (2025-04-28)
+
+
+### Bug Fixes
+
+* **editor-styles:** do not show margin-top for first head in first div ([22dfbf6](https://github.com/JinnElements/jinn-tap/commit/22dfbf6d9007055b8af401dbfec3c761cad84aa1))
+* **NavigationPanel:** create node selection ([a1be550](https://github.com/JinnElements/jinn-tap/commit/a1be5502ba7efd600e7cbdb0a042f6bf9e72528e))
+
+
+### Features
+
+* support multi-user collaboration if configured ([dc4890b](https://github.com/JinnElements/jinn-tap/commit/dc4890b15d1261a6c1a4ff1b57d75e80d070d680))
+
 ## [1.12.3](https://github.com/JinnElements/jinn-tap/compare/v1.12.2...v1.12.3) (2025-04-25)
 
 
