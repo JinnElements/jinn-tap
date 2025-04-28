@@ -1,0 +1,123 @@
+jinn-tap {
+    display: grid;
+    grid-template-rows: min-content 1fr;
+    grid-template-columns: 1fr minmax(220px, 460px);
+    grid-template-areas:
+        "toolbar aside"
+        "editor aside";
+    column-gap: 1rem;
+    height: 100%;
+}
+
+jinn-tap > nav {
+    grid-area: toolbar;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: white;
+}
+
+jinn-tap .editor-area {
+    grid-area: editor;
+    min-height: 1rem;
+}
+
+jinn-tap .aside {
+    grid-area: aside;
+    background: white;
+    padding: 20px;
+    max-height: fit-content;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+jinn-tap .attribute-panel > div {
+    overflow-y: auto;
+}
+
+jinn-tap pb-authority-lookup {
+    overflow-y: auto;
+    height: 20rem;
+}
+
+jinn-tap .occurrences {
+    margin-top: 1rem;
+    overflow-y: auto;
+}
+
+jinn-tap .occurrences [role="group"] {
+    float: right;
+    width: fit-content;
+}
+
+jinn-tap .occurrences ul {
+    height: 20rem;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+}
+
+jinn-tap .occurrences li {
+    list-style: none;
+}
+
+jinn-tap .toolbar .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+jinn-tap .toolbar details i {
+    padding-right: 0.5rem;
+}
+
+jinn-tap .ProseMirror {
+    outline: none;
+    height: 100%;
+}
+
+/* Collaboration cursor styles */
+.collaboration-cursor__caret {
+    position: relative;
+    margin-left: 1px;
+    border-left: 1px solid;
+    border-right: 1px solid;
+    border-radius: 2px;
+}
+
+.collaboration-cursor__label {
+    position: absolute;
+    top: -1.5em;
+    left: -1px;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    user-select: none;
+    white-space: nowrap;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    pointer-events: none;
+    transform: translateX(-50%);
+    animation: fadeOut 1.5s forwards;
+    animation-delay: 0s;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.collaboration-cursor__caret:hover .collaboration-cursor__label {
+    animation: none;
+    opacity: 1;
+} 

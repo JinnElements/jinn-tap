@@ -1,6 +1,10 @@
 import { Editor } from '@tiptap/core';
 import History from '@tiptap/extension-history';
 import Placeholder from '@tiptap/extension-placeholder';
+import { Collaboration } from '@tiptap/extension-collaboration';
+import * as Y from 'yjs'
+import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
+import { HocuspocusProvider } from "@hocuspocus/provider";
 import { serializeToTEI } from './serialize.js';
 import { createFromSchema } from './extensions.js';
 import { FootnoteRules } from './footnote.js';
@@ -9,110 +13,10 @@ import { JinnTapCommands } from './commands.js';
 import { AttributePanel } from './attribute-panel.js';
 import { NavigationPanel } from './navigator.js';
 import { Toolbar } from './toolbar.js';
-import { colorCssFromSchema } from './colors.js';
+import { generateRandomColor } from './colors.js';
 import { fromXml } from './util.js';
 import schema from './schema.json';
-
-// Create a style element for the component's styles
-const style = document.createElement('style');
-style.textContent = `
-    jinn-tap {
-        display: grid;
-        grid-template-rows: min-content 1fr;
-        grid-template-columns: 1fr minmax(220px, 460px);
-        grid-template-areas:
-            "toolbar aside"
-            "editor aside";
-        column-gap: 1rem;
-        height: 100%;
-    }
-
-    jinn-tap > nav {
-        grid-area: toolbar;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        background-color: white;
-    }
-
-    jinn-tap .editor-area {
-        grid-area: editor;
-        min-height: 1rem;
-    }
-    
-    jinn-tap .aside {
-        grid-area: aside;
-        background: white;
-        padding: 20px;
-        max-height: fit-content;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-    }
-
-    jinn-tap .attribute-panel > div {
-        overflow-y: auto;
-    }
-
-    jinn-tap pb-authority-lookup {
-        overflow-y: auto;
-        height: 20rem;
-    }
-    
-    jinn-tap .occurrences {
-        margin-top: 1rem;
-        overflow-y: auto;
-    }
-
-    jinn-tap .occurrences [role="group"] {
-        float: right;
-        width: fit-content;
-    }
-    
-    jinn-tap .occurrences ul {
-        height: 20rem;
-        overflow-y: auto;
-        margin: 0;
-        padding: 0;
-    }
-
-    jinn-tap .occurrences li {
-        list-style: none;
-    }
-
-    jinn-tap .toolbar .disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        pointer-events: none;
-    }
-
-    jinn-tap .toolbar details i {
-        padding-right: 0.5rem;
-    }
-    
-    jinn-tap .ProseMirror {
-        outline: none;
-        height: 100%;
-    }
-
-    jinn-tap .ProseMirror p {
-        margin: 0;
-    }
-
-    .jinn-tap.overlay {
-        border: 5px dashed #EE402E;
-        border-radius: 5px;
-    }
-
-    ${colorCssFromSchema(schema)}
-`;
-
-// Add the style element to the document
-// Only add styles once
-if (!document.querySelector('#jinn-tap-styles')) {
-    style.id = 'jinn-tap-styles';
-    document.head.appendChild(style);
-}
+import './jinn-tap.css';
 
 /**
  * JinnTap - A TEI XML Editor Web Component
@@ -129,6 +33,13 @@ if (!document.querySelector('#jinn-tap-styles')) {
  *                         and used to configure the editor's capabilities. If not provided,
  *                         a default schema will be used.
  * @attr {string} notes - The wrapper element to use for notes. The default is 'listAnnotation'.
+ * @attr {string} collab-document - The name of the document to use for collaboration.
+ * @attr {string} collab-user - The name of the user to use for collaboration.
+ * @attr {string} collab-port - The port to use for collaboration if no collab-server is provided.
+ * The server address will be computed from the current page's hostname.
+ * @attr {string} collab-server - The websocket server to use for collaboration, including the port.
+ * The collab-port attribute is ignored if collab-server is provided.
+ * 
  * @attr {boolean} debug - When present, enables debug mode which adds a debug class
  *                         to the component for styling purposes.
  * 
@@ -161,6 +72,12 @@ export class JinnTap extends HTMLElement {
         this.toolbar = null;
         this.attributePanel = null;
         this.notesWrapper = 'listAnnotation';
+        this.collabEnabled = false;
+        this.collabPort = null;
+        this.collabServer = null;
+        this.collabDocument = 'New Document';
+        this.collabUser = null;
+        this.provider = null;
         this._schema = schema; // Default schema
     }
 
@@ -198,7 +115,7 @@ export class JinnTap extends HTMLElement {
         }
     }
 
-    async loadFromUrl(url) {
+    async loadFromUrl(url, setContent = true) {
         try {
             const response = await fetch(url);
             if (!response.ok) {
@@ -216,12 +133,10 @@ export class JinnTap extends HTMLElement {
                 throw new Error(`Unsupported content type: ${contentType}`);
             }
             
-            if (this.editor) {
+            if (setContent && this.editor) {
                 this.content = content;
-            } else {
-                // Store the content to be used when editor is initialized
-                this._pendingContent = content;
             }
+            return content;
         } catch (error) {
             console.error('Error loading content from URL:', error);
             this.dispatchEvent(new CustomEvent('error', {
@@ -234,10 +149,16 @@ export class JinnTap extends HTMLElement {
         if (this.hasAttribute('notesWrapper')) {
             this.notesWrapper = this.getAttribute('notes');
         }
+        this.collabPort = this.getAttribute('collab-port');
+        this.collabServer = this.getAttribute('collab-server');
+        this.collabDocument = this.getAttribute('collab-document');
+        if (this.collabPort || this.collabServer) {
+            this.collabEnabled = true;
+        }
         this.setupEditor();
     }
 
-    setupEditor() {
+    async setupEditor() {
         // Create a temporary container to parse the content
         const temp = document.createElement('div');
         temp.innerHTML = this.innerHTML;
@@ -259,11 +180,47 @@ export class JinnTap extends HTMLElement {
 
         // Fill in the slots and clean up the current content
         this.applySlots(temp);
-        const initialContent = temp.innerHTML.trim();
+        let initialContent = temp.innerHTML.trim();
+
+        // Check if URL attribute is present
+        const url = this.getAttribute('url');
+        // load initial content from URL if present
+        if (url) {
+            initialContent = await this.loadFromUrl(url, false);
+        }
+        // if no initial content, create a default document
+        if (!initialContent) {
+            initialContent = `
+                <tei-div>
+                    <tei-p></tei-p>
+                </tei-div>
+            `;
+        }
 
         // Initialize the editor
         const extensions = createFromSchema(this._schema);
-        this.editor = new Editor({
+        if (this.collabEnabled) {
+            let collabUrl = this.collabServer;
+            if (!collabUrl) {
+                // Compute the collaboration URL from the current page's hostname
+                const hostname = window.location.hostname;
+                collabUrl = `ws://${hostname}:${this.collabPort}`;
+            }
+            // configure Y.js document and provider if collaboration is enabled
+            this.doc = new Y.Doc();
+            this.provider = new HocuspocusProvider({
+                name: this.collabDocument,
+                url: collabUrl,
+                document: this.doc,
+                onSynced: () => {
+                    if (!this.doc.getMap('config').get('initialContentLoaded') && this.editor) {
+                        this.doc.getMap('config').set('initialContentLoaded', true);
+                        this.editor.chain().focus().setContent(initialContent).run();
+                    }
+                }
+            });
+        }
+        const editorConfig ={
             element: this.querySelector('.editor-area'),
             extensions: [
                 ...extensions,
@@ -272,24 +229,35 @@ export class JinnTap extends HTMLElement {
                 FootnoteRules.configure({
                     notesWrapper: this.notesWrapper
                 }),
-                History,
                 Placeholder.configure({
                     placeholder: 'Write something...',
                     includeChildren: true,
                 })
             ],
-            content: this._pendingContent || initialContent || `
-                <tei-div>
-                    <tei-p></tei-p>
-                </tei-div>
-            `,
-            autofocus: true,
+            autofocus: 'start',
             onCreate: () => {
                 this.dispatchContentChange();
                 this.dispatchEvent(new CustomEvent('ready'));
             },
             onUpdate: () => this.dispatchContentChange()
-        });
+        };
+        if (!this.collabEnabled) {
+            editorConfig.extensions.push(History);
+            editorConfig.content = initialContent;
+        } else {
+            editorConfig.extensions.push(Collaboration.configure({
+                provider: this.provider,
+                document: this.doc
+            }));
+            editorConfig.extensions.push(CollaborationCursor.configure({
+                provider: this.provider,
+                user: {
+                    name: this.collabUser,
+                    color: generateRandomColor()
+                }
+            }));
+        }
+        this.editor = new Editor(editorConfig);
         
         // Initialize attribute panel
         this.attributePanel = new AttributePanel(this, this._schema);
@@ -299,12 +267,6 @@ export class JinnTap extends HTMLElement {
         
         // Initialize toolbar
         this.toolbar = new Toolbar(this, this._schema);
-
-        // Check if URL attribute is present
-        const url = this.getAttribute('url');
-        if (url) {
-            this.loadFromUrl(url);
-        }
     }
 
     dispatchContentChange() {
