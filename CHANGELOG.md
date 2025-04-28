@@ -1,3 +1,10 @@
+## [1.13.5](https://github.com/JinnElements/jinn-tap/compare/v1.13.4...v1.13.5) (2025-04-28)
+
+
+### Bug Fixes
+
+* overlay not visible ([33c0c45](https://github.com/JinnElements/jinn-tap/commit/33c0c45b74fc685b199780fdc03c36a3d74d68c1))
+
 ## [1.13.4](https://github.com/JinnElements/jinn-tap/compare/v1.13.3...v1.13.4) (2025-04-28)
 
 
