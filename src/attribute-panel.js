@@ -133,7 +133,6 @@ export class AttributePanel {
         this.panel.innerHTML = '';
         
         if (!nodeOrMark) {
-            this.panel.innerHTML = '<p>Select text or a node to edit attributes</p>';
             return;
         }
 

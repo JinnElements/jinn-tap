@@ -15,6 +15,7 @@ import { NavigationPanel } from './navigator.js';
 import { Toolbar } from './toolbar.js';
 import { generateRandomColor } from './colors.js';
 import { fromXml } from './util.js';
+import { generateUsername } from "unique-username-generator";
 import schema from './schema.json';
 import './jinn-tap.css';
 
@@ -79,6 +80,7 @@ export class JinnTap extends HTMLElement {
         this.collabUser = null;
         this.provider = null;
         this._schema = schema; // Default schema
+        this._initialized = false;
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -88,7 +90,7 @@ export class JinnTap extends HTMLElement {
             } else {
                 this.classList.remove('debug');
             }
-        } else if (name === 'url' && newValue) {
+        } else if (name === 'url' && newValue && this._initialized) {
             this.loadFromUrl(newValue);
         } else if (name === 'schema' && newValue) {
             this.loadSchema(newValue);
@@ -139,8 +141,11 @@ export class JinnTap extends HTMLElement {
             return content;
         } catch (error) {
             console.error('Error loading content from URL:', error);
-            this.dispatchEvent(new CustomEvent('error', {
-                detail: { error: error.message }
+            document.dispatchEvent(new CustomEvent('jinn-toast', {
+                detail: {
+                    message: 'Error loading content from URL:',
+                    type: 'error'
+                }
             }));
         }
     }
@@ -152,10 +157,15 @@ export class JinnTap extends HTMLElement {
         this.collabPort = this.getAttribute('collab-port');
         this.collabServer = this.getAttribute('collab-server');
         this.collabDocument = this.getAttribute('collab-document');
+        this.collabUser = this.getAttribute('collab-user');
         if (this.collabPort || this.collabServer) {
             this.collabEnabled = true;
         }
+        if (!this.collabUser) {
+            this.collabUser = generateUsername("", 2);
+        }
         this.setupEditor();
+        this._initialized = true;
     }
 
     async setupEditor() {
@@ -217,7 +227,10 @@ export class JinnTap extends HTMLElement {
                         this.doc.getMap('config').set('initialContentLoaded', true);
                         this.editor.chain().focus().setContent(initialContent).run();
                     }
-                }
+                },
+                // onAwarenessChange: ({ states }) => {
+                //     console.log('onAwarenessChange: %o', states);
+                // }
             });
         }
         const editorConfig ={
