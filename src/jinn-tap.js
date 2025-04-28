@@ -13,9 +13,10 @@ import { JinnTapCommands } from './extensions/commands.js';
 import { AttributePanel } from './attribute-panel.js';
 import { NavigationPanel } from './navigator.js';
 import { Toolbar } from './toolbar.js';
-import { generateRandomColor } from './util/colors.js';
+import { generateRandomColor, colorCssFromSchema } from './util/colors.js';
 import { fromXml } from './util/xml.js';
 import { generateUsername } from "unique-username-generator";
+import xmlFormat from 'xml-formatter';
 import schema from './schema.json';
 import './jinn-tap.css';
 
@@ -164,7 +165,21 @@ export class JinnTap extends HTMLElement {
         if (!this.collabUser) {
             this.collabUser = generateUsername("", 2);
         }
+
+        // Generate CSS for schema colors
+        const colorCss = colorCssFromSchema(this._schema);
+        let style = document.getElementById('jinn-tap-color-css');
+        if (!style) {
+            style = document.createElement('style');
+            style.id = 'jinn-tap-color-css';
+            style.textContent = colorCss;
+            document.head.appendChild(style);
+        } else {
+            style.textContent = colorCss;
+        }
+
         this.setupEditor();
+
         this._initialized = true;
     }
 
@@ -181,6 +196,7 @@ export class JinnTap extends HTMLElement {
                 </ul>
             </nav>
             <div class="editor-area"></div>
+            <pre class="code-area" style="display: none;"></pre>
             <div class="aside">
                 <slot name="aside"></slot>
                 <nav class="navigation-panel" aria-label="breadcrumb"></nav>
@@ -207,8 +223,18 @@ export class JinnTap extends HTMLElement {
             `;
         }
 
+        this._codeArea = this.querySelector('.code-area');
+        this.addEventListener('content-change', (event) => {
+            try {
+                this._codeArea.textContent = xmlFormat(`<body>${event.detail.xml}</body>`, { collapseContent: true });
+            } catch (error) {
+                this._codeArea.textContent = event.detail.xml;
+            }
+        });
+
         // Initialize the editor
         const extensions = createFromSchema(this._schema);
+
         if (this.collabEnabled) {
             let collabUrl = this.collabServer;
             if (!collabUrl) {
@@ -226,6 +252,7 @@ export class JinnTap extends HTMLElement {
                     if (!this.doc.getMap('config').get('initialContentLoaded') && this.editor) {
                         this.doc.getMap('config').set('initialContentLoaded', true);
                         this.editor.chain().setContent(initialContent).setTextSelection(0).focus().run();
+                        this.dispatchContentChange();
                     }
                 },
                 // onAwarenessChange: ({ states }) => {

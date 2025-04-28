@@ -116,27 +116,6 @@ export class Toolbar {
             }
         });
 
-        // Add debug toggle button
-        const debugButton = document.createElement('a');
-        debugButton.href = '#';
-        debugButton.dataset.tooltip = 'Toggle debug mode';
-        debugButton.dataset.placement = 'bottom';
-        debugButton.className = 'outline toolbar-button';
-        debugButton.innerHTML = '<i class="bi bi-question-circle"></i>';
-        debugButton.title = 'Toggle debug mode';
-        debugButton.addEventListener('click', (ev) => {
-            ev.preventDefault();
-            const component = this.toolbar.closest('jinn-tap');
-            if (component.hasAttribute('debug')) {
-                component.removeAttribute('debug');
-            } else {
-                component.setAttribute('debug', '');
-            }
-        });
-        const li = document.createElement('li'); 
-        li.appendChild(debugButton);
-        this.toolbar.appendChild(li);
-
         // Update active state based on current selection
         this.editor.on('selectionUpdate', this.updateButtonStates.bind(this));
     }
@@ -175,6 +154,12 @@ export class Toolbar {
         }
 
         if (toolbarDef.command) {
+            switch (toolbarDef.command) {
+                case 'toggleSource':
+                    return checkOnly ? true : this.toggleSource();
+                case 'toggleDebug':
+                    return checkOnly ? true : this.toggleDebug();
+            }
             if (toolbarDef.args) {
                 chain = chain[toolbarDef.command](...toolbarDef.args);
             } else {
@@ -283,4 +268,28 @@ export class Toolbar {
 
         select.querySelector('ul').appendChild(li);
     }
-} 
+
+    toggleSource() {
+        const component = this.toolbar.closest('jinn-tap');
+        const editorArea = component.querySelector('.editor-area');
+        const codeArea = component.querySelector('.code-area');
+        if (codeArea.style.display === 'none') {
+            codeArea.style.display = 'block';
+            editorArea.style.display = 'none';
+        } else {
+            codeArea.style.display = 'none';
+            editorArea.style.display = 'block';
+        }
+        return true;
+    }
+
+    toggleDebug() {
+        const component = this.toolbar.closest('jinn-tap');
+        if (component.hasAttribute('debug')) {
+            component.removeAttribute('debug');
+        } else {
+            component.setAttribute('debug', '');
+        }
+        return true;
+    }
+}

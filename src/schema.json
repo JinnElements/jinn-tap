@@ -29,6 +29,16 @@
             "command": "insertFigure",
             "label": "<i class='bi bi-images'></i>",
             "select": "Blocks"
+        },
+        "Show/Hide Code": {
+            "command": "toggleSource",
+            "label": "<i class='bi bi-filetype-xml'></i>",
+            "order": 20
+        },
+        "Debug Mode": {
+            "command": "toggleDebug",
+            "label": "<i class='bi bi-question-circle'></i>",
+            "order": 20
         }
     },
     "selects": {
@@ -286,7 +296,8 @@
                 "Date": {
                     "attributes": {},
                     "label": "<i class='bi bi-calendar-event'></i>",
-                    "order": 12
+                    "order": 12,
+                    "select": "Textcritical"
                 }
             }
         },
@@ -571,6 +582,7 @@
                 "PageBreak": {
                     "attributes": { "n": "22" },
                     "label": "<i class='bi bi-file-earmark-break'></i>",
+                    "select": "Textcritical",
                     "order": 3
                 }
             }
@@ -585,6 +597,7 @@
                 "LineBreak": {
                     "attributes": {},
                     "label": "<i class='bi bi-arrow-return-left'></i>",
+                    "select": "Textcritical",
                     "order": 3
                 }
             }

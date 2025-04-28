@@ -17,7 +17,7 @@ jinn-tap > nav {
     background-color: var(--jinn-tap-background-color, white);
 }
 
-jinn-tap .editor-area {
+jinn-tap .editor-area, jinn-tap .code-area {
     grid-area: editor;
     min-height: 1rem;
 }
@@ -49,7 +49,8 @@ jinn-tap .attribute-panel fieldset label {
     padding-right: 1rem;
 }
 
-jinn-tap .attribute-panel fieldset input {
+jinn-tap .attribute-panel fieldset input,
+jinn-tap .attribute-panel fieldset select {
     display: block;
     margin: 0;
 }
