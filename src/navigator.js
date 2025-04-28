@@ -9,6 +9,9 @@ export class NavigationPanel {
     }
 
     setupEventListeners() {
+        this.editor.on('update', ({ editor }) => {
+            this.updatePanelForCurrentPosition(editor);
+        });
         this.editor.on('selectionUpdate', ({ editor }) => {
             this.updatePanelForCurrentPosition(editor);
         });
@@ -28,9 +31,9 @@ export class NavigationPanel {
         let marks;
         if (node) {
             // if it's a text node, collect all marks in the selection
-            if (node.isText) {
+            // if (node.isText) {
                 marks = marksInRange(editor, from, to);
-            }
+            // }
             // Traverse up the ancestor chain using resolve
             let depth = $pos.depth;
             
