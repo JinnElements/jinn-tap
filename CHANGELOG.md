@@ -1,3 +1,10 @@
+## [1.13.1](https://github.com/JinnElements/jinn-tap/compare/v1.13.0...v1.13.1) (2025-04-28)
+
+
+### Bug Fixes
+
+* prevent loading of remote document twice; assign random username ([1a9fe59](https://github.com/JinnElements/jinn-tap/commit/1a9fe59746da39e69bd1b4e2c0af77100ca184df))
+
 # [1.13.0](https://github.com/JinnElements/jinn-tap/compare/v1.12.3...v1.13.0) (2025-04-28)
 
 
