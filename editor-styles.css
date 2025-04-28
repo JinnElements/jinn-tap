@@ -1,4 +1,4 @@
-tei-div, tei-p, tei-item {
+tei-div, tei-p, tei-item, tei-head {
     display: block;
 }
 
@@ -6,10 +6,18 @@ tei-head {
     font-size: 2rem;
     font-weight: 700;
     line-height: 1.125;
+}
+
+tei-div > tei-head {
     margin-top: 3rem;
 }
 
+.tiptap > tei-div:first-child > tei-head:first-child {
+    margin-top: 0;
+}
+
 tei-div > tei-div > tei-head {
+  font-style: italic;
     font-size: 1.75rem;
     line-height: 1.15;
     margin-top: 2.625rem;
