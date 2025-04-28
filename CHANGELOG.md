@@ -1,3 +1,10 @@
+## [1.13.2](https://github.com/JinnElements/jinn-tap/compare/v1.13.1...v1.13.2) (2025-04-28)
+
+
+### Bug Fixes
+
+* **NavigationPanel:** correct selection of nodes if cursor is positioned at the very end ([365c54a](https://github.com/JinnElements/jinn-tap/commit/365c54aa67ae9415f3ecf3592731466ab65dda12))
+
 ## [1.13.1](https://github.com/JinnElements/jinn-tap/compare/v1.13.0...v1.13.1) (2025-04-28)
 
 
