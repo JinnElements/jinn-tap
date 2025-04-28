@@ -1,4 +1,4 @@
-import { marksInRange } from './util.js';
+import { marksInRange } from './util/util.js';
 
 export class NavigationPanel {
     constructor(editor, attributePanel) {

@@ -1,7 +1,7 @@
 import { Plugin, PluginKey, TextSelection } from "@tiptap/pm/state";
 import { Extension } from "@tiptap/core";
 import { ReplaceStep } from "@tiptap/pm/transform";
-import { TeiEmptyElement } from './empty.js';
+import { JinnEmptyElement } from './empty.js';
 
 // Function to generate a unique ID
 function generateUniqueId() {
@@ -162,7 +162,7 @@ function updateAnchorNodes(tr, doc) {
     return tr;
 }
 
-export const TeiAnchor = TeiEmptyElement.extend({
+export const JinnAnchor = JinnEmptyElement.extend({
     name: "anchor",
     group: "inline",
     content: "",  // Atomic nodes should not have content

@@ -1,7 +1,14 @@
 import { Mark } from '@tiptap/core';
 
-// Base inline mark for TEI
-export const TeiInline = Mark.create({
+/**
+ * Base inline mark
+ * 
+ * @param {Object} options - The options for the inline mark.
+ * @param {string} options.tag - The tag name for the inline mark (computed from the name).
+ * @param {Object} options.shortcuts - The shortcuts for the inline mark.
+ * @param {Object} options.attributes - The attributes for the inline mark.
+ */
+export const JinnInline = Mark.create({
     name: 'inline',
 
     addOptions() {

@@ -1,6 +1,6 @@
 import { Node, textblockTypeInputRule, wrappingInputRule } from '@tiptap/core';
 
-export const TeiBlock = Node.create({
+export const JinnBlock = Node.create({
     name: 'block',
     group: 'block',
     content: 'inline*',

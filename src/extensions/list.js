@@ -1,7 +1,7 @@
 import { findParentNodeClosestToPos } from '@tiptap/core';
-import { TeiBlock } from './block.js';
+import { JinnBlock } from './block.js';
 
-export const TeiList = TeiBlock.extend({
+export const JinnList = JinnBlock.extend({
     name: 'list',
     content: 'head? item+',
     group: 'block',
@@ -70,7 +70,7 @@ export const TeiList = TeiBlock.extend({
     }
 });
 
-export const TeiItem = TeiBlock.extend({
+export const JinnItem = JinnBlock.extend({
     name: 'item',
     content: 'p block*',
     group: 'item',

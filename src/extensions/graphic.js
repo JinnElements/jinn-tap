@@ -1,6 +1,6 @@
-import { TeiBlock } from "./block.js";
+import { JinnBlock } from "./block.js";
 
-export const TeiGraphic = TeiBlock.extend({
+export const JinnGraphic = JinnBlock.extend({
     name: 'graphic',
     content: '',
     selectable: true,

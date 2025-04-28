@@ -1,5 +1,5 @@
 import { JinnTap, JinnToast } from './index.js';
-import { fromXml } from './util.js';
+import { fromXml } from './util/xml.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const editor = document.querySelector('jinn-tap');

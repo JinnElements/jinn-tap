@@ -1,11 +1,11 @@
 import Document from '@tiptap/extension-document';
 import Text from '@tiptap/extension-text';
-import { TeiInline } from './inline.js';
-import { TeiBlock } from './block.js';
-import { TeiList, TeiItem } from './list.js';
-import { TeiEmptyElement } from './empty.js';
-import { TeiAnchor } from './footnote.js';
-import { TeiGraphic } from './graphic.js';
+import { JinnInline } from './inline.js';
+import { JinnBlock } from './block.js';
+import { JinnList, JinnItem } from './list.js';
+import { JinnEmptyElement } from './empty.js';
+import { JinnAnchor } from './footnote.js';
+import { JinnGraphic } from './graphic.js';
 /**
  * Create nodes and marks from a schema definition.
  * 
@@ -14,41 +14,41 @@ import { TeiGraphic } from './graphic.js';
  */
 export function createFromSchema(schemaDef) {
     const extensions = [
-        TeiDocument,
+        JinnDocument,
         Text,
     ];
     Object.entries(schemaDef.schema).forEach(([name, def]) => {
         let NodeOrMark;
         switch (def.type) {
             case 'inline':
-                NodeOrMark = TeiInline.extend({
+                NodeOrMark = JinnInline.extend({
                     name: name
                 });
                 break;
             case 'anchor':
-                NodeOrMark = TeiAnchor.extend({
+                NodeOrMark = JinnAnchor.extend({
                     name: name
                 });
                 break;
             case 'empty':
-                NodeOrMark = TeiEmptyElement.extend({
+                NodeOrMark = JinnEmptyElement.extend({
                     name: name
                 });
                 break;
             case 'list':
-                NodeOrMark = TeiList.extend({
+                NodeOrMark = JinnList.extend({
                     name: name,
                     content: def.content || 'item+'
                 });
                 break;
             case 'listItem':
-                NodeOrMark = TeiItem.extend({
+                NodeOrMark = JinnItem.extend({
                     name: name,
                     content: def.content || 'p block*'
                 });
                 break;
             case 'block':
-                NodeOrMark = TeiBlock.extend({
+                NodeOrMark = JinnBlock.extend({
                     name: name,
                     group: def.group || 'block',
                     defining: def.defining,
@@ -60,7 +60,7 @@ export function createFromSchema(schemaDef) {
                 });
                 break;
             case 'graphic':
-                NodeOrMark = TeiGraphic.extend({
+                NodeOrMark = JinnGraphic.extend({
                     name: name
                 });
                 break;
@@ -80,7 +80,7 @@ export function createFromSchema(schemaDef) {
     return extensions;
 }
 
-// Custom document extension that requires tei-div
-const TeiDocument = Document.extend({
+// Custom document extension
+const JinnDocument = Document.extend({
     content: 'block+ listAnnotation?'
 });

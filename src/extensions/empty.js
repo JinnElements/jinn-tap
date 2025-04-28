@@ -1,12 +1,26 @@
-import { TeiBlock } from './block.js';
+import { JinnBlock } from './block.js';
 
 function getAttributeString(attrs) {
     return Object.entries(attrs || {})
-        .map(([key, value]) => `${key}="${value}"`)
+        .map(([key, value]) => {
+            if (value !== null) {
+                return `${key}="${value}"`;
+            }
+            return '';
+        })
         .join(' ');
 }
 
-export const TeiEmptyElement = TeiBlock.extend({
+/**
+ * Empty element
+ * 
+ * @param {Object} options - The options for the empty element.
+ * @param {string} options.tag - The tag name for the empty element (computed from the name).
+ * @param {Object} options.shortcuts - The shortcuts for the empty element.
+ * @param {Object} options.attributes - The attributes for the empty element.
+ * @param {string} options.label - The label for the empty element.
+ */
+export const JinnEmptyElement = JinnBlock.extend({
     name: 'emptyElement',
     group: 'inline',
     content: '',

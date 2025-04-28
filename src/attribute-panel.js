@@ -1,7 +1,13 @@
-import { marksInRange, occurrences } from './util.js';
-import { kwicText } from './kwic.js';
-import { Mark, Node } from '@tiptap/pm/model';
+import { marksInRange, occurrences } from './util/util.js';
+import { kwicText } from './util/kwic.js';
+import { Mark } from '@tiptap/pm/model';
 
+/**
+ * Panel for editing the attributes of the current node or mark.
+ * 
+ * @param {Editor} editor - The editor instance.
+ * @param {Object} schemaDef - The schema definition.
+ */
 export class AttributePanel {
 
     constructor(editor, schemaDef) {
