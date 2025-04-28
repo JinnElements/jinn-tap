@@ -1,3 +1,10 @@
+## [1.13.6](https://github.com/JinnElements/jinn-tap/compare/v1.13.5...v1.13.6) (2025-04-28)
+
+
+### Bug Fixes
+
+* **AttributePanel:** more compact styling ([48b9f9b](https://github.com/JinnElements/jinn-tap/commit/48b9f9bc466f86429d525166edf5393a52089505))
+
 ## [1.13.5](https://github.com/JinnElements/jinn-tap/compare/v1.13.4...v1.13.5) (2025-04-28)
 
 
