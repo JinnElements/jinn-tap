@@ -1,3 +1,10 @@
+## [1.13.3](https://github.com/JinnElements/jinn-tap/compare/v1.13.2...v1.13.3) (2025-04-28)
+
+
+### Bug Fixes
+
+* initial selection in collab mode ([32cc89e](https://github.com/JinnElements/jinn-tap/commit/32cc89e0dea142ecbb3e0799f7dcedf2a889bacf))
+
 ## [1.13.2](https://github.com/JinnElements/jinn-tap/compare/v1.13.1...v1.13.2) (2025-04-28)
 
 
