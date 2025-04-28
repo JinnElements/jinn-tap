@@ -1,3 +1,10 @@
+## [1.13.4](https://github.com/JinnElements/jinn-tap/compare/v1.13.3...v1.13.4) (2025-04-28)
+
+
+### Bug Fixes
+
+* updating breadcrumbs and attributes ([07869c2](https://github.com/JinnElements/jinn-tap/commit/07869c26eec53696649656c6552b599bd6041f7b))
+
 ## [1.13.3](https://github.com/JinnElements/jinn-tap/compare/v1.13.2...v1.13.3) (2025-04-28)
 
 

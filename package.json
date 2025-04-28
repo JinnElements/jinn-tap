@@ -1,6 +1,6 @@
 {
   "name": "@jinntec/jinntap",
-  "version": "1.13.3",
+  "version": "1.13.4",
   "type": "module",
   "main": "./dist/index.es.js",
   "module": "./dist/index.es.js",
