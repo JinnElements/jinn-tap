@@ -96,6 +96,7 @@ export class AttributePanel {
     createAttributeInput(form, attrName, attrDef, currentValue, placeholder = '') {
         const label = document.createElement('label');
         label.textContent = attrName;
+        form.appendChild(label);
 
         let input;
         if (attrDef.enum) {
@@ -128,8 +129,7 @@ export class AttributePanel {
         input.value = currentValue || attrDef.default || '';
         input.name = attrName;
 
-        label.appendChild(input);
-        form.appendChild(label);
+        form.appendChild(input);
         return input;
     }
 
@@ -159,6 +159,9 @@ export class AttributePanel {
         const form = document.createElement('form');
         this.panel.appendChild(form);
 
+        const fieldset = document.createElement('fieldset');
+        form.appendChild(fieldset);
+
         // Merge global attributes with node-specific attributes
         const attributes = { ...this.schemaDef.attributes, ...def.attributes };
         
@@ -167,14 +170,16 @@ export class AttributePanel {
                 return;
             }
             if (attrDef.connector) {
-                const input = this.createAttributeInput(
-                    form,
-                    attrName, 
-                    attrDef, 
-                    nodeOrMark.attrs[attrName],
-                    "No reference assigned"
-                );
+                const label = document.createElement('label');
+                label.textContent = attrName;
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = nodeOrMark.attrs[attrName];
                 input.readOnly = true;
+                input.name = attrName;
+                input.placeholder = "No reference assigned";
+                form.appendChild(label);
+                form.appendChild(input);
 
                 const details = document.createElement('details');
                 details.open = !nodeOrMark.attrs[attrName];
@@ -218,7 +223,7 @@ export class AttributePanel {
                 }
             } else {
                 this.createAttributeInput(
-                    form,
+                    fieldset,
                     attrName, 
                     attrDef, 
                     nodeOrMark.attrs[attrName]
