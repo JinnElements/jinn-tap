@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/JinnElements/jinn-tap/compare/v1.13.6...v1.14.0) (2025-04-28)
+
+
+### Features
+
+* add toggle button to show/hide XML source ([263fc65](https://github.com/JinnElements/jinn-tap/commit/263fc65f285d747968e4444f6f65c52496619788))
+
 ## [1.13.6](https://github.com/JinnElements/jinn-tap/compare/v1.13.5...v1.13.6) (2025-04-28)
 
 
