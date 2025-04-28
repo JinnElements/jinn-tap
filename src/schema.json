@@ -46,6 +46,7 @@
             "type": "block",
             "defining": true,
             "content": "heading* block*",
+            "selectable": true,
             "attributes": {
                 "type": {
                     "type": "string"
@@ -143,6 +144,7 @@
         },
         "figure": {
             "type": "block",
+            "selectable": true,
             "content": "(graphic|figDesc)*"
         },
         "figDesc": {
@@ -333,11 +335,13 @@
             ]
         },
         "item": {
-            "type": "listItem"
+            "type": "listItem",
+            "selectable": true
         },
         "list": {
             "type": "list",
             "content": "heading* item+",
+            "selectable": true,
             "attributes": {
                 "rend": {
                     "type": "string",
@@ -378,6 +382,7 @@
         "opener": {
             "type": "block",
             "content": "block*",
+            "selectable": true,
             "toolbar": {
                 "Opener": {
                     "select": "Blocks",
@@ -411,6 +416,7 @@
         "closer": {
             "type": "block",
             "content": "block*",
+            "selectable": true,
             "toolbar": {
                 "Closer": {
                     "select": "Blocks",
@@ -446,6 +452,7 @@
             "content": "inline*",
             "defining": true,
             "isolating": true,
+            "selectable": true,
             "attributes": {
                 "target": {
                     "type": "string"

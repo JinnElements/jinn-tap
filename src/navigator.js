@@ -60,7 +60,7 @@ export class NavigationPanel {
                 // Set selection just before and after the node
                 this.editor.chain()
                     .focus()
-                    .setTextSelection({ from: nodeInfo.pos.from - 1, to: nodeInfo.pos.to + 1 })
+                    .setNodeSelection(nodeInfo.pos.from - 1)
                     .run();
                 this.attributePanel.showNodeAttributes(nodeInfo.node);
             });

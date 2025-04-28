@@ -28,7 +28,7 @@ export class AttributePanel {
         });
 
         // Listen for content changes
-        this.editor.on('update', ({ editor }) => {
+        this.editor.on('selectionUpdate', ({ editor }) => {
             this.updatePanelForCurrentPosition(editor);
         });
 

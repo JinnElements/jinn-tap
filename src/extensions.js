@@ -55,7 +55,8 @@ export function createFromSchema(schemaDef) {
                     isolating: def.isolating,
                     priority: def.priority,
                     inline: def.inline,
-                    content: def.content
+                    content: def.content,
+                    selectable: def.selectable
                 });
                 break;
             case 'graphic':
