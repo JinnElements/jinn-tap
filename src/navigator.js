@@ -18,7 +18,8 @@ export class NavigationPanel {
         this.panel.innerHTML = '';
 
         const { from, to } = editor.state.selection;
-        const node = editor.state.doc.nodeAt(from);
+        const $pos = editor.state.doc.resolve(from);
+        const node = $pos.node();
         
         // Create a list to store the node hierarchy
         const nodeHierarchy = [];
@@ -31,17 +32,15 @@ export class NavigationPanel {
                 marks = marksInRange(editor, from, to);
             }
             // Traverse up the ancestor chain using resolve
-            let pos = from;
-            let depth = editor.state.doc.resolve(pos).depth;
-            const resolvedPos = editor.state.doc.resolve(pos);
+            let depth = $pos.depth;
             
             while (depth > 0) {
-                const parent = resolvedPos.node(depth);
+                const parent = $pos.node(depth);
                 if (parent) {
                     const parentInfo = {
                         type: parent.type.name,
                         node: parent,
-                        pos: { from: resolvedPos.start(depth), to: resolvedPos.end(depth) }
+                        pos: { from: $pos.start(depth), to: $pos.end(depth) }
                     };
                     nodeHierarchy.push(parentInfo);
                 }
