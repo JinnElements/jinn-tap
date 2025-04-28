@@ -225,7 +225,7 @@ export class JinnTap extends HTMLElement {
                 onSynced: () => {
                     if (!this.doc.getMap('config').get('initialContentLoaded') && this.editor) {
                         this.doc.getMap('config').set('initialContentLoaded', true);
-                        this.editor.chain().focus().setContent(initialContent).run();
+                        this.editor.chain().setContent(initialContent).setTextSelection(0).focus().run();
                     }
                 },
                 // onAwarenessChange: ({ states }) => {
@@ -247,7 +247,7 @@ export class JinnTap extends HTMLElement {
                     includeChildren: true,
                 })
             ],
-            autofocus: 'start',
+            autofocus: false,
             onCreate: () => {
                 this.dispatchContentChange();
                 this.dispatchEvent(new CustomEvent('ready'));
@@ -256,7 +256,6 @@ export class JinnTap extends HTMLElement {
         };
         if (!this.collabEnabled) {
             editorConfig.extensions.push(History);
-            editorConfig.content = initialContent;
         } else {
             editorConfig.extensions.push(Collaboration.configure({
                 provider: this.provider,
@@ -280,6 +279,10 @@ export class JinnTap extends HTMLElement {
         
         // Initialize toolbar
         this.toolbar = new Toolbar(this, this._schema);
+
+        if (!this.collabEnabled) {
+            this.content = initialContent;
+        }
     }
 
     dispatchContentChange() {
