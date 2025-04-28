@@ -14,7 +14,7 @@ jinn-tap > nav {
     position: sticky;
     top: 0;
     z-index: 100;
-    background-color: white;
+    background-color: var(--jinn-tap-background-color, white);
 }
 
 jinn-tap .editor-area {
@@ -24,7 +24,7 @@ jinn-tap .editor-area {
 
 jinn-tap .aside {
     grid-area: aside;
-    background: white;
+    background: var(--jinn-tap-background-color, white);
     padding: 20px;
     max-height: fit-content;
     position: sticky;
@@ -120,4 +120,8 @@ jinn-tap .ProseMirror {
 .collaboration-cursor__caret:hover .collaboration-cursor__label {
     animation: none;
     opacity: 1;
-} 
+}
+
+.jinn-tap.overlay {
+    border: 2px dotted var(--jinn-tap-overlay-color, rgb(255, 123, 0));
+}

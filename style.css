@@ -4,6 +4,7 @@
     padding: 1rem 0 1rem 0;
     min-height: 100vh;
     position: relative;
+    --jinn-tap-overlay-color: var(--pico-mark-background-color);
 }
 
 .logo {
