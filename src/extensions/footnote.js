@@ -298,6 +298,11 @@ export const FootnoteRules = Extension.create({
             new Plugin({
                 key: new PluginKey("footnoteRules"),
                 appendTransaction(transactions, oldState, newState) {
+                    const isRemoteTransaction = transactions.every(tr => tr.meta['y-sync$'] !== undefined);
+                    if (isRemoteTransaction) {
+                        return null;
+                    }
+
                     let newTr = newState.tr;
                     let anchorId = null; // Store the ID of the newly inserted anchor
                     let referencesNeedUpdate = false; // Track if references need to be updated
