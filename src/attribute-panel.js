@@ -35,7 +35,10 @@ export class AttributePanel {
 
         // Listen for content changes
         this.editor.on('transaction', ({editor, transaction}) => {
-            if (transaction.docChanged && !transaction.meta['y-sync$']) {
+            // Skip remote transactions (from Yjs) to avoid unnecessary panel updates
+            // when other users move their cursors or make changes
+            const isRemoteTransaction = transaction.meta['y-sync$'] !== undefined;
+            if (transaction.docChanged && !isRemoteTransaction) {
                 this.updatePanelForCurrentPosition(editor);
             }
         });
