@@ -1,3 +1,12 @@
+## [1.14.1](https://github.com/JinnElements/jinn-tap/compare/v1.14.0...v1.14.1) (2025-04-29)
+
+
+### Bug Fixes
+
+* **collaboration:** navigator and attribute panel should not react to y-sync transactions ([5499600](https://github.com/JinnElements/jinn-tap/commit/54996009d152c73c8dfe2963812e9b3f20f6f375))
+* emit content-change event only if document actually changed ([cc3557b](https://github.com/JinnElements/jinn-tap/commit/cc3557b2740002a889070db5f480df1c4d229002))
+* make the distinction between local and remote transaction more robust ([6b1f287](https://github.com/JinnElements/jinn-tap/commit/6b1f28716ff7a310bbd25cb0f5c5d2a7f097835b))
+
 # [1.14.0](https://github.com/JinnElements/jinn-tap/compare/v1.13.6...v1.14.0) (2025-04-28)
 
 
