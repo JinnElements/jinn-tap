@@ -9,8 +9,10 @@ export class NavigationPanel {
     }
 
     setupEventListeners() {
-        this.editor.on('update', ({ editor }) => {
-            this.updatePanelForCurrentPosition(editor);
+        this.editor.on('transaction', ({ editor, transaction }) => {
+            if (transaction.docChanged && !transaction.meta['y-sync$']) {
+                this.updatePanelForCurrentPosition(editor);
+            }
         });
         this.editor.on('selectionUpdate', ({ editor }) => {
             this.updatePanelForCurrentPosition(editor);

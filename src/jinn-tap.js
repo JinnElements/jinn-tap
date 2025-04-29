@@ -279,7 +279,7 @@ export class JinnTap extends HTMLElement {
                 this.dispatchContentChange();
                 this.dispatchEvent(new CustomEvent('ready'));
             },
-            onUpdate: () => this.dispatchContentChange()
+            onTransaction: () => this.dispatchContentChange()
         };
         if (!this.collabEnabled) {
             editorConfig.extensions.push(History);
@@ -315,7 +315,6 @@ export class JinnTap extends HTMLElement {
     dispatchContentChange() {
         this.dispatchEvent(new CustomEvent('content-change', {
             detail: {
-                content: this.editor.getText(),
                 xml: serializeToTEI(this.editor)
             }
         }));
