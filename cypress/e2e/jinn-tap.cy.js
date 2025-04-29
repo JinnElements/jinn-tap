@@ -140,10 +140,10 @@ describe('JinnTap Component', () => {
                         cy.get('jinn-tap .toolbar-button[data-tooltip="Bold"]').click()
                         cy.wait(500)
                         cy.get('@contentChangeSpy')
-                        .should('have.been.calledTwice')
+                        .should('have.been.calledThrice')
                         .then((spy) => {
                             // Get the event detail from the second call
-                            const eventDetail = spy.getCall(1).args[0].detail
+                            const eventDetail = spy.getCall(2).args[0].detail
 
                             // Log the XML after formatting
                             cy.log('XML after formatting:', eventDetail.xml)
