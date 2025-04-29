@@ -276,10 +276,13 @@ export class JinnTap extends HTMLElement {
             ],
             autofocus: false,
             onCreate: () => {
-                this.dispatchContentChange();
                 this.dispatchEvent(new CustomEvent('ready'));
             },
-            onTransaction: () => this.dispatchContentChange()
+            onTransaction: ({editor, transaction}) => {
+                if (transaction.docChanged) {
+                    this.dispatchContentChange();
+                }
+            }
         };
         if (!this.collabEnabled) {
             editorConfig.extensions.push(History);
