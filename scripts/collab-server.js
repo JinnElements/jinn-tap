@@ -4,6 +4,7 @@ import jsonwebtoken from 'jsonwebtoken';
 
 // JWT secret key - in production, this should be stored in environment variables
 const JWT_SECRET = process.env.JWT_SECRET ||'your-secret-key';
+const ALLOWED_GROUP = process.env.ALLOWED_GROUP || 'tei';
 
 const server = new Hocuspocus({
   name: "hocuspocus-jinntap",
@@ -19,10 +20,12 @@ const server = new Hocuspocus({
         throw new Error('No token provided');
       }
       
-      console.log('token', token);
       // Verify the JWT token
       const decoded = jsonwebtoken.decode(token, JWT_SECRET);
-      console.log('decoded', decoded);
+      if (!decoded.groups.includes(ALLOWED_GROUP)) {
+        throw new Error('User does not have access to this service');
+      }
+
       // You can add additional checks here, like checking if the user has access to the document
       return {
         user: decoded.user

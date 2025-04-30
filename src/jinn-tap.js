@@ -258,7 +258,7 @@ export class JinnTap extends HTMLElement {
                 token: this.collaboration.token,
                 url: this.collaboration.url,
                 document: this.doc,
-                onConnect: () => {
+                onAuthenticated: () => {
                     document.dispatchEvent(new CustomEvent('jinn-toast', {
                         detail: {
                             message: 'Connected to collaboration server',
@@ -272,6 +272,14 @@ export class JinnTap extends HTMLElement {
                         this.editor.chain().setContent(initialContent).setTextSelection(0).focus().run();
                         this.dispatchContentChange();
                     }
+                },
+                onAuthenticationFailed: () => {
+                    document.dispatchEvent(new CustomEvent('jinn-toast', {
+                        detail: {
+                            message: 'Authentication failed. Please log in.',
+                            type: 'error'
+                        }
+                    }));
                 },
                 // onAwarenessChange: ({ states }) => {
                 //     console.log('onAwarenessChange: %o', states);
