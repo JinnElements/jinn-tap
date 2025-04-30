@@ -67,6 +67,7 @@
     "@semantic-release/npm": "^10.0.4",
     "chai-xml": "^0.4.1",
     "cypress": "^14.2.1",
+    "jsonwebtoken": "^9.0.2",
     "semantic-release": "^22.0.8",
     "vite": "^5.1.0"
   },

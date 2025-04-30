@@ -170,7 +170,7 @@ export class Toolbar {
         } else if (def.type === 'list') {
             chain = chain.toggleList(toolbarDef.attributes);
         } else if (def.type === 'anchor') {
-            chain = chain.addAnchor(toolbarDef.attributes);
+            chain = checkOnly ? true : chain.addAnchor(toolbarDef.attributes);
         } else if (def.type === 'empty' || def.type === 'graphic') {
             chain = chain.insertContent({
                 type: name,

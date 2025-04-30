@@ -74,11 +74,7 @@ export class JinnTap extends HTMLElement {
         this.toolbar = null;
         this.attributePanel = null;
         this.notesWrapper = 'listAnnotation';
-        this.collabEnabled = false;
-        this.collabPort = null;
-        this.collabServer = null;
-        this.collabDocument = 'New Document';
-        this.collabUser = null;
+        this.collaboration = null;
         this.provider = null;
         this._schema = schema; // Default schema
         this._initialized = false;
@@ -144,7 +140,7 @@ export class JinnTap extends HTMLElement {
             console.error('Error loading content from URL:', error);
             document.dispatchEvent(new CustomEvent('jinn-toast', {
                 detail: {
-                    message: 'Error loading content from URL:',
+                    message: `Error loading content from URL: ${error.message}`,
                     type: 'error'
                 }
             }));
@@ -155,15 +151,34 @@ export class JinnTap extends HTMLElement {
         if (this.hasAttribute('notesWrapper')) {
             this.notesWrapper = this.getAttribute('notes');
         }
-        this.collabPort = this.getAttribute('collab-port');
-        this.collabServer = this.getAttribute('collab-server');
-        this.collabDocument = this.getAttribute('collab-document');
-        this.collabUser = this.getAttribute('collab-user');
-        if (this.collabPort || this.collabServer) {
-            this.collabEnabled = true;
-        }
-        if (!this.collabUser) {
-            this.collabUser = generateUsername("", 2);
+
+        const collabPort = this.getAttribute('port') || null;
+        const collabServer = this.getAttribute('server') || null;
+        const collabToken = this.getAttribute('token') || null;
+        const collabName = this.getAttribute('name') || null;
+        if (collabPort || collabServer) {
+            if (!(collabToken && collabName)) {
+                console.error('collab-token is required when collab-port or collab-server is provided');
+                document.dispatchEvent(new CustomEvent('jinn-toast', {
+                    detail: {
+                        message: 'collab-token is required when collab-port or collab-server is provided',
+                        type: 'error'
+                    }
+                }));
+            } else {
+                this.collaboration = {
+                    token: collabToken,
+                    user: this.getAttribute('user') || generateUsername("", 2),
+                    name: collabName
+                };
+                let collabUrl = collabServer;
+                if (!collabUrl) {
+                    // Compute the collaboration URL from the current page's hostname
+                    const hostname = window.location.hostname;
+                    collabUrl = `ws://${hostname}:${collabPort}`;
+                }
+                this.collaboration.url = collabUrl;
+            }
         }
 
         // Generate CSS for schema colors
@@ -235,19 +250,22 @@ export class JinnTap extends HTMLElement {
         // Initialize the editor
         const extensions = createFromSchema(this._schema);
 
-        if (this.collabEnabled) {
-            let collabUrl = this.collabServer;
-            if (!collabUrl) {
-                // Compute the collaboration URL from the current page's hostname
-                const hostname = window.location.hostname;
-                collabUrl = `ws://${hostname}:${this.collabPort}`;
-            }
+        if (this.collaboration) {
             // configure Y.js document and provider if collaboration is enabled
             this.doc = new Y.Doc();
             this.provider = new HocuspocusProvider({
-                name: this.collabDocument,
-                url: collabUrl,
+                name: this.collaboration.name,
+                token: this.collaboration.token,
+                url: this.collaboration.url,
                 document: this.doc,
+                onConnect: () => {
+                    document.dispatchEvent(new CustomEvent('jinn-toast', {
+                        detail: {
+                            message: 'Connected to collaboration server',
+                            type: 'info'
+                        }
+                    }));
+                },
                 onSynced: () => {
                     if (!this.doc.getMap('config').get('initialContentLoaded') && this.editor) {
                         this.doc.getMap('config').set('initialContentLoaded', true);
@@ -267,7 +285,8 @@ export class JinnTap extends HTMLElement {
                 InputRules,
                 JinnTapCommands,
                 FootnoteRules.configure({
-                    notesWrapper: this.notesWrapper
+                    notesWrapper: this.notesWrapper,
+                    notesWithoutAnchor: false
                 }),
                 Placeholder.configure({
                     placeholder: 'Write something...',
@@ -284,7 +303,7 @@ export class JinnTap extends HTMLElement {
                 }
             }
         };
-        if (!this.collabEnabled) {
+        if (!this.collaboration) {
             editorConfig.extensions.push(History);
         } else {
             editorConfig.extensions.push(Collaboration.configure({
@@ -294,7 +313,7 @@ export class JinnTap extends HTMLElement {
             editorConfig.extensions.push(CollaborationCursor.configure({
                 provider: this.provider,
                 user: {
-                    name: this.collabUser,
+                    name: this.collaboration.user,
                     color: generateRandomColor()
                 }
             }));
@@ -310,7 +329,7 @@ export class JinnTap extends HTMLElement {
         // Initialize toolbar
         this.toolbar = new Toolbar(this, this._schema);
 
-        if (!this.collabEnabled) {
+        if (!this.collaboration) {
             this.content = initialContent;
         }
     }
