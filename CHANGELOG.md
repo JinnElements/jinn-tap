@@ -1,3 +1,15 @@
+# [1.15.0](https://github.com/JinnElements/jinn-tap/compare/v1.14.1...v1.15.0) (2025-04-30)
+
+
+### Bug Fixes
+
+* **collaboration:** adding footnotes failed ([354b851](https://github.com/JinnElements/jinn-tap/commit/354b85166deade012081e09731d9d131a479950a))
+
+
+### Features
+
+* **collaboration:** prepare jwt token auth ([8c9b8cb](https://github.com/JinnElements/jinn-tap/commit/8c9b8cbf777e985118d82135b1f96a1647a465bc))
+
 ## [1.14.1](https://github.com/JinnElements/jinn-tap/compare/v1.14.0...v1.14.1) (2025-04-29)
 
 
