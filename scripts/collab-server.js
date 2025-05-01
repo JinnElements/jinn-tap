@@ -4,11 +4,12 @@ import jsonwebtoken from 'jsonwebtoken';
 
 // JWT secret key - in production, this should be stored in environment variables
 const JWT_SECRET = process.env.JWT_SECRET ||'your-secret-key';
+const PORT = process.env.PORT || 8082;
 const ALLOWED_GROUP = process.env.ALLOWED_GROUP || 'tei';
 
 const server = new Hocuspocus({
   name: "hocuspocus-jinntap",
-  port: 8082,
+  port: PORT,
   timeout: 30000,
   debounce: 5000,
   maxDebounce: 30000,
