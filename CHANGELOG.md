@@ -1,3 +1,15 @@
+# [1.16.0](https://github.com/JinnElements/jinn-tap/compare/v1.15.0...v1.16.0) (2025-05-01)
+
+
+### Bug Fixes
+
+* **collaboration:** allow nickname to be changed ([c77f2a0](https://github.com/JinnElements/jinn-tap/commit/c77f2a0694235a0dae3b974b4656625bbc3e96e3))
+
+
+### Features
+
+* **collab-server:** check for allowed group ([41aa6b1](https://github.com/JinnElements/jinn-tap/commit/41aa6b1d86dbea120a00e578d7d111affe0961ad))
+
 # [1.15.0](https://github.com/JinnElements/jinn-tap/compare/v1.14.1...v1.15.0) (2025-04-30)
 
 
