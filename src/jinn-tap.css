@@ -17,6 +17,10 @@ jinn-tap > nav {
     background-color: var(--jinn-tap-background-color, white);
 }
 
+jinn-tap .user-info {
+    font-size: 0.75rem;
+}
+
 jinn-tap .editor-area, jinn-tap .code-area {
     grid-area: editor;
     min-height: 1rem;

@@ -1,8 +1,8 @@
 export class JinnToast extends HTMLElement {
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
         this.duration = 3000; // Default duration in milliseconds
+        this.stickyDuration = 30000; // Default sticky duration in milliseconds
     }
 
     static get observedAttributes() {
@@ -21,27 +21,19 @@ export class JinnToast extends HTMLElement {
     }
 
     render() {
-        this.shadowRoot.innerHTML = `
+        this.innerHTML = `
             <style>
-                :host {
-                    display: block;
-                    position: fixed;
-                    bottom: 0;
-                    right: 0;
-                    z-index: var(--jinn-toast-z-index, 1000);
-                    pointer-events: none;
-                }
-
-                .toast-container {
+                jinn-toast .container {
                     position: fixed;
                     bottom: 20px;
                     right: 20px;
                     display: flex;
                     flex-direction: column;
                     align-items: flex-end;
+                    z-index: var(--jinn-toast-z-index, 1000);
                 }
 
-                .toast {
+                jinn-toast .toast {
                     padding: 12px 24px;
                     margin: 8px 0;
                     border-radius: 4px;
@@ -49,57 +41,121 @@ export class JinnToast extends HTMLElement {
                     opacity: 0;
                     transform: translateY(20px);
                     transition: opacity 0.3s, transform 0.3s;
-                    max-width: var(--jinn-toast-max-width, 300px);
+                    max-width: var(--jinn-toast-max-width, 30vw);
                     word-wrap: break-word;
                     pointer-events: none;
+                    position: relative;
                 }
 
-                .toast.show {
+                jinn-toast .toast p {
+                    color: var(--jinn-toast-color, #F0F0F0);
+                }
+
+                jinn-toast .toast input {
+                    width: min-content;
+                }
+
+                jinn-toast .toast.sticky {
+                    pointer-events: auto;
+                }
+
+                jinn-toast .close-button {
+                    position: absolute;
+                    top: 4px;
+                    right: 4px;
+                    background: none;
+                    border: none;
+                    color: inherit;
+                    cursor: pointer;
+                    font-size: 16px;
+                    line-height: 1;
+                    padding: 4px;
+                    opacity: 0.7;
+                    transition: opacity 0.2s;
+                }
+
+                jinn-toast .close-button:hover {
+                    opacity: 1;
+                }
+
+                jinn-toast .toast.show {
                     opacity: 1;
                     transform: translateY(0);
                 }
 
-                .toast.error {
+                jinn-toast .toast.error {
                     background-color: var(--jinn-toast-error-color, #EE402E);
                 }
 
-                .toast.warn {
+                jinn-toast .toast.warn {
                     background-color: var(--jinn-toast-warn-color, #FF9500);
                     color: #000;
                 }
 
-                .toast.info {
+                jinn-toast .toast.info {
                     background-color: var(--jinn-toast-info-color, #33790F);
                 }
             </style>
-            <div class="toast-container"></div>
+            <div class="container"></div>
         `;
     }
 
     setupEventListeners() {
         document.addEventListener('jinn-toast', (event) => {
-            this.showToast(event.detail.message, event.detail.type || 'info');
+            this.showToast(event.detail.message, event.detail.type || 'info', event.detail.sticky || false);
         });
     }
 
-    showToast(message, type) {
+    showToast(message, type, sticky = false) {
         const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.textContent = message;
+        toast.className = `toast ${type} ${sticky ? 'sticky' : ''}`;
+        
+        const closeToast = () => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                container.removeChild(toast);
+            }, 300);
+        };
 
-        const container = this.shadowRoot.querySelector('.toast-container');
+        if (typeof message === 'string') {
+            toast.innerHTML = message;
+        } else if (message instanceof Node) {
+            toast.appendChild(message);
+        } else if (typeof message === 'function') {
+            const content = message(closeToast);
+            if (content instanceof Node) {
+                toast.appendChild(content);
+            } else {
+                console.warn('Function message did not return a valid Node.');
+                return;
+            }
+        } else {
+            console.warn('Invalid message type for toast. Expected string, Node, or function.');
+            return;
+        }
+
+        if (sticky) {
+            const closeButton = document.createElement('button');
+            closeButton.className = 'close-button';
+            closeButton.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                </svg>
+            `;
+            closeButton.addEventListener('click', closeToast);
+            toast.appendChild(closeButton);
+        }
+
+        const container = this.querySelector('.container');
         container.appendChild(toast);
 
         // Trigger reflow to enable animation
         toast.offsetHeight;
         toast.classList.add('show');
 
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => {
-                container.removeChild(toast);
-            }, 300); // Wait for fade out animation
-        }, this.duration);
+        if (!sticky) {
+            setTimeout(closeToast, this.duration);
+        }
     }
 }
 

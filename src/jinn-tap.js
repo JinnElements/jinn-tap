@@ -168,7 +168,7 @@ export class JinnTap extends HTMLElement {
             } else {
                 this.collaboration = {
                     token: collabToken,
-                    user: this.getAttribute('user') || generateUsername("", 2),
+                    user: this.getAttribute('user') || generateUsername("-", 2, 16),
                     name: collabName
                 };
                 let collabUrl = collabServer;
@@ -213,6 +213,7 @@ export class JinnTap extends HTMLElement {
             <div class="editor-area"></div>
             <pre class="code-area" style="display: none;"></pre>
             <div class="aside">
+                <div class="user-info"></div>
                 <slot name="aside"></slot>
                 <nav class="navigation-panel" aria-label="breadcrumb"></nav>
                 <div class="attribute-panel"></div>
@@ -258,14 +259,7 @@ export class JinnTap extends HTMLElement {
                 token: this.collaboration.token,
                 url: this.collaboration.url,
                 document: this.doc,
-                onAuthenticated: () => {
-                    document.dispatchEvent(new CustomEvent('jinn-toast', {
-                        detail: {
-                            message: 'Connected to collaboration server',
-                            type: 'info'
-                        }
-                    }));
-                },
+                onAuthenticated: this.onAuthenticated.bind(this),
                 onSynced: () => {
                     if (!this.doc.getMap('config').get('initialContentLoaded') && this.editor) {
                         this.doc.getMap('config').set('initialContentLoaded', true);
@@ -396,6 +390,47 @@ export class JinnTap extends HTMLElement {
         // Remove all slot elements after processing
         slotElements.forEach(slot => slot.remove());
         return content;
+    }
+
+    onAuthenticated() {
+        const content = (close) => {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <p>Choose a nickname below.</p>
+                <fieldset role="group">
+                    <input type="text" id="collab-user" placeholder="Nickname" value="${this.collaboration.user}">
+                    <button>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+                        </svg>
+                    </button>
+                </fieldset>
+            `;
+            const button = div.querySelector('button');
+            button.addEventListener('click', () => {
+                const newUser = div.querySelector('#collab-user').value;
+                this.collaboration.user = newUser;
+                this.editor.commands.updateUser({
+                    name: newUser,
+                    color: generateRandomColor()
+                });
+                this.updateUserInfo();
+                close();
+            });
+            return div;
+        };
+        this.updateUserInfo();
+        document.dispatchEvent(new CustomEvent('jinn-toast', {
+            detail: {
+                message: content,
+                type: 'info',
+                sticky: true
+            }
+        }));
+    }
+
+    updateUserInfo() {
+        this.querySelector('.user-info').textContent = `Connected as ${this.collaboration.user}`;
     }
 }
 
