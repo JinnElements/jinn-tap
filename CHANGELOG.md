@@ -1,3 +1,10 @@
+## [1.16.1](https://github.com/JinnElements/jinn-tap/compare/v1.16.0...v1.16.1) (2025-05-02)
+
+
+### Bug Fixes
+
+* **jinn-toast:** CSS classname conflict ([9e2291d](https://github.com/JinnElements/jinn-tap/commit/9e2291d2b15b22cb0158568fa82c4ed353540af4))
+
 # [1.16.0](https://github.com/JinnElements/jinn-tap/compare/v1.15.0...v1.16.0) (2025-05-01)
 
 
