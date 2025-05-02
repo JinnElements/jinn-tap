@@ -1,3 +1,10 @@
+## [1.16.2](https://github.com/JinnElements/jinn-tap/compare/v1.16.1...v1.16.2) (2025-05-02)
+
+
+### Bug Fixes
+
+* **schema:** allow head in figure ([c6df156](https://github.com/JinnElements/jinn-tap/commit/c6df156cbb1afe44bd8744364bfcec187dd753ba))
+
 ## [1.16.1](https://github.com/JinnElements/jinn-tap/compare/v1.16.0...v1.16.1) (2025-05-02)
 
 
