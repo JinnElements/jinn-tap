@@ -23,7 +23,7 @@ export class JinnToast extends HTMLElement {
     render() {
         this.innerHTML = `
             <style>
-                jinn-toast .container {
+                jinn-toast .jinn-toast-container {
                     position: fixed;
                     bottom: 20px;
                     right: 20px;
@@ -33,7 +33,7 @@ export class JinnToast extends HTMLElement {
                     z-index: var(--jinn-toast-z-index, 1000);
                 }
 
-                jinn-toast .toast {
+                jinn-toast .jinn-toast {
                     padding: 12px 24px;
                     margin: 8px 0;
                     border-radius: 4px;
@@ -47,15 +47,15 @@ export class JinnToast extends HTMLElement {
                     position: relative;
                 }
 
-                jinn-toast .toast p {
+                jinn-toast .jinn-toast p {
                     color: var(--jinn-toast-color, #F0F0F0);
                 }
 
-                jinn-toast .toast input {
+                jinn-toast .jinn-toast input {
                     width: min-content;
                 }
 
-                jinn-toast .toast.sticky {
+                jinn-toast .jinn-toast.sticky {
                     pointer-events: auto;
                 }
 
@@ -78,25 +78,25 @@ export class JinnToast extends HTMLElement {
                     opacity: 1;
                 }
 
-                jinn-toast .toast.show {
+                jinn-toast .jinn-toast.show {
                     opacity: 1;
                     transform: translateY(0);
                 }
 
-                jinn-toast .toast.error {
+                jinn-toast .jinn-toast.error {
                     background-color: var(--jinn-toast-error-color, #EE402E);
                 }
 
-                jinn-toast .toast.warn {
+                jinn-toast .jinn-toast.warn {
                     background-color: var(--jinn-toast-warn-color, #FF9500);
                     color: #000;
                 }
 
-                jinn-toast .toast.info {
+                jinn-toast .jinn-toast.info {
                     background-color: var(--jinn-toast-info-color, #33790F);
                 }
             </style>
-            <div class="container"></div>
+            <div class="jinn-toast-container"></div>
         `;
     }
 
@@ -108,7 +108,7 @@ export class JinnToast extends HTMLElement {
 
     showToast(message, type, sticky = false) {
         const toast = document.createElement('div');
-        toast.className = `toast ${type} ${sticky ? 'sticky' : ''}`;
+        toast.className = `jinn-toast ${type} ${sticky ? 'sticky' : ''}`;
         
         const closeToast = () => {
             toast.classList.remove('show');
@@ -146,7 +146,7 @@ export class JinnToast extends HTMLElement {
             toast.appendChild(closeButton);
         }
 
-        const container = this.querySelector('.container');
+        const container = this.querySelector('.jinn-toast-container');
         container.appendChild(toast);
 
         // Trigger reflow to enable animation
