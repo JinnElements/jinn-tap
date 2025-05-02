@@ -155,7 +155,7 @@
         "figure": {
             "type": "block",
             "selectable": true,
-            "content": "(graphic|figDesc)*"
+            "content": "(graphic|figDesc|head)*"
         },
         "figDesc": {
             "type": "block",
@@ -451,7 +451,7 @@
             "type": "list",
             "group": "",
             "defining": true,
-            "content": "note+",
+            "content": "note*",
             "keyboard": {
                 "Mod-Shift-u": {
                     "attributes": {}
