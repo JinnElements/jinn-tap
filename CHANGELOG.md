@@ -1,3 +1,10 @@
+# [1.18.0](https://github.com/JinnElements/jinn-tap/compare/v1.17.0...v1.18.0) (2025-05-03)
+
+
+### Features
+
+* **footnotes:** support n attribute for note reference ([2886589](https://github.com/JinnElements/jinn-tap/commit/2886589eec1a00239e8f56ac8f64aa41225e902c))
+
 # [1.17.0](https://github.com/JinnElements/jinn-tap/compare/v1.16.2...v1.17.0) (2025-05-03)
 
 
