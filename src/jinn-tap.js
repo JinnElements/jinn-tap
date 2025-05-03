@@ -35,12 +35,10 @@ import './jinn-tap.css';
  *                         and used to configure the editor's capabilities. If not provided,
  *                         a default schema will be used.
  * @attr {string} notes - The wrapper element to use for notes. The default is 'listAnnotation'.
- * @attr {string} collab-document - The name of the document to use for collaboration.
- * @attr {string} collab-user - The name of the user to use for collaboration.
- * @attr {string} collab-port - The port to use for collaboration if no collab-server is provided.
- * The server address will be computed from the current page's hostname.
- * @attr {string} collab-server - The websocket server to use for collaboration, including the port.
- * The collab-port attribute is ignored if collab-server is provided.
+ * @attr {string} server - The websocket server URL to use for collaboration.
+ * @attr {string} token - JWT token to use for authentication with the collaboration server.
+ * @attr {string} name - Unique name for the collaboration session.
+ * @attr {string} user - The user name to use for collaboration.
  * 
  * @attr {boolean} debug - When present, enables debug mode which adds a debug class
  *                         to the component for styling purposes.
@@ -56,7 +54,6 @@ import './jinn-tap.css';
  * 
  * @fires {CustomEvent} content-change - Fired when the editor content changes.
  *                                      The event detail contains:
- *                                      {string} content - The current text content
  *                                      {string} xml - The current TEI XML content
  * @fires {CustomEvent} ready - Fired when the component and the editor are ready.
  * @fires {CustomEvent} error - Fired when an error occurs, such as failing to load
@@ -76,6 +73,7 @@ export class JinnTap extends HTMLElement {
         this.notesWrapper = 'listAnnotation';
         this.collaboration = null;
         this.provider = null;
+        this.notes = 'disconnected';
         this._schema = schema; // Default schema
         this._initialized = false;
     }
@@ -151,33 +149,37 @@ export class JinnTap extends HTMLElement {
         if (this.hasAttribute('notesWrapper')) {
             this.notesWrapper = this.getAttribute('notes');
         }
+        this.notes = this.getAttribute('notes') || 'disconnected';
 
-        const collabPort = this.getAttribute('port') || null;
         const collabServer = this.getAttribute('server') || null;
-        const collabToken = this.getAttribute('token') || null;
-        const collabName = this.getAttribute('name') || null;
-        if (collabPort || collabServer) {
+        if (collabServer) {
+            const collabToken = this.getAttribute('token') || null;
+            const collabName = this.getAttribute('name') || null;
+            const collabUser = this.getAttribute('user') || localStorage.getItem('jinn-tap.username') || null;
+            const collabColor = this.getAttribute('color') || localStorage.getItem('jinn-tap.color') || null;
             if (!(collabToken && collabName)) {
-                console.error('collab-token is required when collab-port or collab-server is provided');
+                console.error('collab-token is required when collab-server is provided');
                 document.dispatchEvent(new CustomEvent('jinn-toast', {
                     detail: {
-                        message: 'collab-token is required when collab-port or collab-server is provided',
+                        message: 'collab-token is required when collab-server is provided',
                         type: 'error'
                     }
                 }));
             } else {
                 this.collaboration = {
+                    url: collabServer,
                     token: collabToken,
-                    user: this.getAttribute('user') || generateUsername("-", 2, 16),
-                    name: collabName
+                    user: collabUser || generateUsername("-", 2, 16),
+                    name: collabName,
+                    color: collabColor || generateRandomColor()
                 };
-                let collabUrl = collabServer;
-                if (!collabUrl) {
-                    // Compute the collaboration URL from the current page's hostname
-                    const hostname = window.location.hostname;
-                    collabUrl = `ws://${hostname}:${collabPort}`;
+                // Store the username in localStorage if it's not already there
+                if (!localStorage.getItem('jinn-tap.username')) {
+                    localStorage.setItem('jinn-tap.username', this.collaboration.user);
                 }
-                this.collaboration.url = collabUrl;
+                if (!localStorage.getItem('jinn-tap.color')) {
+                    localStorage.setItem('jinn-tap.color', this.collaboration.color);
+                }
             }
         }
 
@@ -288,7 +290,7 @@ export class JinnTap extends HTMLElement {
                 JinnTapCommands,
                 FootnoteRules.configure({
                     notesWrapper: this.notesWrapper,
-                    notesWithoutAnchor: false
+                    notesWithoutAnchor: this.notes !== 'connected'
                 }),
                 Placeholder.configure({
                     placeholder: 'Write something...',
@@ -316,7 +318,7 @@ export class JinnTap extends HTMLElement {
                 provider: this.provider,
                 user: {
                     name: this.collaboration.user,
-                    color: generateRandomColor()
+                    color: this.collaboration.color
                 }
             }));
         }
@@ -410,6 +412,7 @@ export class JinnTap extends HTMLElement {
             button.addEventListener('click', () => {
                 const newUser = div.querySelector('#collab-user').value;
                 this.collaboration.user = newUser;
+                localStorage.setItem('jinn-tap-username', newUser);
                 this.editor.commands.updateUser({
                     name: newUser,
                     color: generateRandomColor()

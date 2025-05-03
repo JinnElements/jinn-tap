@@ -129,6 +129,7 @@ tei-figure > tei-figDesc {
     text-align: right;
     font-size: .8rem;
 }
+
 tei-persname {
     color: #A83410;
 }
@@ -205,8 +206,21 @@ tei-note {
 }
 
 tei-note::before {
-    content: attr(_reference) ".";
+    margin-left: -2rem;
+    float: left;
+}
+
+tei-note::before {
+    content: "?";
     margin-right: 0.5em;
+}
+
+tei-note[_reference]::before {
+    content: attr(_reference) ".";
+}
+
+tei-note:not([_reference]) {
+    color: #9E9E9E;
 }
 
 tei-anchor {

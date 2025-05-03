@@ -1,14 +1,6 @@
 import { Plugin, PluginKey, TextSelection } from "@tiptap/pm/state";
 import { Extension } from "@tiptap/core";
 import { ReplaceStep } from "@tiptap/pm/transform";
-import { JinnEmptyElement } from './empty.js';
-
-// Function to generate a unique ID
-function generateUniqueId() {
-    const timestamp = Date.now().toString(36);
-    const randomStr = Math.random().toString(36).substring(2, 8);
-    return `fn-${timestamp}-${randomStr}`;
-}
 
 // Map to store references for each anchor node
 const anchorReferences = new Map();
@@ -39,7 +31,7 @@ function computeAnchorReferences(doc) {
 }
 
 // Function to get the reference for a specific anchor
-function getAnchorReference(nodeId) {
+export function getAnchorReference(nodeId) {
     return anchorReferences.get(nodeId) || -1;
 }
 
@@ -55,6 +47,12 @@ function updateNoteReferences(tr, doc) {
                     tr = tr.setNodeMarkup(pos, null, {
                         ...node.attrs,
                         _reference: reference.toString(),
+                        _timestamp: Date.now()
+                    });
+                } else {
+                    const { target, _reference, ...attrs } = node.attrs;
+                    tr = tr.setNodeMarkup(pos, null, {
+                        ...attrs,
                         _timestamp: Date.now()
                     });
                 }
@@ -87,15 +85,16 @@ function reorderNotes(tr, doc, notesWrapper,targetNoteId = null) {
     listAnnotationNode.content.forEach((node, offset) => {
         if (node.type.name === 'note') {
             const target = node.attrs.target;
+            let reference = -1;
             if (target && target.startsWith('#')) {
                 const anchorId = target.substring(1);
-                const reference = getAnchorReference(anchorId);
-                notes.push({ node, reference, originalIndex: notes.length });
-                
-                // If this is our target note, remember its index
-                if (targetNoteId && target === `#${targetNoteId}`) {
-                    targetNoteIndex = notes.length - 1;
-                }
+                reference = getAnchorReference(anchorId);
+            }
+            notes.push({ node, reference, originalIndex: notes.length });
+            
+            // If this is our target note, remember its index
+            if (targetNoteId && target === `#${targetNoteId}`) {
+                targetNoteIndex = notes.length - 1;
             }
         }
     });
@@ -162,134 +161,43 @@ function updateAnchorNodes(tr, doc) {
     return tr;
 }
 
-export const JinnAnchor = JinnEmptyElement.extend({
-    name: "anchor",
-    group: "inline",
-    content: "",  // Atomic nodes should not have content
-    inline: true,
-    atom: true,
-
-    addAttributes() {
-        const attributes = {
-            "id": {
-                isRequired: true,
-                type: "string",
-                renderHTML(attributes) {
-                    return { id: attributes.id };
-                },
-                parseHTML(element) {
-                    return element.getAttribute("id") || generateUniqueId();
-                }
-            },
-            "_timestamp": {
-                default: null,
-                renderHTML: () => ({}),
-            },
-            "_reference": {
-                default: null,
-                renderHTML: () => ({}),
-            }
-        };
-        if (this.options.attributes) {
-            Object.entries(this.options.attributes).forEach(([attrName, attrDef]) => {
-                attributes[attrName] = {
-                    default: attrDef.default || null,
-                    parseHTML: element => element.getAttribute(attrName),
-                    renderHTML: attributes => {
-                        if (!attributes[attrName]) {
-                            return {}
-                        }
-                        return {
-                            [attrName]: attributes[attrName],
-                        }
-                    },
-                };
-            });
-        }
-        return attributes;
-    },
-
-    addCommands() {
-        return {
-            addAnchor: (attributes) => ({ commands }) => {
-                return commands.insertContent({
-                    type: this.name,
-                    attrs: {
-                        ...attributes,
-                        id: generateUniqueId()
-                    }
-                });
-            },
-            gotoNote: (id) => ({ commands, editor }) => {
-                const noteSelector = `tei-note[target="#${id}"]`;
-                const noteElement = editor.view.dom.querySelector(noteSelector);
-                
-                if (noteElement) {
-                    // Scroll note into view
-                    noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    
-                    // Set selection at start of note
-                    const pos = this.editor.view.posAtDOM(noteElement, 0);
-                    commands.setTextSelection(pos);
-                    return true;
-                }
-                return false;
-            }
-        };
-    },
-
-    addNodeView() {
-        return ({ node, editor }) => {
-            const dom = document.createElement(`tei-${this.name}`);
-            
-            // Set all attributes on the DOM element
-            Object.entries(node.attrs).forEach(([key, value]) => {
-                if (value) {
-                    dom.setAttribute(key, value);
-                }
-            });
-
-            // Get the reference number and set it as text content
-            const reference = getAnchorReference(node.attrs.id);
-            dom.textContent = reference > 0 ? reference.toString() : '';
-
-            dom.addEventListener('click', () => {
-                editor.commands.gotoNote(node.attrs.id);
-            });
-
-            return {
-                dom,
-                update: (updatedNode) => {
-                    if (updatedNode.type !== node.type) {
-                        return false;
-                    }
-                    
-                    // Update attributes
-                    Object.entries(updatedNode.attrs).forEach(([key, value]) => {
-                        if (value) {
-                            dom.setAttribute(key, value);
-                        } else {
-                            dom.removeAttribute(key);
-                        }
-                    });
-
-                    // Update the text content with the new reference number
-                    const reference = getAnchorReference(updatedNode.attrs.id);
-                    dom.textContent = reference > 0 ? reference.toString() : '';
-                    
-                    return true;
-                }
-            }
-        }
-    }
-});
-
 export const FootnoteRules = Extension.create({
     name: "footnoteRules",
     priority: 1000,
     addOptions() {
         return {
-            notesWrapper: 'listAnnotation'
+            notesWrapper: 'listAnnotation',
+            notesWithoutAnchor: false
+        }
+    },
+    addCommands() {
+        return {
+            addNote: () => ({ commands, state }) => {
+                return commands.insertContent({
+                    type: 'note',
+                    attrs: {
+                        '_timestamp': Date.now()
+                    },
+                    content: [{
+                        type: 'p'
+                    }]
+                });
+            },
+            updateNotes: () => ({ commands, state }) => {
+                let tr = state.tr;
+                // Compute references based on the current transaction state
+                computeAnchorReferences(tr.doc);
+
+                // Update all anchor nodes
+                tr = updateAnchorNodes(tr, tr.doc);
+
+                // Update all note references
+                tr = updateNoteReferences(tr, tr.doc);
+
+                // Reorder notes
+                tr = reorderNotes(tr, tr.doc, this.options.notesWrapper);
+                return true;
+            }
         }
     },
     addProseMirrorPlugins() {
@@ -383,7 +291,15 @@ export const FootnoteRules = Extension.create({
                                 if (target && target.startsWith('#')) {
                                     const anchorId = target.substring(1);
                                     if (deletedAnchorIds.has(anchorId)) {
-                                        newTr = newTr.delete(pos, pos + node.nodeSize);
+                                        if (!options.notesWithoutAnchor) {
+                                            newTr = newTr.delete(pos, pos + node.nodeSize);
+                                        } else {
+                                            const { target, _reference, ...attrs } = node.attrs;
+                                            newTr = newTr.setNodeMarkup(pos, null, {
+                                                ...attrs,
+                                                _timestamp: Date.now()
+                                            });
+                                        }
                                     }
                                 }
                             }
@@ -392,11 +308,22 @@ export const FootnoteRules = Extension.create({
 
                     // Handle new anchor creation
                     if (anchorId) {
+                        if (options.notesWithoutAnchor) {
+                            let foundNote = false;
+                            newState.doc.descendants((node, pos) => {
+                                if (node.type.name === 'note' && !node.attrs.target) {
+                                    foundNote = true;
+                                    return false;
+                                }
+                            });
+                            if (foundNote) {
+                                return null;
+                            }
+                        }
                         // Check if a note with this target already exists
                         let noteExists = false;
                         newState.doc.descendants((node, pos) => {
                             if (node.type.name === 'note' && node.attrs.target === `#${anchorId}`) {
-                                console.log('note found', node);
                                 noteExists = true;
                                 return false;
                             }
@@ -429,8 +356,11 @@ export const FootnoteRules = Extension.create({
                         // Insert a new note at the end of the listAnnotation with a reference to the anchor
                         const noteNode = newState.schema.nodes.note.create({ 
                             'target': `#${anchorId}`,
-                            '_reference': '1' // Will be updated later
-                        });
+                            '_reference': '1', // Will be updated later
+                            '_timestamp': Date.now()
+                        }, [
+                            newState.schema.nodes.p.create({}, [])
+                        ]);
                         const insertPos = listAnnotationPos + listAnnotationNode.nodeSize - 1;
                         
                         // Insert the note and create a paragraph inside it

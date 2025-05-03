@@ -459,11 +459,11 @@
             }
         },
         "note": {
-            "type": "listItem",
-            "content": "inline*",
-            "defining": true,
-            "isolating": true,
+            "type": "block",
+            "group": "note",
+            "content": "p+",
             "selectable": true,
+            "priority": 99,
             "attributes": {
                 "target": {
                     "type": "string"
@@ -484,7 +484,8 @@
             "toolbar": {
                 "Footnote": {
                     "attributes": {
-                        "type": "note"
+                        "type": "note",
+                        "_reference": "*"
                     },
                     "label": "<i class='bi bi-123'></i>",
                     "order": 2

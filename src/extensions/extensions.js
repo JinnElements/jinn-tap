@@ -4,7 +4,7 @@ import { JinnInline } from './inline.js';
 import { JinnBlock } from './block.js';
 import { JinnList, JinnItem } from './list.js';
 import { JinnEmptyElement } from './empty.js';
-import { JinnAnchor } from './footnote.js';
+import { JinnAnchor } from './anchor.js';
 import { JinnGraphic } from './graphic.js';
 /**
  * Create nodes and marks from a schema definition.

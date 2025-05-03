@@ -303,6 +303,10 @@ export class AttributePanel {
                     tr.setNodeMarkup(pos, nodeOrMark.type, { ...nodeOrMark.attrs, ...pendingChanges });
                     this.editor.view.dispatch(tr);
                 }
+
+                if (nodeOrMark.type.name === 'note') {
+                    this.editor.commands.updateNotes();
+                }
             }
         }
     }
