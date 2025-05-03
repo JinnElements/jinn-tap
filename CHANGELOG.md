@@ -1,3 +1,10 @@
+## [1.18.1](https://github.com/JinnElements/jinn-tap/compare/v1.18.0...v1.18.1) (2025-05-03)
+
+
+### Bug Fixes
+
+* **footnotes:** reference might be undefined ([7d9f3e1](https://github.com/JinnElements/jinn-tap/commit/7d9f3e1b114eb5acfc139745fb00cc2ce1b3859b))
+
 # [1.18.0](https://github.com/JinnElements/jinn-tap/compare/v1.17.0...v1.18.0) (2025-05-03)
 
 
