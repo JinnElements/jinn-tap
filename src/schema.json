@@ -468,6 +468,9 @@
                 "target": {
                     "type": "string"
                 },
+                "n": {
+                    "type": "string"
+                },
                 "_reference": {
                     "type": "string"
                 }

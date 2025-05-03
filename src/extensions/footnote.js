@@ -8,23 +8,30 @@ const anchorReferences = new Map();
 // Function to compute reference numbers for all anchors in the document
 function computeAnchorReferences(doc) {
     const anchors = [];
+    const notes = new Map();
     doc.nodesBetween(0, doc.content.size, (node, pos) => {
         if (node.type.name === 'anchor') {
             anchors.push({ node, pos });
+        } else if (node.type.name === 'note' && node.attrs.n) {
+            notes.set(node.attrs.target, node.attrs.n);
         }
     });
-    
-    // Sort anchors by their position in the document
-    anchors.sort((a, b) => a.pos - b.pos);
     
     // Clear the previous references
     anchorReferences.clear();
     
     // Assign reference numbers
-    anchors.forEach((anchor, index) => {
-        const refNumber = index + 1;
+    let count = 0;
+    anchors.forEach((anchor) => {
+        let refNumber;
+        const target = `#${anchor.node.attrs.id}`;
+        if (notes.has(target)) {
+            refNumber = notes.get(target);
+        } else {
+            refNumber = ++count;
+        }
         // Store the reference in the map using the node's ID as the key
-        anchorReferences.set(anchor.node.attrs.id, refNumber);
+        anchorReferences.set(anchor.node.attrs.id, refNumber.toString());
     });
     
     return anchors;
@@ -32,7 +39,7 @@ function computeAnchorReferences(doc) {
 
 // Function to get the reference for a specific anchor
 export function getAnchorReference(nodeId) {
-    return anchorReferences.get(nodeId) || -1;
+    return anchorReferences.get(nodeId);
 }
 
 // Function to update _reference attributes of all notes
@@ -43,7 +50,7 @@ function updateNoteReferences(tr, doc) {
             if (target && target.startsWith('#')) {
                 const anchorId = target.substring(1);
                 const reference = getAnchorReference(anchorId);
-                if (reference > 0) {
+                if (reference) {
                     tr = tr.setNodeMarkup(pos, null, {
                         ...node.attrs,
                         _reference: reference.toString(),
@@ -85,7 +92,7 @@ function reorderNotes(tr, doc, notesWrapper,targetNoteId = null) {
     listAnnotationNode.content.forEach((node, offset) => {
         if (node.type.name === 'note') {
             const target = node.attrs.target;
-            let reference = -1;
+            let reference;
             if (target && target.startsWith('#')) {
                 const anchorId = target.substring(1);
                 reference = getAnchorReference(anchorId);
@@ -99,8 +106,8 @@ function reorderNotes(tr, doc, notesWrapper,targetNoteId = null) {
         }
     });
 
-    // Sort notes by reference number
-    notes.sort((a, b) => a.reference - b.reference);
+    // Sort notes by reference using natural string comparison
+    notes.sort((a, b) => a.reference.localeCompare(b.reference));
 
     // Find where our target note ended up after sorting
     let newTargetIndex = -1;
@@ -154,7 +161,7 @@ function updateAnchorNodes(tr, doc) {
             tr = tr.setNodeMarkup(pos, null, {
                 ...node.attrs,
                 _timestamp: uniqueTimestamp,
-                _reference: reference // Store reference in attrs to ensure update
+                _reference: reference.toString() // Ensure reference is stored as string
             });
         }
     });

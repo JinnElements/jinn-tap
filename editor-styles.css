@@ -227,6 +227,14 @@ tei-anchor {
     font-size: 0.8em;
     vertical-align: super;
     cursor: pointer;
+    line-height: 1;
+}
+
+tei-anchor::before {
+    content: attr(_reference);
+}
+tei-anchor::after {
+    content: "\200B";
 }
 
 tei-abbr {

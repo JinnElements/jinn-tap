@@ -135,10 +135,9 @@ export const JinnAnchor = JinnEmptyElement.extend({
 
             // Get the reference number and set it as text content
             const reference = getAnchorReference(node.attrs.id);
-            dom.textContent = reference > 0 ? reference.toString() : '*';
 
-            dom.addEventListener('click', () => {
-                if (reference > 0) {
+            dom.addEventListener('click', (event) => {
+                if (reference && (event.metaKey || event.ctrlKey)) {
                     editor.commands.gotoNote(node.attrs.id);
                 } else {
                     const pos = this.editor.view.posAtDOM(dom);
@@ -162,10 +161,6 @@ export const JinnAnchor = JinnEmptyElement.extend({
                         }
                     });
 
-                    // Update the text content with the new reference number
-                    const reference = getAnchorReference(updatedNode.attrs.id);
-                    dom.textContent = reference > 0 ? reference.toString() : '*';
-                    
                     return true;
                 }
             }
