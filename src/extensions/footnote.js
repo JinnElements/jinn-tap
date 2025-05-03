@@ -107,7 +107,12 @@ function reorderNotes(tr, doc, notesWrapper,targetNoteId = null) {
     });
 
     // Sort notes by reference using natural string comparison
-    notes.sort((a, b) => a.reference.localeCompare(b.reference));
+    notes.sort((a, b) => {
+        if (!a.reference && !b.reference) return 0;
+        if (!a.reference) return 1;
+        if (!b.reference) return -1;
+        return a.reference.localeCompare(b.reference);
+    });
 
     // Find where our target note ended up after sorting
     let newTargetIndex = -1;
