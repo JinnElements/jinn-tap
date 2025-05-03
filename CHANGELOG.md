@@ -1,3 +1,10 @@
+# [1.17.0](https://github.com/JinnElements/jinn-tap/compare/v1.16.2...v1.17.0) (2025-05-03)
+
+
+### Features
+
+* allow notes without anchor ([0b2914e](https://github.com/JinnElements/jinn-tap/commit/0b2914ed6b31b4062e85a9c55694ef45fbdacb67))
+
 ## [1.16.2](https://github.com/JinnElements/jinn-tap/compare/v1.16.1...v1.16.2) (2025-05-02)
 
 
