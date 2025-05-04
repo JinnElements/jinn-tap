@@ -5,7 +5,7 @@ import { Collaboration } from '@tiptap/extension-collaboration';
 import * as Y from 'yjs'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
 import { HocuspocusProvider } from "@hocuspocus/provider";
-import { serializeToTEI } from './util/serialize.js';
+import { serialize } from './util/serialize.js';
 import { createFromSchema } from './extensions/extensions.js';
 import { FootnoteRules } from './extensions/footnote.js';
 import { InputRules } from './extensions/input-rules.js';
@@ -14,7 +14,7 @@ import { AttributePanel } from './attribute-panel.js';
 import { NavigationPanel } from './navigator.js';
 import { Toolbar } from './toolbar.js';
 import { generateRandomColor, colorCssFromSchema } from './util/colors.js';
-import { fromXml, toTei, newDoc } from './util/xml.js';
+import { importXml, exportXml, newDoc } from './util/xml.js';
 import { generateUsername } from "unique-username-generator";
 import xmlFormat from 'xml-formatter';
 import schema from './schema.json';
@@ -123,7 +123,7 @@ export class JinnTap extends HTMLElement {
             
             if (contentType?.includes('application/xml') || contentType?.includes('text/xml')) {
                 const xml = await response.text();
-                const parsed = fromXml(xml);
+                const parsed = importXml(xml);
                 content = parsed.content;
                 this.document = parsed.doc;
             } else if (contentType?.includes('text/html')) {
@@ -246,7 +246,7 @@ export class JinnTap extends HTMLElement {
         this._codeArea = this.querySelector('.code-area');
         this.addEventListener('content-change', (event) => {
             try {
-                this._codeArea.textContent = xmlFormat(`<body>${event.detail.xml}</body>`, { collapseContent: true });
+                this._codeArea.textContent = xmlFormat(event.detail.xml, { collapseContent: true });
             } catch (error) {
                 this._codeArea.textContent = event.detail.xml;
             }
@@ -341,9 +341,11 @@ export class JinnTap extends HTMLElement {
     }
 
     dispatchContentChange() {
+        const body = serialize(this.editor);
         this.dispatchEvent(new CustomEvent('content-change', {
             detail: {
-                xml: serializeToTEI(this.editor)
+                body: body,
+                xml: exportXml(body, this.document)
             }
         }));
     }
@@ -361,7 +363,13 @@ export class JinnTap extends HTMLElement {
 
     // Getter for the TEI XML content
     get xml() {
-        return toTei(serializeToTEI(this.editor), this.document);
+        return exportXml(serialize(this.editor), this.document);
+    }
+
+    set xml(value) {
+        const { doc, content } = importXml(value);
+        this.content = content;
+        this.document = doc;
     }
 
     newDocument() {

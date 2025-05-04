@@ -51,8 +51,8 @@ describe('JinnTap Component', () => {
                         const eventDetail = spy.getCall(0).args[0].detail
 
                         // Compare XML using chai-xml
-                        expect(eventDetail.xml).to.be.xml
-                        expect(eventDetail.xml).to.equal('<div><p>Hello world!</p></div>')
+                        expect(eventDetail.body).to.be.xml
+                        expect(eventDetail.body).to.equal('<div><p>Hello world!</p></div>')
                     })
             })
     })
@@ -80,8 +80,8 @@ describe('JinnTap Component', () => {
                         const eventDetail = spy.getCall(0).args[0].detail
 
                         // Compare XML using chai-xml
-                        expect(eventDetail.xml).to.be.xml
-                        expect(eventDetail.xml).to.equal('<div><p><persName><hi rend="b">Rudi</hi> <hi rend="i">Rüssel</hi></persName></p></div>')
+                        expect(eventDetail.body).to.be.xml
+                        expect(eventDetail.body).to.equal('<div><p><persName><hi rend="b">Rudi</hi> <hi rend="i">Rüssel</hi></persName></p></div>')
                     })
             })
     })
@@ -109,8 +109,8 @@ describe('JinnTap Component', () => {
                         const eventDetail = spy.getCall(0).args[0].detail
 
                         // Compare XML using chai-xml
-                        expect(eventDetail.xml).to.be.xml
-                        expect(eventDetail.xml).to.equal('<div><p><choice><abbr>WYSIWYM</abbr><expan>What you see is what you mean</expan></choice>.</p></div>')
+                        expect(eventDetail.body).to.be.xml
+                        expect(eventDetail.body).to.equal('<div><p><choice><abbr>WYSIWYM</abbr><expan>What you see is what you mean</expan></choice>.</p></div>')
                     })
             })
     })
@@ -146,11 +146,11 @@ describe('JinnTap Component', () => {
                             const eventDetail = spy.getCall(2).args[0].detail
 
                             // Log the XML after formatting
-                            cy.log('XML after formatting:', eventDetail.xml)
+                            cy.log('XML after formatting:', eventDetail.body)
 
                             // Compare XML using chai-xml
-                            expect(eventDetail.xml).to.be.xml
-                            expect(eventDetail.xml).to.equal('<div><p>Hello <hi rend="b">world</hi>!</p></div>')
+                            expect(eventDetail.body).to.be.xml
+                            expect(eventDetail.body).to.equal('<div><p>Hello <hi rend="b">world</hi>!</p></div>')
                         })
                     })
             })

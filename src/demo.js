@@ -1,5 +1,4 @@
 import { JinnTap, JinnToast } from './index.js';
-import { fromXml } from './util/xml.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const editor = document.querySelector('jinn-tap');
@@ -24,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
-                editor.content = fromXml(e.target.result);
+                editor.xml = e.target.result;
             } catch (error) {
                 console.error('Error parsing XML:', error);
             } finally {

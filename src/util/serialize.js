@@ -1,20 +1,20 @@
 /**
- * Serializes the editor's content to TEI XML format
+ * Serializes the editor's content to XML
  * @param {Editor} editor - The Tiptap editor instance
- * @returns {string} The complete TEI XML document
+ * @returns {string} The complete XML document
  */
-export function serializeToTEI(editor) {
+export function serialize(editor) {
   const doc = editor.state.doc;
   const json = doc.toJSON();
   const serializer = new Serializer(editor);
-  let teiContent = [];
+  let content = [];
 
   // Serialize content
   json.content.forEach(node => {
-    teiContent.push(serializer.serialize(node));
+    content.push(serializer.serialize(node));
   });
 
-  return teiContent.join('\n');
+  return content.join('\n');
 }
 
 function compareMarks(mark1, mark2) {
