@@ -78,7 +78,13 @@
                     "command": "wrapDiv",
                     "label": "<i class='bi bi-body-text'></i>"
                 }
-            }
+            },
+            "inputRules": [
+                {
+                    "find": "^>>",
+                    "type": "wrapping"
+                }
+            ]
         },
         "hi": {
             "type": "inline",
@@ -340,7 +346,7 @@
             },
             "inputRules": [
                 {
-                    "find": "^##$",
+                    "find": "^##",
                     "type": "textblock"
                 }
             ]
