@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('xmlFile');
     const copyButton = editor.querySelector('[data-tooltip="Copy TEI to clipboard"]');
     const newButton = editor.querySelector('[data-tooltip="New Document"]');
+    const downloadButton = editor.querySelector('[data-tooltip="Download XML"]');
+    
     if (!fileInput) {
         console.error('File input element not found!');
         return;
@@ -24,6 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.onload = (e) => {
             try {
                 editor.xml = e.target.result;
+                editor.metadata = {
+                    name: file.name
+                };
             } catch (error) {
                 console.error('Error parsing XML:', error);
             } finally {
@@ -68,6 +73,75 @@ document.addEventListener('DOMContentLoaded', () => {
         newButton.addEventListener('click', (event) => {
             event.preventDefault();
             editor.newDocument();
+        });
+    }
+
+    if (downloadButton) {
+        downloadButton.addEventListener('click', async (event) => {
+            event.preventDefault();
+            try {
+                const xml = editor.xml;
+                console.log(xml);
+                const blob = new Blob([xml], { type: 'application/xml' });
+                
+                // Try to use the File System Access API if available
+                if ('showSaveFilePicker' in window) {
+                    try {
+                        const handle = await window.showSaveFilePicker({
+                            suggestedName: editor.metadata?.name || 'document.xml',
+                            types: [{
+                                description: 'XML Files',
+                                accept: {
+                                    'application/xml': ['.xml']
+                                }
+                            }]
+                        });
+                        
+                        const writable = await handle.createWritable();
+                        await writable.write(blob);
+                        await writable.close();
+                        
+                        document.dispatchEvent(new CustomEvent('jinn-toast', {
+                            detail: {
+                                message: 'XML file saved successfully',
+                                type: 'info'
+                            }
+                        }));
+                    } catch (error) {
+                        // User cancelled the save dialog
+                        if (error.name === 'AbortError') {
+                            return;
+                        }
+                        throw error;
+                    }
+                } else {
+                    // Fallback for browsers that don't support showSaveFilePicker
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = editor.metadata?.name || 'document.xml';
+                    
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    
+                    document.dispatchEvent(new CustomEvent('jinn-toast', {
+                        detail: {
+                            message: 'XML file downloaded successfully',
+                            type: 'info'
+                        }
+                    }));
+                }
+            } catch (error) {
+                console.error('Failed to save XML:', error);
+                document.dispatchEvent(new CustomEvent('jinn-toast', {
+                    detail: {
+                        message: 'Failed to save XML file',
+                        type: 'error'
+                    }
+                }));
+            }
         });
     }
 });

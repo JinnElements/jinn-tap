@@ -74,6 +74,7 @@ export class JinnTap extends HTMLElement {
         this.collaboration = null;
         this.provider = null;
         this.notes = 'disconnected';
+        this.metadata = {};
         this._schema = schema; // Default schema
         this._initialized = false;
     }
@@ -135,6 +136,9 @@ export class JinnTap extends HTMLElement {
             if (setContent && this.editor) {
                 this.content = content;
             }
+            this.metadata = {
+                name: url.split('/').pop()
+            };
             return content;
         } catch (error) {
             console.error('Error loading content from URL:', error);

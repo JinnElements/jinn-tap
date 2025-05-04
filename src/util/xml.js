@@ -139,7 +139,6 @@ export function importXml(content) {
     output.forEach(node => {
         xmlText.push(node.outerHTML);
     });
-    console.log(xmlText.join(''));
     return {
         content: xmlText.join(''),
         doc: xmlDoc
