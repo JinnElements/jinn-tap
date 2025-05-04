@@ -383,6 +383,9 @@ export class JinnTap extends HTMLElement {
         const { doc, content } = createDocument();
         this.document = doc;
         this.content = content;
+        this.metadata = {
+            name: 'untitled.xml'
+        };
     }
 
     // Method to focus the editor
