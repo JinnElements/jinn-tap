@@ -28,12 +28,13 @@
                 </figure>
                 <p>While it is very difficult to create a completely generic editor covering the
                     entire complexity of TEI, JinnTap tries to be as customizable as possible to
-                    cover a wide range of use cases. To work properly in a <choice><abbr>WYSIWYM</abbr><expan>What you see is what you mean</expan></choice> context,
-                    the editor needs to be strict about the underlying schema. Many elements in TEI
-                    are ambiguous with respect to their block or inline nature, i.e. they can appear
-                    either way. However, the editor has a clear distinction between block and inline
-                    content<anchor xml:id="fn-m9ic2gkq-e2pwse" type="note" />. Therefore JinnTap
-                    uses its own <ref
+                    cover a wide range of use cases. To work properly in a 
+                    <choice><abbr>WYSIWYM</abbr><expan>What you see is what you mean</expan></choice> context, 
+                    the editor needs to be strict about the underlying schema. Many
+                    elements in TEI are ambiguous with respect to their block or inline nature, i.e.
+                    they can appear either way. However, the editor has a clear distinction between
+                    block and inline content<anchor xml:id="fn-m9ic2gkq-e2pwse" type="note" />.
+                    Therefore JinnTap uses its own <ref
                         target="https://github.com/JinnElements/jinn-tap/blob/main/src/schema.json">
                     schema</ref> to define what is allowed in which position. It extends the schema
                     used by the underlying editor (<ref target="https://prosemirror.net/">
@@ -131,6 +132,36 @@
                         active node. Clicking on any of the breadcrumb links will select the
                         corresponding node and the attribute panel will show the attributes assigned
                         to this node.</p>
+                    <div>
+                        <head>Footnotes</head>
+                        <p>JinnTap does not inline footnotes, but treats them as standoff
+                            annotations. A footnote therefore consists of two nodes: </p>
+                        <list rend="ordered">
+                            <item>
+                                <p>an anchor in the text containing the footnote reference </p>
+                            </item>
+                            <item>
+                                <p>the actual note block saved as a standoff annotation</p>
+                            </item>
+                        </list>
+                        <p>Each anchor has an XML ID to which the note may link via its <hi
+                                rend="code">target</hi> attribute. JinnTap has two different modes
+                            for handling footnotes, which have to be configured on the JinnTap
+                            webcomponent: </p>
+                        <p>In <hi rend="b">connected mode</hi>, notes cannot exist without an
+                            anchor. Deleting the anchor will also delete the associated note.</p>
+                        <p>In <hi rend="b">disconnected mode</hi>, deleting an anchor leaves the
+                            note intact and just marks it visually as orphaned. If there are
+                            orphaned notes in the document and you insert an anchor elsewhere,
+                            JinnTap gives you the option of associating the anchor with one of the
+                            orphaned notes. In this case, the ID of the anchor is automatically
+                            copied to the clipboard and the first orphaned note block is selected.
+                            To associate the note with the anchor, paste the copied ID into the
+                            target field of the note.</p>
+                        <p>Disconnected mode is in particular useful if your starting point is a
+                            text coming from OCR, in which notes may have been recognized but not
+                            the anchors.</p>
+                    </div>
                 </div>
                 <div>
                     <head>Shortcodes</head>
@@ -138,8 +169,12 @@
                         defined:</p>
                     <list rend="unordered">
                         <item>
-                            <p>Typing ## at the start of an empty paragraph turns it into a <hi
+                            <p>Typing ## at the start of a paragraph turns it into a <hi
                                     rend="code">head</hi></p>
+                        </item>
+                        <item>
+                            <p>Typing &gt;&gt; at the start wraps the current block into a <hi
+                                    rend="code">div</hi></p>
                         </item>
                         <item>
                             <p>To create an unordered list, type * followed by a space</p>
@@ -201,12 +236,16 @@
                     </hi>file.</p>
             </div>
             <listAnnotation>
-                <note target="#fn-m9tl85r7-ta5gce">TEI elements are converted to HTML custom
-                    elements, preserving all attributes and structural features.</note>
-                <note target="#fn-m9ic2gkq-e2pwse">In more technical terms, the editor distinguishes
-                    between <hi rend="i">nodes</hi> and <hi rend="i">marks</hi>: while nodes are
-                    mostly block-level elements (with some exceptions), marks are lightweight
-                    markers attached to a piece of text.</note>
+                <note target="#fn-m9tl85r7-ta5gce">
+                    <p>TEI elements are converted to HTML custom elements, preserving all attributes
+                        and structural features.</p>
+                </note>
+                <note target="#fn-m9ic2gkq-e2pwse">
+                    <p>In more technical terms, the editor distinguishes between <hi rend="i">nodes</hi>
+                        and <hi rend="i">marks</hi>: while nodes are mostly block-level elements
+                        (with some exceptions), marks are lightweight markers attached to a piece of
+                        text.</p>
+                </note>
             </listAnnotation>
         </body>
     </text>
