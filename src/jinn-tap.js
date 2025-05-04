@@ -345,7 +345,7 @@ export class JinnTap extends HTMLElement {
     }
 
     dispatchContentChange() {
-        const body = serialize(this.editor);
+        const body = serialize(this.editor, this._schema);
         this.dispatchEvent(new CustomEvent('content-change', {
             detail: {
                 body: body,
@@ -369,7 +369,7 @@ export class JinnTap extends HTMLElement {
 
     // Getter for the full XML content
     get xml() {
-        return exportXml(serialize(this.editor), this.document);
+        return exportXml(serialize(this.editor, this._schema), this.document);
     }
 
     // Setter for the full XML content

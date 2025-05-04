@@ -3,10 +3,10 @@
  * @param {Editor} editor - The Tiptap editor instance
  * @returns {string} The complete XML document
  */
-export function serialize(editor) {
+export function serialize(editor, schemaDef) {
   const doc = editor.state.doc;
   const json = doc.toJSON();
-  const serializer = new Serializer(editor);
+  const serializer = new Serializer(editor, schemaDef);
   let content = [];
 
   // Serialize content
@@ -24,9 +24,10 @@ function compareMarks(mark1, mark2) {
 
 class Serializer {
 
-  constructor(editor) {
+  constructor(editor, schemaDef) {
     this.editor = editor;
     this.openMarks = [];
+    this.schemaDef = schemaDef;
   }
 
   serialize(node, previous, next) {
@@ -59,12 +60,15 @@ class Serializer {
         });
         openingMarks.forEach(mark => {
           this.openMarks.push(mark);
+          const nodeDef = this.schemaDef.schema[mark.type];
           const tagName = mark.type;
           const attrs = mark.attrs ? Object.entries(mark.attrs)
-              .filter(([_, value]) => value !== null)
-              .map(([key, value]) => `${key}="${value}"`)
-              .join(' ') : '';
-          text += `<${tagName}${attrs ? ' ' + attrs : ''}>`;
+            .filter(([_, value]) => value !== null)
+            .map(([key, value]) => `${key}="${value}"`) : [];
+          if (nodeDef.preserveSpace) {
+            attrs.push('xml:space="preserve"');
+          };
+          text += `<${tagName}${attrs.length > 0 ? ' ' + attrs.join(' ') : ''}>`;
         });
         text += node.text;
         if (!next) {

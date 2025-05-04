@@ -504,6 +504,7 @@
         "choice": {
             "type": "inline",
             "content": "abbr expan",
+            "preserveSpace": true,
             "toolbar": {
                 "Choice": {
                     "select": "Textcritical",
