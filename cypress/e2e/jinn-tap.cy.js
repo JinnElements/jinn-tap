@@ -110,7 +110,7 @@ describe('JinnTap Component', () => {
 
                         // Compare XML using chai-xml
                         expect(eventDetail.body).to.be.xml
-                        expect(eventDetail.body).to.equal('<div><p><choice><abbr>WYSIWYM</abbr><expan>What you see is what you mean</expan></choice>.</p></div>')
+                        expect(eventDetail.body).to.equal('<div><p><choice xml:space="preserve"><abbr>WYSIWYM</abbr><expan>What you see is what you mean</expan></choice>.</p></div>')
                     })
             })
     })
