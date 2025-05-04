@@ -1,3 +1,16 @@
+# [1.20.0](https://github.com/JinnElements/jinn-tap/compare/v1.19.0...v1.20.0) (2025-05-04)
+
+
+### Bug Fixes
+
+* **footnotes:** select note when cmd-click on reference ([bc39f9c](https://github.com/JinnElements/jinn-tap/commit/bc39f9c3c6fc1119eda048dba59a977fdf529da9))
+* new document creation ([d54b547](https://github.com/JinnElements/jinn-tap/commit/d54b5472e01f1152c8a34091e9de95f8ffc7bb99))
+
+
+### Features
+
+* merge content to and from TEI documents on the client, therefore no longer requiring a server ([2c3f614](https://github.com/JinnElements/jinn-tap/commit/2c3f614be75dba353b94955c20ec3ffc8e42636e))
+
 # [1.19.0](https://github.com/JinnElements/jinn-tap/compare/v1.18.1...v1.19.0) (2025-05-04)
 
 
