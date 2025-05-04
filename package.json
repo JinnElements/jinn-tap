@@ -53,6 +53,7 @@
     "@tiptap/extension-placeholder": "^2.11.7",
     "@tiptap/pm": "^2.11.7",
     "@tiptap/starter-kit": "^2.11.7",
+    "fontoxpath": "^3.33.2",
     "rollup": "^4.40.1",
     "unique-username-generator": "^1.4.0",
     "xml-formatter": "^3.6.5",

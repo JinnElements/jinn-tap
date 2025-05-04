@@ -1,44 +1,185 @@
 import { parseXml } from './util';
+import { registerXQueryModule, evaluateXPathToNodes, evaluateXPath, evaluateXPathToFirstNode } from "fontoxpath";
+
+registerXQueryModule(`
+    xquery version "3.1";
+
+    module namespace jt="http://jinntec.de/jinntap";
+
+    declare namespace tei="http://www.tei-c.org/ns/1.0";
+
+    declare function jt:new-document() {
+        <TEI xmlns="http://www.tei-c.org/ns/1.0">
+            <teiHeader>
+                <fileDesc>
+                    <titleStmt>
+                        <title>JinnTap Documentation</title>
+                    </titleStmt>
+                    <publicationStmt>
+                        <p>Information about publication or distribution</p>
+                    </publicationStmt>
+                    <sourceDesc>
+                        <p>Information about the source</p>
+                    </sourceDesc>
+                </fileDesc>
+            </teiHeader>
+            <text>
+                <body>
+                    <div>
+                        <p></p>
+                    </div>
+                </body>
+            </text>
+        </TEI>
+    };
+
+    declare function jt:import($doc as document-node()) {
+        let $xml :=
+            if (not($doc//tei:body)) then
+                $doc//tei:text/tei:div
+            else
+                $doc//tei:body
+        return (
+            jt:load-xml($xml, false()),
+            <tei-listAnnotation>
+            { 
+                jt:load-xml($doc//tei:standOff/tei:listAnnotation/tei:note, true()),
+                jt:load-xml($xml//tei:note, true())
+            }
+            </tei-listAnnotation>
+        )
+    };
+
+    declare function jt:load-xml($nodes as node()*, $importNotes as xs:boolean) {
+        for $node in $nodes
+        return
+            typeswitch($node)
+                case element(tei:listAnnotation) return
+                    ()
+                case element(tei:note) return
+                    if ($importNotes) then
+                        <tei-note target="{if ($node/@target) then $node/@target else ('#' || generate-id($node))}" type="note">
+                            { jt:load-xml($node/node(), false()) }
+                        </tei-note>
+                    else
+                        <tei-anchor id="{if ($node/@xml:id) then $node/@xml:id else generate-id($node)}"/>
+                case element() return
+                    element { "tei-" || local-name($node) } {
+                        $node/@* except $node/@xml:id,
+                        if ($node/@xml:id) then
+                            attribute id { $node/@xml:id }
+                        else
+                            (),
+                        jt:load-xml($node/node(), $importNotes)
+                    }
+                default return
+                    $node
+    };
+
+    declare function jt:save-xml($nodes as node()*, $input as document-node()) {
+        for $node in $nodes
+        return
+            typeswitch($node)
+                case document-node() return
+                    jt:save-xml($node/node(), $input)
+                case element(tei:TEI) return
+                    element { node-name($node) } {
+                        $node/@*,
+                        $node/tei:teiHeader,
+                        jt:save-xml($node/tei:text, $input),
+                        if (not($node/tei:standOff)) then
+                            <standOff xmlns="http://www.tei-c.org/ns/1.0">{ $input//tei:listAnnotation }</standOff>
+                        else
+                            (),
+                        jt:save-xml($node/tei:standOff, $input)
+                    }
+                case element(tei:standOff) return
+                    element { node-name($node) } {
+                        $node/@*,
+                        $node/* except $node/tei:listAnnotation,
+                        $input//tei:listAnnotation
+                    }
+                case element(tei:body) return
+                    element { node-name($node) } {
+                        $node/@*,
+                        $input/tei:body/node() except $input/tei:body/tei:listAnnotation
+                    }
+                case element() return
+                    element { node-name($node) } {
+                        $node/@*,
+                        jt:save-xml($node/node(), $input)
+                    }
+                default return
+                    $node
+        };
+`);
 
 export function fromTei(xmlDoc) {
     if (!xmlDoc) return '';
-    
-    const xmlText = [];
-    const nodes = xmlDoc.querySelectorAll('text > body > *');
-    
-    // Transform node names to tei- prefixed format
-    const transformNode = (node) => {
-        if (node.nodeType === Node.ELEMENT_NODE) {
-            // Create new element with tei- prefix
-            const newElement = document.createElement(`tei-${node.tagName}`);
 
-            // Copy all attributes
-            for (const attr of node.attributes) {
-                if (attr.name === 'xml:id') {
-                    newElement.setAttribute('id', attr.value);
-                } else { 
-                    newElement.setAttribute(attr.name, attr.value);
-                }
-            }
-
-            // Transform child nodes recursively
-            for (const child of node.childNodes) {
-                newElement.appendChild(transformNode(child));
-            }
-
-            return newElement;
-        } else {
-            // For text nodes, just clone them
-            return node.cloneNode();
+    const output = evaluateXPathToNodes(
+        `
+            import module namespace jt="http://jinntec.de/jinntap";
+            
+            jt:import(.)
+        `, 
+        xmlDoc,
+        null,
+        null,
+        {
+            language: evaluateXPath.XQUERY_3_1_LANGUAGE
         }
-    };
-
-    nodes.forEach(content => {
-        const transformedContent = transformNode(content);
-        xmlText.push(transformedContent.outerHTML);
+    );
+    const xmlText = [];
+    output.forEach(node => {
+        xmlText.push(node.outerHTML);
     });
-    
     return xmlText.join('');
+}
+
+export function toTei(content, xmlDoc) {
+    if (!xmlDoc) return content;
+    const nodes = parseXml(`<body xmlns="http://www.tei-c.org/ns/1.0">${content}</body>`);
+    const output = evaluateXPathToFirstNode(
+        `
+            import module namespace jt="http://jinntec.de/jinntap";
+            
+            jt:save-xml($document, .)
+        `,
+        nodes,
+        null,
+        {
+            document: xmlDoc
+        },
+        {
+            language: evaluateXPath.XQUERY_3_1_LANGUAGE
+        }
+    );
+    const xml = new XMLSerializer().serializeToString(output);
+    return xml;
+}
+
+export function newDoc(content) {
+    const inDoc = new DOMParser().parseFromString('<TEI xmlns="http://www.tei-c.org/ns/1.0"></TEI>', 'application/xml');
+    const doc = evaluateXPathToFirstNode(
+        `
+            import module namespace jt="http://jinntec.de/jinntap";
+            
+            jt:new-document()
+        `,
+        null,
+        null,
+        null,
+        {
+            language: evaluateXPath.XQUERY_3_1_LANGUAGE,
+            nodesFactory: inDoc,
+            debug: true
+        }
+    );
+    return {
+        doc,
+        content: fromTei(doc)
+    };
 }
 
 export function fromXml(content) {
@@ -46,5 +187,8 @@ export function fromXml(content) {
             
     // Check if root element is in TEI namespace
     const hasTeiNamespace = xmlDoc.documentElement.namespaceURI === 'http://www.tei-c.org/ns/1.0';
-    return hasTeiNamespace ? fromTei(xmlDoc) : xml;
+    return {
+        doc: xmlDoc,
+        content: hasTeiNamespace ? fromTei(xmlDoc) : content
+    };
 } 

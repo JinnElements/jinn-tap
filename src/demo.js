@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (newButton) {
         newButton.addEventListener('click', (event) => {
             event.preventDefault();
-            editor.content = '<tei-div><tei-p></tei-p></tei-div>';
+            editor.newDocument();
         });
     }
 });
