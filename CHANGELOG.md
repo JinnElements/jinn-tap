@@ -1,3 +1,10 @@
+# [1.21.0](https://github.com/JinnElements/jinn-tap/compare/v1.20.0...v1.21.0) (2025-05-04)
+
+
+### Features
+
+* **demo:** add download button ([cbfb405](https://github.com/JinnElements/jinn-tap/commit/cbfb40520dbe1dfccc0949d3ec23ed2a0e7326f6))
+
 # [1.20.0](https://github.com/JinnElements/jinn-tap/compare/v1.19.0...v1.20.0) (2025-05-04)
 
 
