@@ -1,3 +1,10 @@
+## [1.21.1](https://github.com/JinnElements/jinn-tap/compare/v1.21.0...v1.21.1) (2025-05-04)
+
+
+### Bug Fixes
+
+* new document should reset metadata ([9e09362](https://github.com/JinnElements/jinn-tap/commit/9e09362f95f5f2a6234b72317c6d5936faa00811))
+
 # [1.21.0](https://github.com/JinnElements/jinn-tap/compare/v1.20.0...v1.21.0) (2025-05-04)
 
 
