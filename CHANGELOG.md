@@ -1,3 +1,10 @@
+# [1.19.0](https://github.com/JinnElements/jinn-tap/compare/v1.18.1...v1.19.0) (2025-05-04)
+
+
+### Features
+
+* add input rule >> for creating subdivision ([3109a0e](https://github.com/JinnElements/jinn-tap/commit/3109a0e072a48693af0beb668f95c0b38e5b58a6))
+
 ## [1.18.1](https://github.com/JinnElements/jinn-tap/compare/v1.18.0...v1.18.1) (2025-05-03)
 
 
