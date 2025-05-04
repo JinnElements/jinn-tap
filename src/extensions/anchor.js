@@ -1,5 +1,6 @@
 import { JinnEmptyElement } from './empty.js';
 import { getAnchorReference } from './footnote.js';
+import { Plugin, PluginKey } from '@tiptap/pm/state';
 
 // Function to generate a unique ID
 function generateUniqueId() {
@@ -105,19 +106,15 @@ export const JinnAnchor = JinnEmptyElement.extend({
                 }
             },
             gotoNote: (id) => ({ commands, editor }) => {
-                const noteSelector = `tei-note[target="#${id}"]`;
-                const noteElement = editor.view.dom.querySelector(noteSelector);
-                
-                if (noteElement) {
-                    // Scroll note into view
-                    noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    
-                    // Set selection at start of note
-                    const pos = this.editor.view.posAtDOM(noteElement, 0);
-                    commands.setTextSelection(pos);
-                    return true;
-                }
-                return false;
+                const target = `#${id}`;
+                editor.view.state.doc.descendants((node, pos) => {
+                    if (node.type.name === 'note' && node.attrs.target === target) {
+                        const noteElement = editor.view.domAtPos(pos).node;
+                        noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        commands.setNodeSelection(pos + 1);
+                        return true;
+                    }
+                });
             }
         };
     },
@@ -130,18 +127,6 @@ export const JinnAnchor = JinnEmptyElement.extend({
             Object.entries(node.attrs).forEach(([key, value]) => {
                 if (value) {
                     dom.setAttribute(key, value);
-                }
-            });
-
-            // Get the reference number and set it as text content
-            const reference = getAnchorReference(node.attrs.id);
-
-            dom.addEventListener('click', (event) => {
-                if (reference && (event.metaKey || event.ctrlKey)) {
-                    editor.commands.gotoNote(node.attrs.id);
-                } else {
-                    const pos = this.editor.view.posAtDOM(dom);
-                    this.editor.options.element.dispatchEvent(new CustomEvent('empty-element-clicked', { detail: { node, pos } }));
                 }
             });
 
@@ -165,5 +150,30 @@ export const JinnAnchor = JinnEmptyElement.extend({
                 }
             }
         }
+    },
+    addProseMirrorPlugins() {
+        const { editor } = this;
+        return [
+            new Plugin({
+                key: new PluginKey("footnoteRefClick"),
+
+                props: {
+                    handleClickOn(view, pos, node, nodePos, event) {
+                        if (node.type.name === 'anchor') {
+                            if (event.ctrlKey || event.metaKey) {
+                                // Get the reference number and set it as text content
+                                const reference = getAnchorReference(node.attrs.id);
+                                if (reference) {
+                                    editor.commands.gotoNote(node.attrs.id);
+                                }
+                            } else {
+                                editor.options.element.dispatchEvent(new CustomEvent('empty-element-clicked', { detail: { node, pos } }));
+                            }
+                            return true;
+                        }
+                    }
+                }
+            })
+        ];
     }
 }); 
