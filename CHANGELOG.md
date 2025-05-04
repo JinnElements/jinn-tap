@@ -1,3 +1,11 @@
+## [1.21.2](https://github.com/JinnElements/jinn-tap/compare/v1.21.1...v1.21.2) (2025-05-04)
+
+
+### Bug Fixes
+
+* nodes with preserveSpace:true in the schema should be serialized with xml:space="preserve" ([f5e798e](https://github.com/JinnElements/jinn-tap/commit/f5e798ef32b13a1a0a944d6fa83ead82884a8761))
+* test case for xml:space="preserve" ([de1d7e2](https://github.com/JinnElements/jinn-tap/commit/de1d7e21362d630b23141b75e99c1b688b08fd18))
+
 ## [1.21.1](https://github.com/JinnElements/jinn-tap/compare/v1.21.0...v1.21.1) (2025-05-04)
 
 
