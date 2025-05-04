@@ -30,10 +30,13 @@ registerXQueryModule(`
                     </div>
                 </body>
             </text>
+            <standOff>
+                <listAnnotation></listAnnotation>
+            </standOff>
         </TEI>
     };
 
-    declare function jt:import($doc as document-node()) {
+    declare function jt:import($doc as node()) {
         let $xml :=
             if (not($doc//tei:body)) then
                 $doc//tei:text/tei:div
@@ -115,9 +118,8 @@ registerXQueryModule(`
 `);
 
 export function importXml(content) {
-    const xmlDoc = parseXml(content);
+    const xmlDoc = typeof content === 'string' ? parseXml(content) : content;
     if (!xmlDoc) return '';
-
     const output = evaluateXPathToNodes(
         `
             import module namespace jt="http://jinntec.de/jinntap";
@@ -128,13 +130,16 @@ export function importXml(content) {
         null,
         null,
         {
-            language: evaluateXPath.XQUERY_3_1_LANGUAGE
+            language: evaluateXPath.XQUERY_3_1_LANGUAGE,
+            // we want to create HTML, not XML nodes
+            nodesFactory: document
         }
     );
     const xmlText = [];
     output.forEach(node => {
         xmlText.push(node.outerHTML);
     });
+    console.log(xmlText.join(''));
     return {
         content: xmlText.join(''),
         doc: xmlDoc
@@ -163,7 +168,8 @@ export function exportXml(content, xmlDoc) {
     return xml;
 }
 
-export function newDoc() {
+export function createDocument() {
+    // to be used as nodesFactory, which should produce XML nodes
     const inDoc = new DOMParser().parseFromString('<TEI xmlns="http://www.tei-c.org/ns/1.0"></TEI>', 'application/xml');
     const doc = evaluateXPathToFirstNode(
         `
@@ -180,8 +186,5 @@ export function newDoc() {
             debug: true
         }
     );
-    return {
-        doc,
-        content: importXml(doc)
-    };
+    return importXml(doc);
 }

@@ -14,7 +14,7 @@ import { AttributePanel } from './attribute-panel.js';
 import { NavigationPanel } from './navigator.js';
 import { Toolbar } from './toolbar.js';
 import { generateRandomColor, colorCssFromSchema } from './util/colors.js';
-import { importXml, exportXml, newDoc } from './util/xml.js';
+import { importXml, exportXml, createDocument } from './util/xml.js';
 import { generateUsername } from "unique-username-generator";
 import xmlFormat from 'xml-formatter';
 import schema from './schema.json';
@@ -350,22 +350,25 @@ export class JinnTap extends HTMLElement {
         }));
     }
 
-    // Getter for the editor's content
+    // Getter for the editor's content, i.e. the fragment edited in the editor,
+    // not the full XML content.
     get content() {
         return this.editor.getText();
     }
 
-    // Setter for the editor's content
+    // Setter for the editor's content, i.e. the fragment edited in the editor,
+    // not the full XML content.
     set content(value) {
         this.editor.chain().focus().setContent(value).setTextSelection(0).run();
         this.dispatchContentChange();
     }
 
-    // Getter for the TEI XML content
+    // Getter for the full XML content
     get xml() {
         return exportXml(serialize(this.editor), this.document);
     }
 
+    // Setter for the full XML content
     set xml(value) {
         const { doc, content } = importXml(value);
         this.content = content;
@@ -373,7 +376,7 @@ export class JinnTap extends HTMLElement {
     }
 
     newDocument() {
-        const { doc, content } = newDoc();
+        const { doc, content } = createDocument();
         this.document = doc;
         this.content = content;
     }
