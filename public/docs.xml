@@ -111,6 +111,11 @@
                             are displayed as colored markers. You can insert, delete them or change
                             their attributes, but not add any content.</p>
                     </item>
+                    <item>
+                        <p>clicking on a footnote anchor will select it. Hold <hi rend="code">ctrl</hi>
+                            (or <hi rend="code">command</hi> on Mac) and click to navigate to the
+                            footnote text.</p>
+                    </item>
                 </list>
                 <p>Apply inline markup by selecting some text and pressing a corresponding button.
                     Note that those buttons are toggles, i.e. pressing again will <hi rend="b">
