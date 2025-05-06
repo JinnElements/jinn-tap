@@ -49,7 +49,7 @@ export class AttributePanel {
                 .focus()
                 .setNodeSelection(pos)
                 .run();
-            this.showNodeAttributes(node);
+            this.updatePanel(node, pos);
         });
     }
 
@@ -61,7 +61,7 @@ export class AttributePanel {
             this.currentElement = null;
             const matchingMark = matchingMarks[matchingMarks.length - 1];
             if (this.currentMark?.mark != matchingMark.mark) {
-                this.showMarkAttributes(matchingMark.mark, matchingMark.text);
+                this.updatePanel(matchingMark.mark, from, matchingMark.text);
             }
             this.currentMark = matchingMark;
             return;
@@ -78,20 +78,14 @@ export class AttributePanel {
             }
             this.currentElement = node;
             this.currentAttributes = { ...node.attrs };
-            this.showNodeAttributes(node);
+            // Get the actual node position by finding its start position
+            const nodePos = $pos.before();
+            this.updatePanel(node, nodePos);
         } else {
             this.currentElement = null;
             this.currentAttributes = {};
             this.hidePanel();
         }
-    }
-
-    showMarkAttributes(mark, text) {
-        this.updatePanel(mark, text);
-    }
-
-    showNodeAttributes(node) {
-        this.updatePanel(node);
     }
 
     hidePanel() {
@@ -138,7 +132,7 @@ export class AttributePanel {
         return input;
     }
 
-    updatePanel(nodeOrMark, text) {
+    updatePanel(nodeOrMark, pos, text) {
         if (!this.panel) return;
         
         this.panel.innerHTML = '';
@@ -210,7 +204,7 @@ export class AttributePanel {
                     const value = `${attrDef.connector.prefix}-${event.detail.properties.ref}`;
                     input.value = value;
                     details.open = false;
-                    this.handleAttributeUpdate(nodeOrMark, { [attrName]: value });
+                    this.handleAttributeUpdate(nodeOrMark, pos, { [attrName]: value });
                 });
                 details.appendChild(lookup);
                 form.appendChild(details);
@@ -251,13 +245,13 @@ export class AttributePanel {
                 Apply`;
             applyButton.addEventListener('click', (ev) => {
                 ev.preventDefault();
-                this.handleAttributeUpdate(nodeOrMark);
+                this.handleAttributeUpdate(nodeOrMark, pos);
             });
             this.panel.appendChild(applyButton);
         }
     }
 
-    handleAttributeUpdate(nodeOrMark, pendingChanges = {}) {
+    handleAttributeUpdate(nodeOrMark, pos, pendingChanges = {}) {
         const formData = new FormData(this.panel.querySelector('form'));
         const clearedAttributes = [];
         for (const [key, value] of formData.entries()) {
@@ -277,7 +271,7 @@ export class AttributePanel {
                 .run();
         }
 
-        if (Object.keys(pendingChanges).length > 0) {
+        if (Object.keys(pendingChanges).length > 0 || clearedAttributes.length > 0) {
             if (nodeOrMark instanceof Mark) {
                 if (clearedAttributes.length > 0) {
                     this.editor.commands.resetAttributes(nodeOrMark.type, clearedAttributes);
@@ -289,19 +283,22 @@ export class AttributePanel {
                     .run();
             } else {
                 // Find the position of the node or mark in the document
-                let pos = null;
-                this.editor.state.doc.nodesBetween(0, this.editor.state.doc.content.size, (node, nodePos) => {
-                    // For nodes, check if this is the node we're looking for
-                    if (node.eq(nodeOrMark)) {
-                        pos = nodePos;
-                        return false; // Stop traversal
-                    }
-                });
-                
                 if (pos !== null) {
                     const tr = this.editor.state.tr;
-                    tr.setNodeMarkup(pos, nodeOrMark.type, { ...nodeOrMark.attrs, ...pendingChanges });
+                    // Create new attributes object without cleared attributes
+                    const newAttrs = { ...nodeOrMark.attrs, ...pendingChanges };
+                    clearedAttributes.forEach(attr => delete newAttrs[attr]);
+                    console.log('<jinn-tap> newAttrs: %o', newAttrs);
+                    tr.setNodeMarkup(pos, nodeOrMark.type, newAttrs);
                     this.editor.view.dispatch(tr);
+                } else {
+                    console.log('<jinn-tap> updating attributes: %o', pendingChanges);
+                    this.editor.chain()
+                        .focus()
+                        .resetAttributes(nodeOrMark.type, clearedAttributes)
+                        .updateAttributes(nodeOrMark.type, pendingChanges)
+                        .setTextSelection({ from, to })
+                        .run();
                 }
 
                 if (nodeOrMark.type.name === 'note') {

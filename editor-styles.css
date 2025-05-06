@@ -82,15 +82,15 @@ tei-p {
     position: relative;
 }
 
-tei-p[rend="center"] {
+[rend="center"] {
     text-align: center;
 }
 
-tei-p[rend="right"] {
+[rend="right"] {
     text-align: right;
 }
 
-tei-p[rend="justify"] {
+[rend="justify"] {
     text-align: justify;
 }
 
@@ -290,7 +290,6 @@ tei-p.is-empty::before {
 tei-ref {
     color: var(--pico-primary);
     text-decoration: underline;
-    cursor: pointer;
 }
 
 .ProseMirror-selectednode {

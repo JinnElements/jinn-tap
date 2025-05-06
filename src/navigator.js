@@ -69,7 +69,7 @@ export class NavigationPanel {
                     .focus()
                     .setNodeSelection(nodeInfo.pos.from - 1)
                     .run();
-                this.attributePanel.showNodeAttributes(nodeInfo.node);
+                this.attributePanel.updatePanel(nodeInfo.node, nodeInfo.pos.from - 1);
             });
             li.appendChild(link);
             ul.appendChild(li);
@@ -83,7 +83,7 @@ export class NavigationPanel {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
                     this.editor.chain().focus().extendMarkRange(mark.mark.type).run();
-                    this.attributePanel.showMarkAttributes(mark.mark, mark.text);
+                    this.attributePanel.updatePanel(mark.mark, from, mark.text);
                 });
                 li.appendChild(link);
                 ul.appendChild(li);

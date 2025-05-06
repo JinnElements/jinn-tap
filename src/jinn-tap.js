@@ -240,11 +240,9 @@ export class JinnTap extends HTMLElement {
         }
         // if no initial content, create a default document
         if (!initialContent) {
-            initialContent = `
-                <tei-div>
-                    <tei-p></tei-p>
-                </tei-div>
-            `;
+            const { doc, content } = createDocument();
+            initialContent = content;
+            this.document = doc;
         }
 
         this._codeArea = this.querySelector('.code-area');

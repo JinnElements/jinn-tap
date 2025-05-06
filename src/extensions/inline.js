@@ -28,17 +28,6 @@ export const JinnInline = Mark.create({
     },
 
     renderHTML({ HTMLAttributes }) {
-        // Special handling for ref elements to make them behave like links
-        if (this.name === 'ref') {
-            return [this.options.tag, {
-                ...HTMLAttributes,
-                role: 'link',
-                tabindex: '0',
-                onclick: `window.open(this.getAttribute('target'), '_blank', 'noopener,noreferrer')`,
-                onkeypress: `if(event.key === 'Enter') window.open(this.getAttribute('target'), '_blank', 'noopener,noreferrer')`,
-                rel: 'noopener noreferrer'
-            }, 0]
-        }
         return [this.options.tag, HTMLAttributes, 0]
     },
 
