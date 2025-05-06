@@ -1,3 +1,10 @@
+## [1.21.3](https://github.com/JinnElements/jinn-tap/compare/v1.21.2...v1.21.3) (2025-05-06)
+
+
+### Bug Fixes
+
+* correct selection in attribute panel ([cc1a696](https://github.com/JinnElements/jinn-tap/commit/cc1a696b5b133c55bbf194d09a2a4cc6f793656c))
+
 ## [1.21.2](https://github.com/JinnElements/jinn-tap/compare/v1.21.1...v1.21.2) (2025-05-04)
 
 
