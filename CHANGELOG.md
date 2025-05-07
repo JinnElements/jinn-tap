@@ -1,3 +1,10 @@
+## [1.21.4](https://github.com/JinnElements/jinn-tap/compare/v1.21.3...v1.21.4) (2025-05-07)
+
+
+### Bug Fixes
+
+* initialize with empty document ([6df9407](https://github.com/JinnElements/jinn-tap/commit/6df9407142f4abe94c93f74af035413a66ddb40b))
+
 ## [1.21.3](https://github.com/JinnElements/jinn-tap/compare/v1.21.2...v1.21.3) (2025-05-06)
 
 
