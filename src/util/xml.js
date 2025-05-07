@@ -13,7 +13,7 @@ registerXQueryModule(`
             <teiHeader>
                 <fileDesc>
                     <titleStmt>
-                        <title>JinnTap Documentation</title>
+                        <title>Untitled Document</title>
                     </titleStmt>
                     <publicationStmt>
                         <p>Information about publication or distribution</p>
@@ -39,9 +39,9 @@ registerXQueryModule(`
     declare function jt:import($doc as node()) {
         let $xml :=
             if (not($doc//tei:body)) then
-                $doc//tei:text/tei:div
+                $doc//tei:text/node()
             else
-                $doc//tei:body
+                $doc//tei:body/node()
         return (
             jt:import($xml, false()),
             <tei-listAnnotation>
@@ -79,22 +79,22 @@ registerXQueryModule(`
                     $node
     };
 
-    declare function jt:export($nodes as node()*, $input as document-node()) {
+    declare function jt:export($nodes as node()*, $input as document-node(), $meta as map(*)) {
         for $node in $nodes
         return
             typeswitch($node)
                 case document-node() return
-                    jt:export($node/node(), $input)
+                    jt:export($node/node(), $input, $meta)
                 case element(tei:TEI) return
                     element { node-name($node) } {
                         $node/@*,
-                        $node/tei:teiHeader,
-                        jt:export($node/tei:text, $input),
+                        jt:export($node/tei:teiHeader, $input, $meta),
+                        jt:export($node/tei:text, $input, $meta),
                         if (not($node/tei:standOff)) then
                             <standOff xmlns="http://www.tei-c.org/ns/1.0">{ $input//tei:listAnnotation }</standOff>
                         else
                             (),
-                        jt:export($node/tei:standOff, $input)
+                        jt:export($node/tei:standOff, $input, $meta)
                     }
                 case element(tei:standOff) return
                     element { node-name($node) } {
@@ -107,10 +107,18 @@ registerXQueryModule(`
                         $node/@*,
                         $input/tei:body/node() except $input/tei:body/tei:listAnnotation
                     }
+                case element(tei:title) return
+                    element { node-name($node) } {
+                        $node/@*,
+                        if ($node/ancestor::tei:titleStmt) then
+                            <title xmlns="http://www.tei-c.org/ns/1.0">{$meta?title}</title>
+                        else
+                            jt:export($node/node(), $input, $meta)
+                    }
                 case element() return
                     element { node-name($node) } {
                         $node/@*,
-                        jt:export($node/node(), $input)
+                        jt:export($node/node(), $input, $meta)
                     }
                 default return
                     $node
@@ -145,26 +153,27 @@ export function importXml(content) {
     };
 }
 
-export function exportXml(content, xmlDoc) {
+export function exportXml(content, xmlDoc, metadata = {}) {
     if (!xmlDoc) return content;
     const nodes = parseXml(`<body xmlns="http://www.tei-c.org/ns/1.0">${content}</body>`);
-    const output = evaluateXPathToFirstNode(
+    const output = evaluateXPathToNodes(
         `
             import module namespace jt="http://jinntec.de/jinntap";
             
-            jt:export($document, .)
+            jt:export($document, ., $meta)
         `,
         nodes,
         null,
         {
-            document: xmlDoc
+            document: xmlDoc,
+            meta: metadata
         },
         {
             language: evaluateXPath.XQUERY_3_1_LANGUAGE
         }
     );
-    const xml = new XMLSerializer().serializeToString(output);
-    return xml;
+    const serializer = new XMLSerializer();
+    return output.map(node => serializer.serializeToString(node)).join('');
 }
 
 export function createDocument() {

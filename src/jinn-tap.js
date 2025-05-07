@@ -74,7 +74,10 @@ export class JinnTap extends HTMLElement {
         this.collaboration = null;
         this.provider = null;
         this.notes = 'disconnected';
-        this.metadata = {};
+        this.metadata = {
+            title: 'Untitled Document',
+            name: 'untitled.xml'
+        };
         this._schema = schema; // Default schema
         this._initialized = false;
     }
@@ -304,6 +307,7 @@ export class JinnTap extends HTMLElement {
             autofocus: false,
             onCreate: () => {
                 this.dispatchEvent(new CustomEvent('ready'));
+                this.dispatchContentChange();
             },
             onTransaction: ({editor, transaction}) => {
                 if (transaction.docChanged) {
@@ -313,6 +317,7 @@ export class JinnTap extends HTMLElement {
         };
         if (!this.collaboration) {
             editorConfig.extensions.push(History);
+            editorConfig.content = initialContent;
         } else {
             editorConfig.extensions.push(Collaboration.configure({
                 provider: this.provider,
@@ -336,10 +341,6 @@ export class JinnTap extends HTMLElement {
         
         // Initialize toolbar
         this.toolbar = new Toolbar(this, this._schema);
-
-        if (!this.collaboration) {
-            this.content = initialContent;
-        }
     }
 
     dispatchContentChange() {
@@ -347,7 +348,7 @@ export class JinnTap extends HTMLElement {
         this.dispatchEvent(new CustomEvent('content-change', {
             detail: {
                 body: body,
-                xml: exportXml(body, this.document)
+                xml: exportXml(body, this.document, this.metadata)
             }
         }));
     }
@@ -367,7 +368,7 @@ export class JinnTap extends HTMLElement {
 
     // Getter for the full XML content
     get xml() {
-        return exportXml(serialize(this.editor, this._schema), this.document);
+        return exportXml(serialize(this.editor, this._schema), this.document, this.metadata);
     }
 
     // Setter for the full XML content
