@@ -307,7 +307,6 @@ export class JinnTap extends HTMLElement {
             autofocus: false,
             onCreate: () => {
                 this.dispatchEvent(new CustomEvent('ready'));
-                this.dispatchContentChange();
             },
             onTransaction: ({editor, transaction}) => {
                 if (transaction.docChanged) {
@@ -341,6 +340,10 @@ export class JinnTap extends HTMLElement {
         
         // Initialize toolbar
         this.toolbar = new Toolbar(this, this._schema);
+
+        if (!this.collaboration) {
+            this.content = initialContent;
+        }
     }
 
     dispatchContentChange() {
@@ -362,7 +365,11 @@ export class JinnTap extends HTMLElement {
     // Setter for the editor's content, i.e. the fragment edited in the editor,
     // not the full XML content.
     set content(value) {
-        this.editor.chain().focus().setContent(value).setTextSelection(0).run();
+        this.editor.chain()
+            .focus()
+            .setContent(value)
+            .setTextSelection(0)
+            .run();
         this.dispatchContentChange();
     }
 
