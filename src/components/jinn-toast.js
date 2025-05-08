@@ -37,7 +37,7 @@ export class JinnToast extends HTMLElement {
                     padding: 12px 24px;
                     margin: 8px 0;
                     border-radius: 4px;
-                    color: white;
+                    color: var(--jinn-toast-color, #F0F0F0);
                     opacity: 0;
                     transform: translateY(20px);
                     transition: opacity 0.3s, transform 0.3s;
@@ -102,11 +102,16 @@ export class JinnToast extends HTMLElement {
 
     setupEventListeners() {
         document.addEventListener('jinn-toast', (event) => {
-            this.showToast(event.detail.message, event.detail.type || 'info', event.detail.sticky || false);
+            this.showToast(
+                event.detail.message, 
+                event.detail.type || 'info', 
+                event.detail.nohtml || false,
+                event.detail.sticky || false
+            );
         });
     }
 
-    showToast(message, type, sticky = false) {
+    showToast(message, type, nohtml = false, sticky = false) {
         const toast = document.createElement('div');
         toast.className = `jinn-toast ${type} ${sticky ? 'sticky' : ''}`;
         
@@ -118,7 +123,11 @@ export class JinnToast extends HTMLElement {
         };
 
         if (typeof message === 'string') {
-            toast.innerHTML = message;
+            if (nohtml) {
+                toast.textContent = message;
+            } else {
+                toast.innerHTML = message;
+            }
         } else if (message instanceof Node) {
             toast.appendChild(message);
         } else if (typeof message === 'function') {

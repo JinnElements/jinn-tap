@@ -279,7 +279,7 @@ export class JinnTap extends HTMLElement {
                 onAuthenticationFailed: () => {
                     document.dispatchEvent(new CustomEvent('jinn-toast', {
                         detail: {
-                            message: 'Authentication failed. Please log in.',
+                            message: 'Authentication failed. Please log in and reload the page.',
                             type: 'error'
                         }
                     }));
@@ -311,6 +311,28 @@ export class JinnTap extends HTMLElement {
             onTransaction: ({editor, transaction}) => {
                 if (transaction.docChanged) {
                     this.dispatchContentChange();
+                }
+            },
+            enableContentCheck: true,
+            onContentError({ editor, error, disableCollaboration }) {
+                const errorMessage = error.cause ? error.cause.message : error.message;
+                let toastMessage;
+                if (this.collaboration) {
+                    toastMessage = `Content does not match schema. Switching to read-only mode. ${errorMessage}`;
+                } else {
+                    toastMessage = `Content does not match schema. Some markup may be lost on save. ${errorMessage}`;
+                }
+                document.dispatchEvent(new CustomEvent('jinn-toast', {
+                    detail: {
+                        message: toastMessage,
+                        type: 'error',
+                        nohtml: true,
+                        sticky: true
+                    }
+                }));
+                if (this.collaboration) {
+                    disableCollaboration();
+                    editor.setEditable(false, false);
                 }
             }
         };
