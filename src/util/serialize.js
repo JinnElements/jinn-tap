@@ -110,19 +110,22 @@ class Serializer {
   
     // If content is empty, output as self-closing element
     if (!content) {
-      return `<${tagName}${attrs ? ' ' + attrs : ''}/>`;
+      return `${this.closeMarks(next)}<${tagName}${attrs ? ' ' + attrs : ''}/>`;
     }
   
-    return `<${tagName}${attrs ? ' ' + attrs : ''}>${content}</${tagName}>`;
+    return `${this.closeMarks(next)}<${tagName}${attrs ? ' ' + attrs : ''}>${content}</${tagName}>`;
   }
 
-  closeMarks() {
+  closeMarks(next) {
     let text = '';
     this.openMarks.forEach(openMark => {
+      if (next?.isText && next.marks.some(mark => compareMarks(mark, openMark))) {
+        return '';
+      }
       const tagName = openMark.type;
+      this.openMarks = this.openMarks.filter(mark => !compareMarks(mark, openMark));
       text += `</${tagName}>`;
     });
-    this.openMarks = [];
     return text;
   }
 }
