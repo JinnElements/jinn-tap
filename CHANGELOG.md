@@ -1,3 +1,10 @@
+## [1.21.5](https://github.com/JinnElements/jinn-tap/compare/v1.21.4...v1.21.5) (2025-05-08)
+
+
+### Bug Fixes
+
+* footnotes not visible on initialization ([1363761](https://github.com/JinnElements/jinn-tap/commit/13637615f90728392d8b89f00f060191611321ed))
+
 ## [1.21.4](https://github.com/JinnElements/jinn-tap/compare/v1.21.3...v1.21.4) (2025-05-07)
 
 
