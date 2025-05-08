@@ -1,3 +1,10 @@
+## [1.22.1](https://github.com/JinnElements/jinn-tap/compare/v1.22.0...v1.22.1) (2025-05-08)
+
+
+### Bug Fixes
+
+* title serialization ([083b5e6](https://github.com/JinnElements/jinn-tap/commit/083b5e63fa70122ed0e4450393a6e5612386fd41))
+
 # [1.22.0](https://github.com/JinnElements/jinn-tap/compare/v1.21.5...v1.22.0) (2025-05-08)
 
 
