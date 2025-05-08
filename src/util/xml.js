@@ -110,8 +110,8 @@ registerXQueryModule(`
                 case element(tei:title) return
                     element { node-name($node) } {
                         $node/@*,
-                        if ($node/ancestor::tei:titleStmt) then
-                            <title xmlns="http://www.tei-c.org/ns/1.0">{$meta?title}</title>
+                        if ($node/ancestor::tei:titleStmt and map:contains($meta, 'title')) then
+                            $meta?title
                         else
                             jt:export($node/node(), $input, $meta)
                     }
