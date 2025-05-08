@@ -1,3 +1,15 @@
+# [1.22.0](https://github.com/JinnElements/jinn-tap/compare/v1.21.5...v1.22.0) (2025-05-08)
+
+
+### Bug Fixes
+
+* serialization of inline elements coming after a mark ([bec3121](https://github.com/JinnElements/jinn-tap/commit/bec3121e15c0bc86676adf4aaef6fdcb72839864))
+
+
+### Features
+
+* warn if xml does not match schema ([2da49f3](https://github.com/JinnElements/jinn-tap/commit/2da49f3cf316e5d4bbf6af7b7320a11b67096121))
+
 ## [1.21.5](https://github.com/JinnElements/jinn-tap/compare/v1.21.4...v1.21.5) (2025-05-08)
 
 
