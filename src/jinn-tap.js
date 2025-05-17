@@ -34,7 +34,10 @@ import './jinn-tap.css';
  * @attr {string} schema - URL to load the TEI schema from. The schema will be fetched
  *                         and used to configure the editor's capabilities. If not provided,
  *                         a default schema will be used.
- * @attr {string} notes - The wrapper element to use for notes. The default is 'listAnnotation'.
+ * @attr {string} notes-wrapper - The wrapper element to use for notes. The default is 'listAnnotation'.
+ * @attr {string} notes - Which of the two modes for editing notes should be used. Default is 'connected',
+ * i.e. deleting an anchor will delete the associated note. The alternative, 'disconnected', allows notes to be 
+ * detached from their anchor.
  * @attr {string} server - The websocket server URL to use for collaboration.
  * @attr {string} token - JWT token to use for authentication with the collaboration server.
  * @attr {string} name - Unique name for the collaboration session.
@@ -156,7 +159,7 @@ export class JinnTap extends HTMLElement {
 
     connectedCallback() {
         if (this.hasAttribute('notesWrapper')) {
-            this.notesWrapper = this.getAttribute('notes');
+            this.notesWrapper = this.getAttribute('notes-wrapper');
         }
         this.notes = this.getAttribute('notes') || 'disconnected';
 
