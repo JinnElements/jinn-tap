@@ -169,6 +169,9 @@ export class AttributePanel {
                 return;
             }
             if (attrDef.connector) {
+                const connectorFieldset = document.createElement('fieldset');
+                form.appendChild(connectorFieldset);
+
                 const label = document.createElement('label');
                 label.textContent = attrName;
                 const input = document.createElement('input');
@@ -177,8 +180,8 @@ export class AttributePanel {
                 input.readOnly = true;
                 input.name = attrName;
                 input.placeholder = "No reference assigned";
-                form.appendChild(label);
-                form.appendChild(input);
+                connectorFieldset.appendChild(label);
+                connectorFieldset.appendChild(input);
 
                 const details = document.createElement('details');
                 details.open = !nodeOrMark.attrs[attrName];
@@ -234,6 +237,7 @@ export class AttributePanel {
         // Skip button if only one attribute and it has a connector
         if (Object.keys(attributes).length > 0 && 
             !(Object.keys(attributes).length === 1 && attributes[Object.keys(attributes)[0]].connector)) {
+            const footer = document.createElement('footer');
             const applyButton = document.createElement('button');
             applyButton.dataset.tooltip = 'Apply Changes';
             applyButton.type = 'submit';
@@ -242,12 +246,13 @@ export class AttributePanel {
                     <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0"/>
                     <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z"/>
                 </svg>
-                Apply`;
+                <span>Apply</span>`;
             applyButton.addEventListener('click', (ev) => {
                 ev.preventDefault();
                 this.handleAttributeUpdate(nodeOrMark, pos);
             });
-            this.panel.appendChild(applyButton);
+            footer.appendChild(applyButton);
+            this.panel.appendChild(footer);
         }
     }
 
