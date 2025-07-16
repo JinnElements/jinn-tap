@@ -307,6 +307,25 @@
                 }
             }
         },
+        "measure": {
+            "type": "inline",
+            "attributes": {
+                "quantity": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                }
+            },
+            "toolbar": {
+                "Measure": {
+                    "attributes": {},
+                    "label": "<i class='bi bi-rulers'></i>",
+                    "order": 12,
+                    "select": "Textcritical"
+                }
+            }
+        },
         "p": {
             "type": "block",
             "priority": 100,
