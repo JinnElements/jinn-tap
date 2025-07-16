@@ -1,3 +1,10 @@
+## [1.22.2](https://github.com/JinnElements/jinn-tap/compare/v1.22.1...v1.22.2) (2025-07-16)
+
+
+### Bug Fixes
+
+* conflicting attribute names ([258dd9e](https://github.com/JinnElements/jinn-tap/commit/258dd9ed2538091ff0cf38dca15dd53674188e3c))
+
 ## [1.22.1](https://github.com/JinnElements/jinn-tap/compare/v1.22.0...v1.22.1) (2025-05-08)
 
 
