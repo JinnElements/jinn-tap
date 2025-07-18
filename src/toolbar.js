@@ -2,7 +2,7 @@ import { findParentNodeClosestToPos } from '@tiptap/core';
 
 /**
  * Toolbar class for the editor.
- * 
+ *
  * @class Toolbar
  * @param {Object} editor - The editor instance.
  * @param {Object} schemaDef - The schema definition.
@@ -10,7 +10,7 @@ import { findParentNodeClosestToPos } from '@tiptap/core';
 export class Toolbar {
     /**
      * Create a new Toolbar instance.
-     * 
+     *
      * @param {Object} editor - The editor instance.
      * @param {Object} schemaDef - The schema definition.
      */
@@ -33,20 +33,20 @@ export class Toolbar {
                     }
                     selectItems.get(def.select).push({ name, def, isGlobal: true });
                     // Add select to all items if not already added
-                    if (!allItems.some(item => item.type === 'select' && item.name === def.select)) {
+                    if (!allItems.some((item) => item.type === 'select' && item.name === def.select)) {
                         allItems.push({
                             type: 'select',
                             name: def.select,
-                            order: this.schemaDef.selects[def.select]?.order ?? 0
+                            order: this.schemaDef.selects[def.select]?.order ?? 0,
                         });
                     }
                 } else {
-                    allItems.push({ 
+                    allItems.push({
                         type: 'button',
                         name,
                         def,
                         isGlobal: true,
-                        order: def.order ?? 0
+                        order: def.order ?? 0,
                     });
                 }
             });
@@ -62,22 +62,22 @@ export class Toolbar {
                     }
                     selectItems.get(toolbarDef.select).push({ name, def, label, toolbarDef, isGlobal: false });
                     // Add select to all items if not already added
-                    if (!allItems.some(item => item.type === 'select' && item.name === toolbarDef.select)) {
+                    if (!allItems.some((item) => item.type === 'select' && item.name === toolbarDef.select)) {
                         allItems.push({
                             type: 'select',
                             name: toolbarDef.select,
-                            order: this.schemaDef.selects[toolbarDef.select]?.order ?? 0
+                            order: this.schemaDef.selects[toolbarDef.select]?.order ?? 0,
                         });
                     }
                 } else {
-                    allItems.push({ 
+                    allItems.push({
                         type: 'button',
                         name,
                         def,
                         label,
                         toolbarDef,
                         isGlobal: false,
-                        order: toolbarDef.order ?? 0
+                        order: toolbarDef.order ?? 0,
                     });
                 }
             });
@@ -87,7 +87,7 @@ export class Toolbar {
         const sortedItems = allItems.sort((a, b) => a.order - b.order);
 
         // Create toolbar items in order
-        sortedItems.forEach(item => {
+        sortedItems.forEach((item) => {
             if (item.type === 'select') {
                 const selectDef = this.schemaDef.selects[item.name];
                 const select = this.createSelect(selectDef?.label || item.name);
@@ -97,15 +97,31 @@ export class Toolbar {
                 this.toolbar.appendChild(li);
 
                 // Add items to select
-                selectItems.get(item.name).forEach(selectItem => {
+                selectItems.get(item.name).forEach((selectItem) => {
                     if (selectItem.isGlobal) {
-                        this.addOptionToSelect(select, selectItem.name, selectItem.def, selectItem.name, selectItem.def);
+                        this.addOptionToSelect(
+                            select,
+                            selectItem.name,
+                            selectItem.def,
+                            selectItem.name,
+                            selectItem.def,
+                        );
                     } else {
-                        this.addOptionToSelect(select, selectItem.name, selectItem.def, selectItem.label, selectItem.toolbarDef);
+                        this.addOptionToSelect(
+                            select,
+                            selectItem.name,
+                            selectItem.def,
+                            selectItem.label,
+                            selectItem.toolbarDef,
+                        );
                     }
                 });
             } else {
-                const button = this.createButton(item.name, item.isGlobal ? item.name : item.label, item.isGlobal ? item.def : (item.toolbarDef || item.def));
+                const button = this.createButton(
+                    item.name,
+                    item.isGlobal ? item.name : item.label,
+                    item.isGlobal ? item.def : item.toolbarDef || item.def,
+                );
                 button.addEventListener('click', (ev) => {
                     ev.preventDefault();
                     this.nodeAction(item.name, item.def, item.toolbarDef || item.def);
@@ -122,7 +138,7 @@ export class Toolbar {
 
     /**
      * Perform action for a node in the toolbar.
-     * 
+     *
      * @param {string} name - The name of the node.
      * @param {Object} def - The definition of the node.
      * @param {Object} toolbarDef - The definition of the toolbar item.
@@ -134,8 +150,8 @@ export class Toolbar {
             const { state } = this.editor;
             const { selection } = state;
             const { $from } = selection;
-            const listItem = findParentNodeClosestToPos($from, node => node.type.name === 'item');
-            
+            const listItem = findParentNodeClosestToPos($from, (node) => node.type.name === 'item');
+
             if (listItem) {
                 // If in a list item, use transformToHead
                 if (checkOnly) {
@@ -174,7 +190,7 @@ export class Toolbar {
         } else if (def.type === 'empty' || def.type === 'graphic') {
             chain = chain.insertContent({
                 type: name,
-                attrs: toolbarDef.attributes
+                attrs: toolbarDef.attributes,
             });
         } else {
             // Check if the node's content model is a textBlock
@@ -196,22 +212,21 @@ export class Toolbar {
         const button = document.createElement('a');
         button.href = '#';
         button.className = 'outline toolbar-button';
-        
+
         // Add icon if specified in schema
         if (def.label) {
             button.innerHTML = def.label;
         }
-        
+
         // Add tooltip
         button.dataset.tooltip = label;
         button.dataset.placement = 'bottom';
         button.dataset.name = name;
-        
+
         // Add active state styling
         button.addEventListener('mousedown', (e) => {
             e.preventDefault(); // Prevent editor from losing focus
         });
-
 
         return button;
     }
@@ -221,14 +236,14 @@ export class Toolbar {
      */
     updateButtonStates() {
         const buttons = this.toolbar.querySelectorAll('a[data-name]');
-        buttons.forEach(button => {
+        buttons.forEach((button) => {
             const nodeType = this.schemaDef.schema[button.dataset.name];
-            
+
             if (!nodeType) return;
-            
+
             // Use nodeAction with checkOnly=true to determine if the action can be performed
             const isValid = this.nodeAction(button.dataset.name, nodeType, nodeType, true);
-            
+
             button.disabled = !isValid;
             if (!isValid) {
                 button.classList.add('disabled');
@@ -242,7 +257,7 @@ export class Toolbar {
     createSelect(name) {
         const select = document.createElement('details');
         select.className = 'dropdown';
-        
+
         const summary = document.createElement('summary');
         summary.innerHTML = name;
         select.appendChild(summary);

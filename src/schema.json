@@ -19,9 +19,7 @@
         },
         "choice/abbr/expan": {
             "command": "insertSnippet",
-            "args": [
-                "<tei-choice><tei-abbr>{abbrev}</tei-abbr><tei-expan>{expansion}</tei-expan></tei-choice>"
-            ],
+            "args": ["<tei-choice><tei-abbr>{abbrev}</tei-abbr><tei-expan>{expansion}</tei-expan></tei-choice>"],
             "select": "Textcritical",
             "label": "<i class='bi bi-three-dots'></i>"
         },
@@ -96,10 +94,10 @@
                 }
             },
             "keyboard": {
-                "Cmd-b": { 
+                "Cmd-b": {
                     "attributes": { "rend": "b" }
                 },
-                "Cmd-i": { 
+                "Cmd-i": {
                     "attributes": { "rend": "i" }
                 }
             },
@@ -145,7 +143,7 @@
                 }
             },
             "keyboard": {
-                "Mod-Alt-t": { 
+                "Mod-Alt-t": {
                     "attributes": { "level": "m" }
                 }
             },
@@ -171,7 +169,7 @@
         "graphic": {
             "type": "graphic",
             "attributes": {
-                "url": { 
+                "url": {
                     "type": "string",
                     "default": "https://placehold.co/320x200"
                 }
