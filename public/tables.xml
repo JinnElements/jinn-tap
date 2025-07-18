@@ -1,0 +1,90 @@
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>JinnTap Documentation</title>
+      </titleStmt>
+      <publicationStmt>
+        <p>Information about publication or distribution</p>
+      </publicationStmt>
+      <sourceDesc>
+        <p>Information about the source</p>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div>
+        <head>JinnTap</head>
+        <p>Example of a table with rowspan. Comes from frus1918.xml</p>
+        <table cols="3" rows="2">
+          <row>
+            <cell rows="2">
+            <hi rend="smallcaps">Ta’vn Ju-lin</hi>,</cell>
+            <cell role="brace" rows="2">{</cell>
+            <cell>
+              <hi rend="italic">Minister of Communications</hi>
+            </cell>
+          </row>
+          <row>
+            <cell>
+              <hi rend="italic">Minister of finance</hi>
+            </cell>
+          </row>
+        </table>
+
+        <p>Example of a table with colspan. comes from frus1955-57v19</p>
+        <table xmlns="http://www.tei-c.org/ns/1.0" cols="8" rows="5">
+          <row role="label">
+            <cell/>
+            <cell>58</cell>
+            <cell>59</cell>
+            <cell>60</cell>
+            <cell>61</cell>
+            <cell>62</cell>
+            <cell>63</cell>
+            <cell>
+              <hi rend="italic">Totals</hi>
+            </cell>
+          </row>
+          <row role="label">
+            <cell/>
+            <cell cols="7">
+              <hi rend="italic">Millions of Dollars</hi>
+            </cell>
+          </row>
+          <row>
+            <cell>Navaho Reductions</cell>
+            <cell role="num">159</cell>
+            <cell role="num">269</cell>
+            <cell role="num">420</cell>
+            <cell role="num">500</cell>
+            <cell role="num">466</cell>
+            <cell role="num">134</cell>
+            <cell role="num">1,948</cell>
+          </row>
+          <row>
+            <cell>Nike-Talos Reduction</cell>
+            <cell role="num">61</cell>
+            <cell role="num">221</cell>
+            <cell role="num">278</cell>
+            <cell role="num">117</cell>
+            <cell role="num">19</cell>
+            <cell role="num">5</cell>
+            <cell role="num">701</cell>
+          </row>
+          <row>
+            <cell>Total Reduction</cell>
+            <cell role="num">220</cell>
+            <cell role="num">490</cell>
+            <cell role="num">698</cell>
+            <cell role="num">617</cell>
+            <cell role="num">485</cell>
+            <cell role="num">139</cell>
+            <cell role="num">2,649</cell>
+          </row>
+        </table>
+      </div>
+    </body>
+  </text>
+</TEI>
