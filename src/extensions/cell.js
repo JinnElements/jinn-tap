@@ -5,6 +5,8 @@ export const JinnCell = Node.create({
     name: 'cell',
     group: 'cell',
     content: 'inline+',
+    // Technically header cell OR normal cell, but that depends on attributes of the ancestry
+    tableRole: 'cell',
 
     isolating: true,
 
@@ -31,11 +33,7 @@ export const JinnCell = Node.create({
     },
 
     renderHTML({ HTMLAttributes }) {
-        return [
-            'td',
-            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
-            0,
-        ]
+        return ['td', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0]
     },
     addAttributes() {
         /**
@@ -58,22 +56,20 @@ export const JinnCell = Node.create({
 
         // Apply default attributes
         if (this.options.attributes) {
-            Object.entries(this.options.attributes).forEach(
-                ([attrName, attrDef]) => {
-                    attributes[attrName] = {
-                        default: attrDef.default || null,
-                        parseHTML: (element) => element.getAttribute(attrName),
-                        renderHTML: (attributes) => {
-                            if (!attributes[attrName]) {
-                                return {}
-                            }
-                            return {
-                                [attrName]: attributes[attrName],
-                            }
-                        },
-                    }
+            Object.entries(this.options.attributes).forEach(([attrName, attrDef]) => {
+                attributes[attrName] = {
+                    default: attrDef.default || null,
+                    parseHTML: (element) => element.getAttribute(attrName),
+                    renderHTML: (attributes) => {
+                        if (!attributes[attrName]) {
+                            return {}
+                        }
+                        return {
+                            [attrName]: attributes[attrName],
+                        }
+                    },
                 }
-            )
+            })
         }
 
         return attributes
