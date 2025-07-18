@@ -1,3 +1,5 @@
+import { evaluateXPathToNumber } from 'fontoxpath';
+
 describe('JinnTap Component', () => {
     beforeEach(() => {
         cy.visit('/test.html');
@@ -214,17 +216,24 @@ describe('JinnTap Component', () => {
             cy.window().invoke('getSelection').invoke('toString').should('eq', 'A');
 
             cy.get('jinn-tap').press(Cypress.Keyboard.Keys.TAB);
-
             cy.window().invoke('getSelection').invoke('toString').should('eq', 'B');
 
             // Whoop, next row!
             cy.get('jinn-tap').press(Cypress.Keyboard.Keys.TAB);
-
             cy.window().invoke('getSelection').invoke('toString').should('eq', 'C');
 
             cy.get('jinn-tap').press(Cypress.Keyboard.Keys.TAB);
-
             cy.window().invoke('getSelection').invoke('toString').should('eq', 'D');
+
+            // And for our next trick: new row!
+            cy.get('jinn-tap').press(Cypress.Keyboard.Keys.TAB);
+            cy.get('jinn-tap').should((e) => {
+                const [editor] = e;
+
+                const xml = new DOMParser().parseFromString(editor.xml, 'text/xml');
+
+                expect(evaluateXPathToNumber('count(//*:row)', xml)).to.equal(3, 'There should now be three rows!');
+            });
         });
     });
 });

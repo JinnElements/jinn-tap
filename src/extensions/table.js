@@ -26,7 +26,7 @@ export const JinnTable = Node.create({
     content: 'heading* row*',
     group: 'block',
     isolating: true,
-    tableRow: 'table',
+    tableRole: 'table',
 
     addOptions() {
         return {
