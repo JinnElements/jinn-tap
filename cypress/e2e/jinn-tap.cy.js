@@ -206,6 +206,25 @@ describe('JinnTap Component', () => {
                         '<table rows="2" cols="2"><head>The title</head><row><cell>A</cell><cell>B</cell></row><row><cell>C</cell><cell>D</cell></row></table>',
                     );
                 });
+            $component[0].content = testContent;
+
+            // Set the selection to in the table, around the 'A'
+            $component[0].editor.commands.setTextSelection({ from: 14, to: 15 });
+
+            cy.window().invoke('getSelection').invoke('toString').should('eq', 'A');
+
+            cy.get('jinn-tap').press(Cypress.Keyboard.Keys.TAB);
+
+            cy.window().invoke('getSelection').invoke('toString').should('eq', 'B');
+
+            // Whoop, next row!
+            cy.get('jinn-tap').press(Cypress.Keyboard.Keys.TAB);
+
+            cy.window().invoke('getSelection').invoke('toString').should('eq', 'C');
+
+            cy.get('jinn-tap').press(Cypress.Keyboard.Keys.TAB);
+
+            cy.window().invoke('getSelection').invoke('toString').should('eq', 'D');
         });
     });
 });

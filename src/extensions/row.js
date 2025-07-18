@@ -5,6 +5,7 @@ export const JinnRow = Node.create({
     name: 'row',
     group: 'row',
     content: 'cell+',
+    tableRole: 'row',
 
     addOptions() {
         return {
@@ -30,11 +31,7 @@ export const JinnRow = Node.create({
     renderHTML({ node, HTMLAttributes }) {
         const isHeaderRow = node.attrs.role === 'label'
         // If we have a role label, we're actually a header
-        return [
-            isHeaderRow ? 'thead' : 'tr',
-            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
-            0,
-        ]
+        return [isHeaderRow ? 'thead' : 'tr', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0]
     },
 
     addAttributes() {
@@ -43,22 +40,20 @@ export const JinnRow = Node.create({
          */
         const attributes = {}
         if (this.options.attributes) {
-            Object.entries(this.options.attributes).forEach(
-                ([attrName, attrDef]) => {
-                    attributes[attrName] = {
-                        default: attrDef.default || null,
-                        parseHTML: (element) => element.getAttribute(attrName),
-                        renderHTML: (attributes) => {
-                            if (!attributes[attrName]) {
-                                return {}
-                            }
-                            return {
-                                [attrName]: attributes[attrName],
-                            }
-                        },
-                    }
+            Object.entries(this.options.attributes).forEach(([attrName, attrDef]) => {
+                attributes[attrName] = {
+                    default: attrDef.default || null,
+                    parseHTML: (element) => element.getAttribute(attrName),
+                    renderHTML: (attributes) => {
+                        if (!attributes[attrName]) {
+                            return {}
+                        }
+                        return {
+                            [attrName]: attributes[attrName],
+                        }
+                    },
                 }
-            )
+            })
         }
         return attributes
     },
