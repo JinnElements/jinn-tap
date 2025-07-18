@@ -177,4 +177,35 @@ describe('JinnTap Component', () => {
             });
         });
     });
+
+    it('can handle tables', () => {
+        const testContent =
+            '<tei-table><tei-head>The title</tei-head><tei-row><tei-cell>A</tei-cell><tei-cell>B</tei-cell></tei-row><tei-row><tei-cell>C</tei-cell><tei-cell>D</tei-cell></tei-row></tei-table>';
+
+        // Get the component instance
+        cy.get('jinn-tap').then(($component) => {
+            // Create a spy for the content-change event
+            const contentChangeSpy = cy.spy().as('contentChangeSpy');
+
+            // Add event listener for content-change event
+            $component[0].addEventListener('content-change', contentChangeSpy);
+
+            // Set the content
+            $component[0].content = testContent;
+
+            // Wait for the content-change event
+            cy.get('@contentChangeSpy')
+                .should('have.been.called')
+                .then((spy) => {
+                    // Get the event detail from the spy
+                    const eventDetail = spy.getCall(0).args[0].detail;
+
+                    // Compare XML using chai-xml
+                    expect(eventDetail.body).to.be.xml;
+                    expect(eventDetail.body).to.equal(
+                        '<table rows="2" cols="2"><head>The title</head><row><cell>A</cell><cell>B</cell></row><row><cell>C</cell><cell>D</cell></row></table>',
+                    );
+                });
+        });
+    });
 });
