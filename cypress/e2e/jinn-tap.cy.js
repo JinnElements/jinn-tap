@@ -185,5 +185,34 @@ describe('JinnTap Component', () => {
                     )
                 })
             })
-        })
     })
+
+    it('can use tab to navigate in tables', () => {
+        const testContent =
+            '<tei-table><tei-head></tei-head><tei-row><tei-cell>A</tei-cell><tei-cell>B</tei-cell></tei-row><tei-row><tei-cell>C</tei-cell><tei-cell>D</tei-cell></tei-row></tei-table>'
+
+        // Get the component instance
+        cy.get('jinn-tap').then(($component) => {
+            // Set the content
+            $component[0].content = testContent
+
+            // Set the selection to in the table, around the 'A'
+            $component[0].editor.commands.setTextSelection({from: 4, to: 6})
+
+            cy.window().invoke('getSelection').invoke('toString').should('eq', 'A');
+
+            cy.get('jinn-tap').press(Cypress.Keyboard.Keys.TAB)
+
+            cy.window().invoke('getSelection').invoke('toString').should('eq', 'B');
+
+            // Whoop, next row!
+            cy.get('jinn-tap').press(Cypress.Keyboard.Keys.TAB)
+
+            cy.window().invoke('getSelection').invoke('toString').should('eq', 'C');
+
+            cy.get('jinn-tap').press(Cypress.Keyboard.Keys.TAB)
+
+            cy.window().invoke('getSelection').invoke('toString').should('eq', 'D');
+});
+    })
+});

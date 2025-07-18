@@ -1,10 +1,32 @@
-import { Node } from '@tiptap/core'
+import { getExtensionField } from '@tiptap/core'
+import { callOrReturn, Node } from '@tiptap/core'
+
+import {
+    addColumnAfter,
+    addColumnBefore,
+    addRowAfter,
+    addRowBefore,
+    CellSelection,
+    columnResizing,
+    deleteColumn,
+    deleteRow,
+    deleteTable,
+    fixTables,
+    goToNextCell,
+    mergeCells,
+    setCellAttr,
+    splitCell,
+    tableEditing,
+    toggleHeader,
+    toggleHeaderCell,
+} from '@tiptap/pm/tables'
 
 export const JinnTable = Node.create({
     name: 'table',
     content: 'heading* row*',
     group: 'block',
     isolating: true,
+    tableRow: 'table',
 
     addOptions() {
         return {
@@ -64,5 +86,159 @@ export const JinnTable = Node.create({
             },
         }
         return attributes
+    },
+
+    addCommands() {
+        return {
+            insertTable:
+                ({ rows = 3, cols = 3, withHeaderRow = true } = {}) =>
+                ({ tr, dispatch, editor }) => {
+                    const node = createTable(editor.schema, rows, cols, withHeaderRow)
+
+                    if (dispatch) {
+                        const offset = tr.selection.from + 1
+
+                        tr.replaceSelectionWith(node)
+                            .scrollIntoView()
+                            .setSelection(TextSelection.near(tr.doc.resolve(offset)))
+                    }
+
+                    return true
+                },
+            addColumnBefore:
+                () =>
+                ({ state, dispatch }) => {
+                    return addColumnBefore(state, dispatch)
+                },
+            addColumnAfter:
+                () =>
+                ({ state, dispatch }) => {
+                    return addColumnAfter(state, dispatch)
+                },
+            deleteColumn:
+                () =>
+                ({ state, dispatch }) => {
+                    return deleteColumn(state, dispatch)
+                },
+            addRowBefore:
+                () =>
+                ({ state, dispatch }) => {
+                    return addRowBefore(state, dispatch)
+                },
+            addRowAfter:
+                () =>
+                ({ state, dispatch }) => {
+                    return addRowAfter(state, dispatch)
+                },
+            deleteRow:
+                () =>
+                ({ state, dispatch }) => {
+                    return deleteRow(state, dispatch)
+                },
+            deleteTable:
+                () =>
+                ({ state, dispatch }) => {
+                    return deleteTable(state, dispatch)
+                },
+            mergeCells:
+                () =>
+                ({ state, dispatch }) => {
+                    return mergeCells(state, dispatch)
+                },
+            splitCell:
+                () =>
+                ({ state, dispatch }) => {
+                    return splitCell(state, dispatch)
+                },
+            toggleHeaderColumn:
+                () =>
+                ({ state, dispatch }) => {
+                    return toggleHeader('column')(state, dispatch)
+                },
+            toggleHeaderRow:
+                () =>
+                ({ state, dispatch }) => {
+                    return toggleHeader('row')(state, dispatch)
+                },
+            toggleHeaderCell:
+                () =>
+                ({ state, dispatch }) => {
+                    return toggleHeaderCell(state, dispatch)
+                },
+            mergeOrSplit:
+                () =>
+                ({ state, dispatch }) => {
+                    if (mergeCells(state, dispatch)) {
+                        return true
+                    }
+
+                    return splitCell(state, dispatch)
+                },
+            setCellAttribute:
+                (name, value) =>
+                ({ state, dispatch }) => {
+                    return setCellAttr(name, value)(state, dispatch)
+                },
+            goToNextCell:
+                () =>
+                ({ state, dispatch }) => {
+                    return goToNextCell(1)(state, dispatch)
+                },
+            goToPreviousCell:
+                () =>
+                ({ state, dispatch }) => {
+                    return goToNextCell(-1)(state, dispatch)
+                },
+            fixTables:
+                () =>
+                ({ state, dispatch }) => {
+                    if (dispatch) {
+                        fixTables(state)
+                    }
+
+                    return true
+                },
+            setCellSelection:
+                (position) =>
+                ({ tr, dispatch }) => {
+                    if (dispatch) {
+                        const selection = CellSelection.create(tr.doc, position.anchorCell, position.headCell)
+
+                        // @ts-ignore
+                        tr.setSelection(selection)
+                    }
+
+                    return true
+                },
+        }
+    },
+
+    addKeyboardShortcuts() {
+        return {
+            Tab: () => {
+                if (this.editor.commands.goToNextCell()) {
+                    return true
+                }
+
+                if (!this.editor.can().addRowAfter()) {
+                    return false
+                }
+
+                return this.editor.chain().addRowAfter().goToNextCell().run()
+            },
+            'Shift-Tab': () => this.editor.commands.goToPreviousCell(),
+        }
+    },
+
+    extendNodeSchema(extension) {
+        const context = {
+            name: extension.name,
+            options: extension.options,
+            storage: extension.storage,
+        }
+
+        return {
+            tableRole: callOrReturn(getExtensionField(extension, 'tableRole', context)),
+        }
     },
 })
