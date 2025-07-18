@@ -129,7 +129,7 @@ describe('JinnTap Component', () => {
 
                 // Set the content
                 $component[0].content = testContent
-                
+
                 // Wait for the content-change event
                 cy.get('@contentChangeSpy')
                     .should('have.been.called')
@@ -153,6 +153,25 @@ describe('JinnTap Component', () => {
                             expect(eventDetail.body).to.equal('<div><p>Hello <hi rend="b">world</hi>!</p></div>')
                         })
                     })
+            })
+        })
+
+        it('handles characters that can be invalid in XML', () => {
+            const testContent =
+                '<tei-p></tei-p>'
+
+            // Get the component instance
+            cy.get('jinn-tap').then(($component) => {
+                // Set the content
+                $component[0].content = testContent
+
+                cy.get('jinn-tap').type('I <3 the & character')
+
+                cy.get('jinn-tap').should(e => {
+                    const [editor] = e.get();
+
+                    expect(editor.xml).to.equal('<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body><p>I &lt;3 the &amp; character</p></body></text><standOff/></TEI>')
+                })
             })
     })
 })

@@ -32,6 +32,13 @@ class Serializer {
 
   serialize(node, previous, next) {
     if (node.type === 'text') {
+      // Note that these text nodes are not always directly valid in XML. For example, a text node like `I <3 the &
+      // character` contains characters that can not be included directly.  Roundtrip through XMLSerializer to
+      // circumvent this
+      // @TODO: also clean up attribute contents. Or better: construct an XML DOM instead of a string
+      const rawNodeText = node.text;
+      const textNode = document.createTextNode(rawNodeText);
+      const cleanNodeText = new XMLSerializer().serializeToString(textNode);
       let text = '';
       if (node.marks && node.marks.length > 0) {
         if (previous?.marks) {
@@ -70,7 +77,7 @@ class Serializer {
           };
           text += `<${tagName}${attrs.length > 0 ? ' ' + attrs.join(' ') : ''}>`;
         });
-        text += node.text;
+        text += cleanNodeText;
         if (!next) {
           this.openMarks.reverse().forEach(mark => {
             text += `</${mark.type}>`;
@@ -82,7 +89,7 @@ class Serializer {
           text += `</${prevMark.type}>`;
         });
         this.openMarks = [];
-        text += node.text;
+        text += cleanNodeText;
       }
       return text;
     }
