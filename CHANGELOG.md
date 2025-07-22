@@ -1,3 +1,10 @@
+## [1.22.4](https://github.com/JinnElements/jinn-tap/compare/v1.22.3...v1.22.4) (2025-07-22)
+
+
+### Bug Fixes
+
+* **attribute-panel:** add authority key to same fieldset as other props ([e963d57](https://github.com/JinnElements/jinn-tap/commit/e963d575d65791db91a5384b113cb42163702358))
+
 ## [1.22.3](https://github.com/JinnElements/jinn-tap/compare/v1.22.2...v1.22.3) (2025-07-22)
 
 
