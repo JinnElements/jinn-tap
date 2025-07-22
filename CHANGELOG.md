@@ -1,3 +1,10 @@
+## [1.22.3](https://github.com/JinnElements/jinn-tap/compare/v1.22.2...v1.22.3) (2025-07-22)
+
+
+### Bug Fixes
+
+* **serializer:** handle characters that must be escaped ([b76c62c](https://github.com/JinnElements/jinn-tap/commit/b76c62cefaccadbbd18bbc17f1c093f49ad4b068))
+
 ## [1.22.2](https://github.com/JinnElements/jinn-tap/compare/v1.22.1...v1.22.2) (2025-07-16)
 
 
