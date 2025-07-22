@@ -165,9 +165,6 @@ export class AttributePanel {
                 return;
             }
             if (attrDef.connector) {
-                const connectorFieldset = document.createElement('fieldset');
-                form.appendChild(connectorFieldset);
-
                 const label = document.createElement('label');
                 label.textContent = attrName;
                 const input = document.createElement('input');
@@ -176,8 +173,8 @@ export class AttributePanel {
                 input.readOnly = true;
                 input.name = attrName;
                 input.placeholder = 'No reference assigned';
-                connectorFieldset.appendChild(label);
-                connectorFieldset.appendChild(input);
+                fieldset.appendChild(label);
+                fieldset.appendChild(input);
 
                 const details = document.createElement('details');
                 details.open = !nodeOrMark.attrs[attrName];
