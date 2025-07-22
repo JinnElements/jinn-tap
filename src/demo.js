@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyButton = editor.querySelector('[data-tooltip="Copy TEI to clipboard"]');
     const newButton = editor.querySelector('[data-tooltip="New Document"]');
     const downloadButton = editor.querySelector('[data-tooltip="Download XML"]');
-    
+
     if (!fileInput) {
         console.error('File input element not found!');
         return;
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 editor.xml = e.target.result;
                 editor.metadata = {
-                    name: file.name
+                    name: file.name,
                 };
             } catch (error) {
                 console.error('Error parsing XML:', error);
@@ -46,14 +46,16 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const xml = editor.xml;
                 await navigator.clipboard.writeText(xml);
-                
+
                 // Show success message
-                document.dispatchEvent(new CustomEvent('jinn-toast', {
-                    detail: {
-                        message: 'XML content copied to clipboard',
-                        type: 'info'
-                    }
-                }));
+                document.dispatchEvent(
+                    new CustomEvent('jinn-toast', {
+                        detail: {
+                            message: 'XML content copied to clipboard',
+                            type: 'info',
+                        },
+                    }),
+                );
                 const originalTooltip = copyButton.dataset.tooltip;
                 copyButton.dataset.tooltip = 'Copied!';
                 setTimeout(() => {
@@ -83,30 +85,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 const xml = editor.xml;
                 console.log(xml);
                 const blob = new Blob([xml], { type: 'application/xml' });
-                
+
                 // Try to use the File System Access API if available
                 if ('showSaveFilePicker' in window) {
                     try {
                         const handle = await window.showSaveFilePicker({
                             suggestedName: editor.metadata?.name || 'document.xml',
-                            types: [{
-                                description: 'XML Files',
-                                accept: {
-                                    'application/xml': ['.xml']
-                                }
-                            }]
+                            types: [
+                                {
+                                    description: 'XML Files',
+                                    accept: {
+                                        'application/xml': ['.xml'],
+                                    },
+                                },
+                            ],
                         });
-                        
+
                         const writable = await handle.createWritable();
                         await writable.write(blob);
                         await writable.close();
-                        
-                        document.dispatchEvent(new CustomEvent('jinn-toast', {
-                            detail: {
-                                message: 'XML file saved successfully',
-                                type: 'info'
-                            }
-                        }));
+
+                        document.dispatchEvent(
+                            new CustomEvent('jinn-toast', {
+                                detail: {
+                                    message: 'XML file saved successfully',
+                                    type: 'info',
+                                },
+                            }),
+                        );
                     } catch (error) {
                         // User cancelled the save dialog
                         if (error.name === 'AbortError') {
@@ -120,27 +126,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     const link = document.createElement('a');
                     link.href = url;
                     link.download = editor.metadata?.name || 'document.xml';
-                    
+
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
                     URL.revokeObjectURL(url);
-                    
-                    document.dispatchEvent(new CustomEvent('jinn-toast', {
-                        detail: {
-                            message: 'XML file downloaded successfully',
-                            type: 'info'
-                        }
-                    }));
+
+                    document.dispatchEvent(
+                        new CustomEvent('jinn-toast', {
+                            detail: {
+                                message: 'XML file downloaded successfully',
+                                type: 'info',
+                            },
+                        }),
+                    );
                 }
             } catch (error) {
                 console.error('Failed to save XML:', error);
-                document.dispatchEvent(new CustomEvent('jinn-toast', {
-                    detail: {
-                        message: 'Failed to save XML file',
-                        type: 'error'
-                    }
-                }));
+                document.dispatchEvent(
+                    new CustomEvent('jinn-toast', {
+                        detail: {
+                            message: 'Failed to save XML file',
+                            type: 'error',
+                        },
+                    }),
+                );
             }
         });
     }

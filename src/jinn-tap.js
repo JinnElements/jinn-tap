@@ -2,9 +2,9 @@ import { Editor } from '@tiptap/core';
 import History from '@tiptap/extension-history';
 import Placeholder from '@tiptap/extension-placeholder';
 import { Collaboration } from '@tiptap/extension-collaboration';
-import * as Y from 'yjs'
+import * as Y from 'yjs';
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
-import { HocuspocusProvider } from "@hocuspocus/provider";
+import { HocuspocusProvider } from '@hocuspocus/provider';
 import { serialize } from './util/serialize.js';
 import { createFromSchema } from './extensions/extensions.js';
 import { FootnoteRules } from './extensions/footnote.js';
@@ -15,20 +15,20 @@ import { NavigationPanel } from './navigator.js';
 import { Toolbar } from './toolbar.js';
 import { generateRandomColor, colorCssFromSchema } from './util/colors.js';
 import { importXml, exportXml, createDocument } from './util/xml.js';
-import { generateUsername } from "unique-username-generator";
+import { generateUsername } from 'unique-username-generator';
 import xmlFormat from 'xml-formatter';
 import schema from './schema.json';
 import './jinn-tap.css';
 
 /**
  * JinnTap - A TEI XML Editor Web Component
- * 
+ *
  * A custom element that provides a rich text editor specialized for TEI XML editing.
  * It includes a toolbar for text formatting and element insertion, and an attribute panel
  * for editing element attributes.
- * 
+ *
  * @element jinn-tap
- * 
+ *
  * @attr {string} url - URL to load the initial content from. The content will be fetched
  *                      and loaded into the editor when this attribute is set.
  * @attr {string} schema - URL to load the TEI schema from. The schema will be fetched
@@ -36,25 +36,25 @@ import './jinn-tap.css';
  *                         a default schema will be used.
  * @attr {string} notes-wrapper - The wrapper element to use for notes. The default is 'listAnnotation'.
  * @attr {string} notes - Which of the two modes for editing notes should be used. Default is 'connected',
- * i.e. deleting an anchor will delete the associated note. The alternative, 'disconnected', allows notes to be 
+ * i.e. deleting an anchor will delete the associated note. The alternative, 'disconnected', allows notes to be
  * detached from their anchor.
  * @attr {string} server - The websocket server URL to use for collaboration.
  * @attr {string} token - JWT token to use for authentication with the collaboration server.
  * @attr {string} name - Unique name for the collaboration session.
  * @attr {string} user - The user name to use for collaboration.
- * 
+ *
  * @attr {boolean} debug - When present, enables debug mode which adds a debug class
  *                         to the component for styling purposes.
- * 
+ *
  * @property {string} content - The current text content of the editor. Can be set to update
  *                             the editor's content programmatically.
  * @property {string} xml - The current TEI XML content of the editor.
- * 
+ *
  * @slot toolbar - Content to be placed in the toolbar area at the top of the editor.
  *                This slot is intended for custom toolbar buttons or controls.
  * @slot aside - Content to be placed in the sidebar area on the right side of the editor.
  *              This slot is intended for additional panels or controls.
- * 
+ *
  * @fires {CustomEvent} content-change - Fired when the editor content changes.
  *                                      The event detail contains:
  *                                      {string} xml - The current TEI XML content
@@ -79,7 +79,7 @@ export class JinnTap extends HTMLElement {
         this.notes = 'disconnected';
         this.metadata = {
             title: 'Untitled Document',
-            name: 'untitled.xml'
+            name: 'untitled.xml',
         };
         this._schema = schema; // Default schema
         this._initialized = false;
@@ -106,16 +106,18 @@ export class JinnTap extends HTMLElement {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             this._schema = await response.json();
-            
+
             // If editor is already initialized, recreate it with new schema
             if (this.editor) {
                 this.setupEditor();
             }
         } catch (error) {
             console.error('Error loading schema from URL:', error);
-            this.dispatchEvent(new CustomEvent('error', {
-                detail: { error: error.message }
-            }));
+            this.dispatchEvent(
+                new CustomEvent('error', {
+                    detail: { error: error.message },
+                }),
+            );
         }
     }
 
@@ -127,7 +129,7 @@ export class JinnTap extends HTMLElement {
             }
             const contentType = response.headers.get('content-type');
             let content;
-            
+
             if (contentType?.includes('application/xml') || contentType?.includes('text/xml')) {
                 const xml = await response.text();
                 const parsed = importXml(xml);
@@ -138,22 +140,24 @@ export class JinnTap extends HTMLElement {
             } else {
                 throw new Error(`Unsupported content type: ${contentType}`);
             }
-            
+
             if (setContent && this.editor) {
                 this.content = content;
             }
             this.metadata = {
-                name: url.split('/').pop()
+                name: url.split('/').pop(),
             };
             return content;
         } catch (error) {
             console.error('Error loading content from URL:', error);
-            document.dispatchEvent(new CustomEvent('jinn-toast', {
-                detail: {
-                    message: `Error loading content from URL: ${error.message}`,
-                    type: 'error'
-                }
-            }));
+            document.dispatchEvent(
+                new CustomEvent('jinn-toast', {
+                    detail: {
+                        message: `Error loading content from URL: ${error.message}`,
+                        type: 'error',
+                    },
+                }),
+            );
         }
     }
 
@@ -171,19 +175,21 @@ export class JinnTap extends HTMLElement {
             const collabColor = this.getAttribute('color') || localStorage.getItem('jinn-tap.color') || null;
             if (!(collabToken && collabName)) {
                 console.error('collab-token is required when collab-server is provided');
-                document.dispatchEvent(new CustomEvent('jinn-toast', {
-                    detail: {
-                        message: 'collab-token is required when collab-server is provided',
-                        type: 'error'
-                    }
-                }));
+                document.dispatchEvent(
+                    new CustomEvent('jinn-toast', {
+                        detail: {
+                            message: 'collab-token is required when collab-server is provided',
+                            type: 'error',
+                        },
+                    }),
+                );
             } else {
                 this.collaboration = {
                     url: collabServer,
                     token: collabToken,
-                    user: collabUser || generateUsername("-", 2, 16),
+                    user: collabUser || generateUsername('-', 2, 16),
                     name: collabName,
-                    color: collabColor || generateRandomColor()
+                    color: collabColor || generateRandomColor(),
                 };
                 // Store the username in localStorage if it's not already there
                 if (!localStorage.getItem('jinn-tap.username')) {
@@ -280,19 +286,21 @@ export class JinnTap extends HTMLElement {
                     }
                 },
                 onAuthenticationFailed: () => {
-                    document.dispatchEvent(new CustomEvent('jinn-toast', {
-                        detail: {
-                            message: 'Authentication failed. Please log in and reload the page.',
-                            type: 'error'
-                        }
-                    }));
+                    document.dispatchEvent(
+                        new CustomEvent('jinn-toast', {
+                            detail: {
+                                message: 'Authentication failed. Please log in and reload the page.',
+                                type: 'error',
+                            },
+                        }),
+                    );
                 },
                 // onAwarenessChange: ({ states }) => {
                 //     console.log('onAwarenessChange: %o', states);
                 // }
             });
         }
-        const editorConfig ={
+        const editorConfig = {
             element: this.querySelector('.editor-area'),
             extensions: [
                 ...extensions,
@@ -300,18 +308,18 @@ export class JinnTap extends HTMLElement {
                 JinnTapCommands,
                 FootnoteRules.configure({
                     notesWrapper: this.notesWrapper,
-                    notesWithoutAnchor: this.notes !== 'connected'
+                    notesWithoutAnchor: this.notes !== 'connected',
                 }),
                 Placeholder.configure({
                     placeholder: 'Write something...',
                     includeChildren: true,
-                })
+                }),
             ],
             autofocus: false,
             onCreate: () => {
                 this.dispatchEvent(new CustomEvent('ready'));
             },
-            onTransaction: ({editor, transaction}) => {
+            onTransaction: ({ editor, transaction }) => {
                 if (transaction.docChanged) {
                     this.dispatchContentChange();
                 }
@@ -325,44 +333,50 @@ export class JinnTap extends HTMLElement {
                 } else {
                     toastMessage = `Content does not match schema. Some markup may be lost on save. ${errorMessage}`;
                 }
-                document.dispatchEvent(new CustomEvent('jinn-toast', {
-                    detail: {
-                        message: toastMessage,
-                        type: 'error',
-                        nohtml: true,
-                        sticky: true
-                    }
-                }));
+                document.dispatchEvent(
+                    new CustomEvent('jinn-toast', {
+                        detail: {
+                            message: toastMessage,
+                            type: 'error',
+                            nohtml: true,
+                            sticky: true,
+                        },
+                    }),
+                );
                 if (this.collaboration) {
                     disableCollaboration();
                     editor.setEditable(false, false);
                 }
-            }
+            },
         };
         if (!this.collaboration) {
             editorConfig.extensions.push(History);
             editorConfig.content = initialContent;
         } else {
-            editorConfig.extensions.push(Collaboration.configure({
-                provider: this.provider,
-                document: this.doc
-            }));
-            editorConfig.extensions.push(CollaborationCursor.configure({
-                provider: this.provider,
-                user: {
-                    name: this.collaboration.user,
-                    color: this.collaboration.color
-                }
-            }));
+            editorConfig.extensions.push(
+                Collaboration.configure({
+                    provider: this.provider,
+                    document: this.doc,
+                }),
+            );
+            editorConfig.extensions.push(
+                CollaborationCursor.configure({
+                    provider: this.provider,
+                    user: {
+                        name: this.collaboration.user,
+                        color: this.collaboration.color,
+                    },
+                }),
+            );
         }
         this.editor = new Editor(editorConfig);
-        
+
         // Initialize attribute panel
         this.attributePanel = new AttributePanel(this, this._schema);
-        
+
         // Initialize navigation panel
         this.navigationPanel = new NavigationPanel(this, this.attributePanel);
-        
+
         // Initialize toolbar
         this.toolbar = new Toolbar(this, this._schema);
 
@@ -373,12 +387,14 @@ export class JinnTap extends HTMLElement {
 
     dispatchContentChange() {
         const body = serialize(this.editor, this._schema);
-        this.dispatchEvent(new CustomEvent('content-change', {
-            detail: {
-                body: body,
-                xml: exportXml(body, this.document, this.metadata)
-            }
-        }));
+        this.dispatchEvent(
+            new CustomEvent('content-change', {
+                detail: {
+                    body: body,
+                    xml: exportXml(body, this.document, this.metadata),
+                },
+            }),
+        );
     }
 
     // Getter for the editor's content, i.e. the fragment edited in the editor,
@@ -390,11 +406,7 @@ export class JinnTap extends HTMLElement {
     // Setter for the editor's content, i.e. the fragment edited in the editor,
     // not the full XML content.
     set content(value) {
-        this.editor.chain()
-            .focus()
-            .setContent(value)
-            .setTextSelection(0)
-            .run();
+        this.editor.chain().focus().setContent(value).setTextSelection(0).run();
         this.dispatchContentChange();
     }
 
@@ -415,7 +427,7 @@ export class JinnTap extends HTMLElement {
         this.document = doc;
         this.content = content;
         this.metadata = {
-            name: 'untitled.xml'
+            name: 'untitled.xml',
         };
     }
 
@@ -436,18 +448,18 @@ export class JinnTap extends HTMLElement {
             const slotContents = content.querySelectorAll(`[slot="${name}"]`);
             if (slotContents.length > 0) {
                 const parent = slotElement.parentNode;
-                slotContents.forEach(slotContent => {
+                slotContents.forEach((slotContent) => {
                     // Create temporary node to parse the outerHTML
                     const tempDiv = document.createElement('div');
                     tempDiv.innerHTML = slotContent.outerHTML;
                     const children = Array.from(tempDiv.children);
-                    children.forEach(child => parent.insertBefore(child, slotElement));
+                    children.forEach((child) => parent.insertBefore(child, slotElement));
                     slotContent.remove();
                 });
             }
         }
         // Remove all slot elements after processing
-        slotElements.forEach(slot => slot.remove());
+        slotElements.forEach((slot) => slot.remove());
         return content;
     }
 
@@ -472,7 +484,7 @@ export class JinnTap extends HTMLElement {
                 localStorage.setItem('jinn-tap-username', newUser);
                 this.editor.commands.updateUser({
                     name: newUser,
-                    color: generateRandomColor()
+                    color: generateRandomColor(),
                 });
                 this.updateUserInfo();
                 close();
@@ -480,13 +492,15 @@ export class JinnTap extends HTMLElement {
             return div;
         };
         this.updateUserInfo();
-        document.dispatchEvent(new CustomEvent('jinn-toast', {
-            detail: {
-                message: content,
-                type: 'info',
-                sticky: true
-            }
-        }));
+        document.dispatchEvent(
+            new CustomEvent('jinn-toast', {
+                detail: {
+                    message: content,
+                    type: 'info',
+                    sticky: true,
+                },
+            }),
+        );
     }
 
     updateUserInfo() {
@@ -494,4 +508,4 @@ export class JinnTap extends HTMLElement {
     }
 }
 
-customElements.define('jinn-tap', JinnTap); 
+customElements.define('jinn-tap', JinnTap);
