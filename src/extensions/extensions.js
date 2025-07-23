@@ -6,9 +6,9 @@ import { JinnList, JinnItem } from './list.js';
 import { JinnEmptyElement } from './empty.js';
 import { JinnAnchor } from './anchor.js';
 import { JinnGraphic } from './graphic.js';
-import { JinnTable } from './table.js';
-import { JinnRow } from './row.js';
-import { JinnCell } from './cell.js';
+import { JinnTable } from './tables/table.js';
+import { JinnRow } from './tables/row.js';
+import { JinnCell } from './tables/cell.js';
 /**
  * Create nodes and marks from a schema definition.
  *
@@ -65,14 +65,14 @@ export function createFromSchema(schemaDef) {
                 });
                 break;
             case 'table':
-                NodeOrMark = JinnTable.extend({})
-                break
+                NodeOrMark = JinnTable.extend({});
+                break;
             case 'row':
-                NodeOrMark = JinnRow.extend({})
-                break
+                NodeOrMark = JinnRow.extend({});
+                break;
             case 'cell':
-                NodeOrMark = JinnCell.extend({})
-                break
+                NodeOrMark = JinnCell.extend({});
+                break;
         }
         // Merge global attributes with node-specific attributes
         const attributes = { ...schemaDef.attributes, ...def.attributes };
