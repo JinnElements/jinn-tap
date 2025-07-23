@@ -186,28 +186,16 @@ describe('JinnTap Component', () => {
 
         // Get the component instance
         cy.get('jinn-tap').then(($component) => {
-            // Create a spy for the content-change event
-            const contentChangeSpy = cy.spy().as('contentChangeSpy');
-
-            // Add event listener for content-change event
-            $component[0].addEventListener('content-change', contentChangeSpy);
-
             // Set the content
             $component[0].content = testContent;
 
-            // Wait for the content-change event
-            cy.get('@contentChangeSpy')
-                .should('have.been.called')
-                .then((spy) => {
-                    // Get the event detail from the spy
-                    const eventDetail = spy.getCall(0).args[0].detail;
+            cy.get('jinn-tap').should((e) => {
+                const [editor] = e.get();
+                expect(editor.xml).to.equal(
+                    '<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body><table cols="2" rows="2"><head>The title</head><row><cell>A</cell><cell>B</cell></row><row><cell>C</cell><cell>D</cell></row></table></body></text><standOff/></TEI>',
+                );
+            });
 
-                    // Compare XML using chai-xml
-                    expect(eventDetail.body).to.be.xml;
-                    expect(eventDetail.body).to.equal(
-                        '<table rows="2" cols="2"><head>The title</head><row><cell>A</cell><cell>B</cell></row><row><cell>C</cell><cell>D</cell></row></table>',
-                    );
-                });
             $component[0].content = testContent;
 
             // Set the selection to in the table, around the 'A'

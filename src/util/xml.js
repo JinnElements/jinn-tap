@@ -45,7 +45,7 @@ registerXQueryModule(`
         return (
             jt:import($xml, false()),
             <tei-listAnnotation>
-            { 
+            {
                 jt:import($doc//tei:standOff/tei:listAnnotation/tei:note, true()),
                 jt:import($xml//tei:note, true())
             }
@@ -82,7 +82,7 @@ registerXQueryModule(`
     declare function jt:export($nodes as node()*, $input as document-node(), $meta as map(*)) {
         for $node in $nodes
         return
-            typeswitch($node)
+            typeswitch($node => trace("AAA"||name($node)))
                 case document-node() return
                     jt:export($node/node(), $input, $meta)
                 case element(tei:TEI) return
@@ -105,7 +105,9 @@ registerXQueryModule(`
                 case element(tei:body) return
                     element { node-name($node) } {
                         $node/@*,
-                        $input/tei:body/node() except $input/tei:body/tei:listAnnotation
+                        let $contents := $input/tei:body/node() except $input/tei:body/tei:listAnnotation
+                        return jt:export($contents, $input, $meta)
+
                     }
                 case element(tei:title) return
                     element { node-name($node) } {
@@ -114,6 +116,12 @@ registerXQueryModule(`
                             $meta?title
                         else
                             jt:export($node/node(), $input, $meta)
+                    }
+                case element(tei:cell) return
+                    element { node-name($node) => trace('AAA')} {
+                        (: Filter out rowspan and colspan. They are added while the TEI table is an HTML table :)
+                        $node/@* except $node/(@colspan, @rowspan),
+                        jt:export($node/node(), $input, $meta)
                     }
                 case element() return
                     element { node-name($node) } {
@@ -131,7 +139,7 @@ export function importXml(content) {
     const output = evaluateXPathToNodes(
         `
             import module namespace jt="http://jinntec.de/jinntap";
-            
+
             jt:import(.)
         `,
         xmlDoc,
@@ -159,7 +167,7 @@ export function exportXml(content, xmlDoc, metadata = {}) {
     const output = evaluateXPathToNodes(
         `
             import module namespace jt="http://jinntec.de/jinntap";
-            
+
             jt:export($document, ., $meta)
         `,
         nodes,
@@ -182,7 +190,7 @@ export function createDocument() {
     const doc = evaluateXPathToFirstNode(
         `
             import module namespace jt="http://jinntec.de/jinntap";
-            
+
             jt:new-document()
         `,
         null,
