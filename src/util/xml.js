@@ -82,7 +82,7 @@ registerXQueryModule(`
     declare function jt:export($nodes as node()*, $input as document-node(), $meta as map(*)) {
         for $node in $nodes
         return
-            typeswitch($node => trace("AAA"||name($node)))
+            typeswitch($node)
                 case document-node() return
                     jt:export($node/node(), $input, $meta)
                 case element(tei:TEI) return
@@ -118,7 +118,7 @@ registerXQueryModule(`
                             jt:export($node/node(), $input, $meta)
                     }
                 case element(tei:cell) return
-                    element { node-name($node) => trace('AAA')} {
+                    element { node-name($node)} {
                         (: Filter out rowspan and colspan. They are added while the TEI table is an HTML table :)
                         $node/@* except $node/(@colspan, @rowspan),
                         jt:export($node/node(), $input, $meta)

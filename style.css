@@ -52,3 +52,36 @@ jinn-tap .occurrences {
     padding-top: var(--pico-block-spacing-vertical);
     border-top: 1px solid #ccc;
 }
+
+/* Table menu */
+.table-menu {
+  background-color: white;
+  border-radius: 0.7rem;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  display: flex;
+  padding: 0.2rem;
+
+  .divider::before {
+	  content: '';
+	  height: 2rem;
+	  border-left: 4px solid var(--pico-table-border-color);
+	  border-radius: 2px;
+	  display: block;
+  }
+
+  a {
+    background-color: unset;
+
+    &:hover {
+      background-color: var(--gray-3);
+    }
+
+    &.is-active {
+      background-color: var(--purple);
+
+      &:hover {
+        background-color: var(--purple-contrast);
+      }
+    }
+  }
+}
