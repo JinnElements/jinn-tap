@@ -53,6 +53,10 @@ jinn-tap .occurrences {
     border-top: 1px solid #ccc;
 }
 
+.selectedCell {
+	background-color: var(--pico-form-element-selected-background-color)
+}
+
 /* Table menu */
 .table-menu {
   background-color: white;
