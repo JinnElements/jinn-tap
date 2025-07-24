@@ -1,5 +1,5 @@
 import { parseXml } from './util';
-import { registerXQueryModule, evaluateXPathToNodes, evaluateXPath, evaluateXPathToFirstNode } from "fontoxpath";
+import { registerXQueryModule, evaluateXPathToNodes, evaluateXPath, evaluateXPathToFirstNode } from 'fontoxpath';
 
 registerXQueryModule(`
     xquery version "3.1";
@@ -45,7 +45,7 @@ registerXQueryModule(`
         return (
             jt:import($xml, false()),
             <tei-listAnnotation>
-            { 
+            {
                 jt:import($doc//tei:standOff/tei:listAnnotation/tei:note, true()),
                 jt:import($xml//tei:note, true())
             }
@@ -105,7 +105,9 @@ registerXQueryModule(`
                 case element(tei:body) return
                     element { node-name($node) } {
                         $node/@*,
-                        $input/tei:body/node() except $input/tei:body/tei:listAnnotation
+                        let $contents := $input/tei:body/node() except $input/tei:body/tei:listAnnotation
+                        return jt:export($contents, $input, $meta)
+
                     }
                 case element(tei:title) return
                     element { node-name($node) } {
@@ -114,6 +116,12 @@ registerXQueryModule(`
                             $meta?title
                         else
                             jt:export($node/node(), $input, $meta)
+                    }
+                case element(tei:cell) return
+                    element { node-name($node)} {
+                        (: Filter out rowspan and colspan. They are added while the TEI table is an HTML table :)
+                        $node/@* except $node/(@colspan, @rowspan),
+                        jt:export($node/node(), $input, $meta)
                     }
                 case element() return
                     element { node-name($node) } {
@@ -131,25 +139,25 @@ export function importXml(content) {
     const output = evaluateXPathToNodes(
         `
             import module namespace jt="http://jinntec.de/jinntap";
-            
+
             jt:import(.)
-        `, 
+        `,
         xmlDoc,
         null,
         null,
         {
             language: evaluateXPath.XQUERY_3_1_LANGUAGE,
             // we want to create HTML, not XML nodes
-            nodesFactory: document
-        }
+            nodesFactory: document,
+        },
     );
     const xmlText = [];
-    output.forEach(node => {
+    output.forEach((node) => {
         xmlText.push(node.outerHTML);
     });
     return {
         content: xmlText.join(''),
-        doc: xmlDoc
+        doc: xmlDoc,
     };
 }
 
@@ -159,21 +167,21 @@ export function exportXml(content, xmlDoc, metadata = {}) {
     const output = evaluateXPathToNodes(
         `
             import module namespace jt="http://jinntec.de/jinntap";
-            
+
             jt:export($document, ., $meta)
         `,
         nodes,
         null,
         {
             document: xmlDoc,
-            meta: metadata
+            meta: metadata,
         },
         {
-            language: evaluateXPath.XQUERY_3_1_LANGUAGE
-        }
+            language: evaluateXPath.XQUERY_3_1_LANGUAGE,
+        },
     );
     const serializer = new XMLSerializer();
-    return output.map(node => serializer.serializeToString(node)).join('');
+    return output.map((node) => serializer.serializeToString(node)).join('');
 }
 
 export function createDocument() {
@@ -182,7 +190,7 @@ export function createDocument() {
     const doc = evaluateXPathToFirstNode(
         `
             import module namespace jt="http://jinntec.de/jinntap";
-            
+
             jt:new-document()
         `,
         null,
@@ -191,8 +199,8 @@ export function createDocument() {
         {
             language: evaluateXPath.XQUERY_3_1_LANGUAGE,
             nodesFactory: inDoc,
-            debug: true
-        }
+            debug: true,
+        },
     );
     return importXml(doc);
 }

@@ -19,6 +19,7 @@ import { generateUsername } from 'unique-username-generator';
 import xmlFormat from 'xml-formatter';
 import schema from './schema.json';
 import './jinn-tap.css';
+import { TableMenu } from './extensions/tables/TableMenu.js';
 
 /**
  * JinnTap - A TEI XML Editor Web Component
@@ -231,6 +232,7 @@ export class JinnTap extends HTMLElement {
                 </ul>
             </nav>
             <div class="editor-area"></div>
+			<nav class="table-menu"><ul class="toolbar"/></nav>
             <pre class="code-area" style="display: none;"></pre>
             <div class="aside">
                 <div class="user-info"></div>
@@ -369,6 +371,9 @@ export class JinnTap extends HTMLElement {
                 }),
             );
         }
+
+        this.tableMenu = new TableMenu(this);
+
         this.editor = new Editor(editorConfig);
 
         // Initialize attribute panel
