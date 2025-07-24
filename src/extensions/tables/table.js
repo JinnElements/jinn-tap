@@ -1,7 +1,4 @@
-import { getExtensionField } from '@tiptap/core';
-import { callOrReturn, Node } from '@tiptap/core';
-
-import BubbleMenu from '@tiptap/extension-bubble-menu';
+import { getExtensionField, callOrReturn, Node } from '@tiptap/core';
 
 import {
     addColumnAfter,

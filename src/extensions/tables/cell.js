@@ -42,7 +42,7 @@ export const JinnCell = Node.create({
         const attributes = {};
         // Translate the TEI attribute `rows` to its HTML counterpart: `rowspan`
         attributes.rowspan = {
-            default: null,
+            default: 1,
             parseHTML: (element) => {
                 if (!element.hasAttribute('rows')) {
                     return 1;
@@ -60,7 +60,7 @@ export const JinnCell = Node.create({
 
         // Same for `cols` vs `colspan`
         attributes.colspan = {
-            default: null,
+            default: 1,
             parseHTML: (element) => {
                 if (!element.hasAttribute('cols')) {
                     return 1;
