@@ -1,5 +1,5 @@
 import { getExtensionField, callOrReturn, Node } from '@tiptap/core';
-
+import { BubbleMenu } from '@tiptap/extension-bubble-menu';
 import {
     addColumnAfter,
     addColumnBefore,

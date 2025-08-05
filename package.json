@@ -47,6 +47,7 @@
   "dependencies": {
     "@hocuspocus/provider": "^2.15.2",
     "@tiptap/core": "^3.0.0",
+    "@tiptap/extension-bubble-menu": "^3.0.9",
     "@tiptap/extension-collaboration": "^3.0.0",
     "@tiptap/extension-collaboration-cursor": "^3.0.0",
     "@tiptap/extension-history": "^3.0.0",
@@ -54,7 +55,6 @@
     "@tiptap/extension-placeholder": "^3.0.0",
     "@tiptap/pm": "^3.0.0",
     "@tiptap/starter-kit": "^3.0.0",
-    "@tiptap/extension-bubble-menu": "^3.0.0",
     "fontoxpath": "^3.33.2",
     "rollup": "^4.45.1",
     "unique-username-generator": "^1.4.0",
