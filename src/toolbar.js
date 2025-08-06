@@ -11,11 +11,17 @@ export class Toolbar {
     /**
      * Create a new Toolbar instance.
      *
-     * @param {Object} editor - The editor instance.
+     * @param {import('./jinn-tap').JinnTap} editor - The editor instance.
      * @param {Object} schemaDef - The schema definition.
      */
     constructor(editor, schemaDef) {
+        /**
+         * @type {import('@tiptap/core').Editor}
+         */
         this.editor = editor.tiptap;
+        /**
+         * @type {Element}
+         */
         this.toolbar = editor.querySelector('.toolbar');
         this.schemaDef = schemaDef;
         this.selectElements = new Map();
@@ -159,6 +165,30 @@ export class Toolbar {
                 }
                 this.editor.chain().focus().transformToHead().run();
                 return;
+            }
+        }
+
+        if (name === 'pb') {
+            // Check if we're in a table here. In tables, add the pb element between rows
+            const { state } = this.editor;
+            const { selection } = state;
+            const { $from, $to } = selection;
+            const fromRow = findParentNodeClosestToPos($from, (node) => node.type.name === 'row');
+            const toRow = findParentNodeClosestToPos($to, (node) => node.type.name === 'row');
+
+            if (fromRow) {
+                if (toRow.pos !== fromRow.pos) {
+                    // Selection spanning multiple rows. Don't.
+                    return false;
+                }
+                let chain = checkOnly ? this.editor.can().chain() : this.editor.chain();
+                const hasPrecedingPbNow = !!fromRow.node.attrs['data-preceding-pb'];
+                return chain
+                    .focus()
+                    .updateAttributes(fromRow.node.type, {
+                        'data-preceding-pb': hasPrecedingPbNow ? null : 'true',
+                    })
+                    .run();
             }
         }
 

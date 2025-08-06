@@ -31,6 +31,17 @@ declare function jt:import ($doc as node()) {
         )
 };
 
+declare %private function jt:transform-to-same-node ($node as node(), $importNotes as xs:boolean) as node()* {
+    element {'tei-' || local-name($node)} {
+        $node/@* except $node/@xml:id,
+        if ($node/@xml:id) then
+            attribute id { $node/@xml:id }
+        else (
+        ),
+        jt:import($node/node(), $importNotes)
+    }
+};
+
 declare function jt:import ($nodes as node()*, $importNotes as xs:boolean) {
     for $node in $nodes
     return typeswitch ($node)
@@ -56,15 +67,24 @@ declare function jt:import ($nodes as node()*, $importNotes as xs:boolean) {
                             else
                                 generate-id($node)
                         }" />
+            case element(tei:row) return
+                (: If there is a pb element directly after the row, fold it into the row as an attribute :)
+                let $preceding-pb := $node/preceding-sibling::*[1][self::tei:pb]
+                return if (empty($preceding-pb)) then (
+                        jt:transform-to-same-node($node, $importNotes)
+                    ) else (
+                        <tei-row>
+                            { $node/@*, attribute data-preceding-pb { true() }, jt:import($node/node(), $importNotes) }
+                        </tei-row>
+                    )
+            case element(tei:pb) return
+                if ($node/parent::tei:table) then (
+                    (: Remove the pb element, it's folded into the row :)
+                ) else (
+                    jt:transform-to-same-node($node, $importNotes)
+                )
             case element() return
-                element {'tei-' || local-name($node)} {
-                    $node/@* except $node/@xml:id,
-                    if ($node/@xml:id) then
-                        attribute id { $node/@xml:id }
-                    else (
-                    ),
-                    jt:import($node/node(), $importNotes)
-                }
+                jt:transform-to-same-node($node, $importNotes)
 
             default return
                 $node
@@ -109,6 +129,14 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
                     (: Filter out rowspan and colspan. They are added while the TEI table is an HTML table :)
                     $node/@* except $node/(@colspan, @rowspan), jt:export($node/node(), $input, $meta)
                 }
+            case element(tei:row) return
+                (
+                    <tei:row>
+                        { $node/@* except $node/@data-preceding-pb, jt:export($node/node(), $input, $meta) }
+                    </tei:row>,
+                    (: Add the pb element in again. TODO: attributes :)
+                    <tei:pb />
+                )
             case element() return
                 element {node-name($node)} { $node/@*, jt:export($node/node(), $input, $meta) }
 

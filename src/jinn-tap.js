@@ -70,6 +70,9 @@ export class JinnTap extends HTMLElement {
 
     constructor() {
         super();
+        /**
+         * @type {Editor}
+         */
         this.editor = null;
         this.toolbar = null;
         this.attributePanel = null;

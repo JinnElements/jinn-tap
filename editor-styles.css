@@ -270,6 +270,29 @@ tei-pb, tei-lb {
     cursor: pointer;
 }
 
+
+tr[data-preceding-pb] {
+	border-top: 4px double #ffa500;
+	&::before {
+		position: relative;
+		/* Place this just next to the table, in the middle of the border line to not overlap any table content */
+		top: -1rem;
+		width: 2rem;
+		height: 2rem;
+		left: -2rem;
+		display: inline-block;
+
+		/* Display this the same as an lb in normal content */
+		content: 'pb';
+		background-color: #ffa500;
+		font-size: 1rem;
+		font-weight: normal;
+		border-radius: 4px;
+		padding: 2px 6px;
+		cursor: pointer;
+	}
+}
+
 tei-lb {
     display: inline;
 }
@@ -308,5 +331,4 @@ tei-ref {
     font-size: .65rem;
     font-weight: normal;
     color: white;
-    vertical-align: middle;
-}
+    vertical-align: middle;}
