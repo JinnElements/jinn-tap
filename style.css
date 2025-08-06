@@ -66,15 +66,6 @@ jinn-tap .occurrences {
   padding: 0.2rem;
   /* Place the menu a bit away from the place where authors are working. Don't overlap what they can read! */
   margin-top: -3rem;
-
-  .divider::before {
-	  content: '';
-	  height: 2rem;
-	  border-left: 4px solid var(--pico-table-border-color);
-	  border-radius: 2px;
-	  display: block;
-  }
-
   a {
     background-color: unset;
 
