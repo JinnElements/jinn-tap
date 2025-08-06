@@ -50,7 +50,6 @@ export const JinnCell = Node.create({
                 return parseInt(element.getAttribute('rows'), 10);
             },
             renderHTML: (attributes) => {
-                console.log('Applying rows and stuf', attributes.rowspan);
                 attributes.rows = attributes.rowspan;
                 return {
                     rowspan: attributes.rowspan,
