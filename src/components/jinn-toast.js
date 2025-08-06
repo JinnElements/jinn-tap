@@ -103,10 +103,10 @@ export class JinnToast extends HTMLElement {
     setupEventListeners() {
         document.addEventListener('jinn-toast', (event) => {
             this.showToast(
-                event.detail.message, 
-                event.detail.type || 'info', 
+                event.detail.message,
+                event.detail.type || 'info',
                 event.detail.nohtml || false,
-                event.detail.sticky || false
+                event.detail.sticky || false,
             );
         });
     }
@@ -114,7 +114,7 @@ export class JinnToast extends HTMLElement {
     showToast(message, type, nohtml = false, sticky = false) {
         const toast = document.createElement('div');
         toast.className = `jinn-toast ${type} ${sticky ? 'sticky' : ''}`;
-        
+
         const closeToast = () => {
             toast.classList.remove('show');
             setTimeout(() => {
@@ -168,4 +168,4 @@ export class JinnToast extends HTMLElement {
     }
 }
 
-customElements.define('jinn-toast', JinnToast); 
+customElements.define('jinn-toast', JinnToast);

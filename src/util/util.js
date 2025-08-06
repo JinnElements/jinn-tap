@@ -12,15 +12,17 @@ export function marksInRange(editor, from, to) {
     editor.state.doc.nodesBetween(from, to, (node, pos, parent, index) => {
         if (node.isText) {
             if (matchingMarks == null) {
-                matchingMarks = node.marks.map(mark => ({ mark, pos }));
+                matchingMarks = node.marks.map((mark) => ({ mark, pos }));
             } else {
-                matchingMarks = matchingMarks.filter(mark => node.marks.find(m => m.type.name === mark.mark.type.name));
+                matchingMarks = matchingMarks.filter((mark) =>
+                    node.marks.find((m) => m.type.name === mark.mark.type.name),
+                );
             }
         }
     });
 
     if (matchingMarks) {
-        matchingMarks = matchingMarks.map(mark => {
+        matchingMarks = matchingMarks.map((mark) => {
             const $pos = editor.state.doc.resolve(mark.pos);
             const range = getMarkRange($pos, mark.mark.type, mark.mark.attrs);
             mark.text = editor.state.doc.textBetween(range.from, range.to, '', ' ');
@@ -45,7 +47,7 @@ export function moveUp(editor, node) {
 
     // Get the $pos to access node hierarchy
     const $pos = editor.state.doc.resolve(nodePos);
-    
+
     // Need at least a parent and grandparent depth
     if ($pos.depth < 2) return false;
 
@@ -57,7 +59,7 @@ export function moveUp(editor, node) {
     const tr = editor.state.tr;
     tr.delete($pos.start(), $pos.end());
     // tr.insert($parentEnd.pos, node);
-      
+
     editor.view.dispatch(tr);
     return true;
 }
@@ -67,14 +69,16 @@ export function occurrences(editor, strings = []) {
     const foundPositions = [];
     editor.state.doc.nodesBetween(0, editor.state.doc.content.size, (node, pos) => {
         if (node.isText) {
-            strings.forEach(string => {
+            strings.forEach((string) => {
                 const index = node.text.indexOf(string);
                 if (index !== -1) {
                     const newPos = { pos: pos, index: index, length: string.length };
                     // Only add if not contained within any existing position
-                    const isContained = foundPositions.some(existing => 
-                        existing.pos <= newPos.pos && 
-                        existing.pos + existing.index + existing.length >= newPos.pos + newPos.index + newPos.length
+                    const isContained = foundPositions.some(
+                        (existing) =>
+                            existing.pos <= newPos.pos &&
+                            existing.pos + existing.index + existing.length >=
+                                newPos.pos + newPos.index + newPos.length,
                     );
                     if (!isContained) {
                         occurrences[string] = [...(occurrences[string] || []), newPos];

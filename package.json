@@ -42,7 +42,7 @@
     "test": "cypress run",
     "semantic-release": "semantic-release",
     "collab-server": "node scripts/collab-server.js",
-    "format": "prettier --write ./**/*.js ./**/*.json"
+    "format": "prettier --write './**/*.js' './*/**/*.json'"
   },
   "dependencies": {
     "@hocuspocus/provider": "^2.15.2",

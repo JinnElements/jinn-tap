@@ -14,9 +14,6 @@ export const InputRules = Extension.create({
     name: 'inputRules',
 
     addInputRules() {
-        return [
-            emdash,
-            endash,
-        ];
-    }
+        return [emdash, endash];
+    },
 });

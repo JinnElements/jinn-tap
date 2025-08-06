@@ -1,6 +1,6 @@
-import { Plugin, PluginKey, TextSelection } from "@tiptap/pm/state";
-import { Extension } from "@tiptap/core";
-import { ReplaceStep } from "@tiptap/pm/transform";
+import { Plugin, PluginKey, TextSelection } from '@tiptap/pm/state';
+import { Extension } from '@tiptap/core';
+import { ReplaceStep } from '@tiptap/pm/transform';
 
 // Map to store references for each anchor node
 const anchorReferences = new Map();
@@ -16,10 +16,10 @@ function computeAnchorReferences(doc) {
             notes.set(node.attrs.target, node.attrs.n);
         }
     });
-    
+
     // Clear the previous references
     anchorReferences.clear();
-    
+
     // Assign reference numbers
     let count = 0;
     anchors.forEach((anchor) => {
@@ -33,7 +33,7 @@ function computeAnchorReferences(doc) {
         // Store the reference in the map using the node's ID as the key
         anchorReferences.set(anchor.node.attrs.id, refNumber.toString());
     });
-    
+
     return anchors;
 }
 
@@ -54,13 +54,13 @@ function updateNoteReferences(tr, doc) {
                     tr = tr.setNodeMarkup(pos, null, {
                         ...node.attrs,
                         _reference: reference.toString(),
-                        _timestamp: Date.now()
+                        _timestamp: Date.now(),
                     });
                 } else {
                     const { target, _reference, ...attrs } = node.attrs;
                     tr = tr.setNodeMarkup(pos, null, {
                         ...attrs,
-                        _timestamp: Date.now()
+                        _timestamp: Date.now(),
                     });
                 }
             }
@@ -70,7 +70,7 @@ function updateNoteReferences(tr, doc) {
 }
 
 // Function to reorder notes according to their reference numbers
-function reorderNotes(tr, doc, notesWrapper,targetNoteId = null) {
+function reorderNotes(tr, doc, notesWrapper, targetNoteId = null) {
     // Find the listAnnotation
     let listAnnotationPos = null;
     doc.descendants((node, pos) => {
@@ -88,7 +88,7 @@ function reorderNotes(tr, doc, notesWrapper,targetNoteId = null) {
     // Collect all notes with their reference numbers and positions
     const notes = [];
     let targetNoteIndex = -1;
-    
+
     listAnnotationNode.content.forEach((node, offset) => {
         if (node.type.name === 'note') {
             const target = node.attrs.target;
@@ -98,7 +98,7 @@ function reorderNotes(tr, doc, notesWrapper,targetNoteId = null) {
                 reference = getAnchorReference(anchorId);
             }
             notes.push({ node, reference, originalIndex: notes.length });
-            
+
             // If this is our target note, remember its index
             if (targetNoteId && target === `#${targetNoteId}`) {
                 targetNoteIndex = notes.length - 1;
@@ -117,13 +117,13 @@ function reorderNotes(tr, doc, notesWrapper,targetNoteId = null) {
     // Find where our target note ended up after sorting
     let newTargetIndex = -1;
     if (targetNoteIndex !== -1) {
-        newTargetIndex = notes.findIndex(n => n.originalIndex === targetNoteIndex);
+        newTargetIndex = notes.findIndex((n) => n.originalIndex === targetNoteIndex);
     }
 
     // Create a new listAnnotation with sorted notes
     const newlistAnnotation = listAnnotationNode.type.create(
         listAnnotationNode.attrs,
-        notes.map(n => n.node)
+        notes.map((n) => n.node),
     );
 
     // Replace the old listAnnotation with the new one
@@ -133,7 +133,7 @@ function reorderNotes(tr, doc, notesWrapper,targetNoteId = null) {
     if (newTargetIndex !== -1) {
         const newNotePos = listAnnotationPos + 1; // +1 to skip the listAnnotation opening tag
         let currentPos = newNotePos;
-        
+
         // Move through notes until we reach our target
         for (let i = 0; i < newTargetIndex; i++) {
             const node = tr.doc.nodeAt(currentPos);
@@ -141,11 +141,8 @@ function reorderNotes(tr, doc, notesWrapper,targetNoteId = null) {
                 currentPos += node.nodeSize;
             }
         }
-        
-        tr = tr.setSelection(TextSelection.create(
-            tr.doc,
-            currentPos + 1
-        ));
+
+        tr = tr.setSelection(TextSelection.create(tr.doc, currentPos + 1));
     }
 
     return tr;
@@ -155,18 +152,18 @@ function reorderNotes(tr, doc, notesWrapper,targetNoteId = null) {
 function updateAnchorNodes(tr, doc) {
     // Generate a unique timestamp for this update batch
     const batchTimestamp = Date.now();
-    
+
     doc.nodesBetween(0, doc.content.size, (node, pos) => {
         if (node.type.name === 'anchor') {
             const reference = getAnchorReference(node.attrs.id);
-            
+
             // Create a unique timestamp for each node to force re-render
             const uniqueTimestamp = `${batchTimestamp}-${pos}`;
-            
+
             tr = tr.setNodeMarkup(pos, null, {
                 ...node.attrs,
                 _timestamp: uniqueTimestamp,
-                _reference: reference.toString() // Ensure reference is stored as string
+                _reference: reference.toString(), // Ensure reference is stored as string
             });
         }
     });
@@ -174,51 +171,57 @@ function updateAnchorNodes(tr, doc) {
 }
 
 export const FootnoteRules = Extension.create({
-    name: "footnoteRules",
+    name: 'footnoteRules',
     priority: 1000,
     addOptions() {
         return {
             notesWrapper: 'listAnnotation',
-            notesWithoutAnchor: false
-        }
+            notesWithoutAnchor: false,
+        };
     },
     addCommands() {
         return {
-            addNote: () => ({ commands, state }) => {
-                return commands.insertContent({
-                    type: 'note',
-                    attrs: {
-                        '_timestamp': Date.now()
-                    },
-                    content: [{
-                        type: 'p'
-                    }]
-                });
-            },
-            updateNotes: () => ({ commands, state }) => {
-                let tr = state.tr;
-                // Compute references based on the current transaction state
-                computeAnchorReferences(tr.doc);
+            addNote:
+                () =>
+                ({ commands, state }) => {
+                    return commands.insertContent({
+                        type: 'note',
+                        attrs: {
+                            _timestamp: Date.now(),
+                        },
+                        content: [
+                            {
+                                type: 'p',
+                            },
+                        ],
+                    });
+                },
+            updateNotes:
+                () =>
+                ({ commands, state }) => {
+                    let tr = state.tr;
+                    // Compute references based on the current transaction state
+                    computeAnchorReferences(tr.doc);
 
-                // Update all anchor nodes
-                tr = updateAnchorNodes(tr, tr.doc);
+                    // Update all anchor nodes
+                    tr = updateAnchorNodes(tr, tr.doc);
 
-                // Update all note references
-                tr = updateNoteReferences(tr, tr.doc);
+                    // Update all note references
+                    tr = updateNoteReferences(tr, tr.doc);
 
-                // Reorder notes
-                tr = reorderNotes(tr, tr.doc, this.options.notesWrapper);
-                return true;
-            }
-        }
+                    // Reorder notes
+                    tr = reorderNotes(tr, tr.doc, this.options.notesWrapper);
+                    return true;
+                },
+        };
     },
     addProseMirrorPlugins() {
         const options = this.options;
         return [
             new Plugin({
-                key: new PluginKey("footnoteRules"),
+                key: new PluginKey('footnoteRules'),
                 appendTransaction(transactions, oldState, newState) {
-                    const isRemoteTransaction = transactions.every(tr => tr.meta['y-sync$'] !== undefined);
+                    const isRemoteTransaction = transactions.every((tr) => tr.meta['y-sync$'] !== undefined);
                     if (isRemoteTransaction) {
                         return null;
                     }
@@ -229,8 +232,8 @@ export const FootnoteRules = Extension.create({
                     let deletedAnchorIds = new Set(); // Track IDs of deleted anchors
 
                     // Check for complete document replacement
-                    const isCompleteReplacement = transactions.some(tr => {
-                        return tr.steps.some(step => {
+                    const isCompleteReplacement = transactions.some((tr) => {
+                        return tr.steps.some((step) => {
                             if (step instanceof ReplaceStep) {
                                 return step.from === 0 && step.to === oldState.doc.content.size;
                             }
@@ -252,8 +255,8 @@ export const FootnoteRules = Extension.create({
                                 if (isInsert) {
                                     // Check for new anchor nodes
                                     step.slice.content.descendants((node, pos) => {
-                                        if (node?.type.name == "anchor") {
-                                            anchorId = node.attrs["id"];
+                                        if (node?.type.name == 'anchor') {
+                                            anchorId = node.attrs['id'];
                                             referencesNeedUpdate = true;
                                             return false;
                                         }
@@ -265,13 +268,13 @@ export const FootnoteRules = Extension.create({
                                 const newDoc = tr.doc;
                                 const oldAnchors = new Map();
                                 const newAnchors = new Map();
-                                
+
                                 oldDoc.descendants((node, pos) => {
                                     if (node.type.name === 'anchor') {
                                         oldAnchors.set(node.attrs.id, pos);
                                     }
                                 });
-                                
+
                                 newDoc.descendants((node, pos) => {
                                     if (node.type.name === 'anchor') {
                                         newAnchors.set(node.attrs.id, pos);
@@ -287,8 +290,10 @@ export const FootnoteRules = Extension.create({
                                 }
 
                                 // Check if any anchor positions changed
-                                if (oldAnchors.size !== newAnchors.size || 
-                                    Array.from(oldAnchors.entries()).some(([id, pos]) => newAnchors.get(id) !== pos)) {
+                                if (
+                                    oldAnchors.size !== newAnchors.size ||
+                                    Array.from(oldAnchors.entries()).some(([id, pos]) => newAnchors.get(id) !== pos)
+                                ) {
                                     referencesNeedUpdate = true;
                                 }
                             }
@@ -309,7 +314,7 @@ export const FootnoteRules = Extension.create({
                                             const { target, _reference, ...attrs } = node.attrs;
                                             newTr = newTr.setNodeMarkup(pos, null, {
                                                 ...attrs,
-                                                _timestamp: Date.now()
+                                                _timestamp: Date.now(),
                                             });
                                         }
                                     }
@@ -366,54 +371,52 @@ export const FootnoteRules = Extension.create({
                         }
 
                         // Insert a new note at the end of the listAnnotation with a reference to the anchor
-                        const noteNode = newState.schema.nodes.note.create({ 
-                            'target': `#${anchorId}`,
-                            '_reference': '1', // Will be updated later
-                            '_timestamp': Date.now()
-                        }, [
-                            newState.schema.nodes.p.create({}, [])
-                        ]);
+                        const noteNode = newState.schema.nodes.note.create(
+                            {
+                                target: `#${anchorId}`,
+                                _reference: '1', // Will be updated later
+                                _timestamp: Date.now(),
+                            },
+                            [newState.schema.nodes.p.create({}, [])],
+                        );
                         const insertPos = listAnnotationPos + listAnnotationNode.nodeSize - 1;
-                        
+
                         // Insert the note and create a paragraph inside it
                         newTr = newTr.insert(insertPos, noteNode);
-                        
+
                         // Get the position after the note was inserted
                         const notePos = insertPos;
                         const note = newTr.doc.nodeAt(notePos);
-                        
+
                         if (note) {
                             // Set the selection to the start of the note
-                            newTr = newTr.setSelection(TextSelection.create(
-                                newTr.doc,
-                                notePos + 1
-                            ));
+                            newTr = newTr.setSelection(TextSelection.create(newTr.doc, notePos + 1));
 
                             // Add scroll to the transaction
                             newTr.scrollIntoView();
                         }
                     }
-                    
+
                     // Update references if needed using the final document state
                     if (referencesNeedUpdate) {
                         // Compute references based on the current transaction state
                         computeAnchorReferences(newTr.doc);
-                        
+
                         // Update all anchor nodes
                         newTr = updateAnchorNodes(newTr, newTr.doc);
-                        
+
                         // Update all note references
                         newTr = updateNoteReferences(newTr, newTr.doc);
-                        
+
                         // Reorder notes
                         newTr = reorderNotes(newTr, newTr.doc, options.notesWrapper, anchorId);
                     }
-                    
+
                     return newTr;
-                }
-            })
-        ]
-    }
+                },
+            }),
+        ];
+    },
 });
 
 export default FootnoteRules;

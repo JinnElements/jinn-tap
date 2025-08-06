@@ -1,5 +1,5 @@
 import { parseXml } from './util';
-import { registerXQueryModule, evaluateXPathToNodes, evaluateXPath, evaluateXPathToFirstNode } from "fontoxpath";
+import { registerXQueryModule, evaluateXPathToNodes, evaluateXPath, evaluateXPathToFirstNode } from 'fontoxpath';
 
 registerXQueryModule(`
     xquery version "3.1";
@@ -133,23 +133,23 @@ export function importXml(content) {
             import module namespace jt="http://jinntec.de/jinntap";
             
             jt:import(.)
-        `, 
+        `,
         xmlDoc,
         null,
         null,
         {
             language: evaluateXPath.XQUERY_3_1_LANGUAGE,
             // we want to create HTML, not XML nodes
-            nodesFactory: document
-        }
+            nodesFactory: document,
+        },
     );
     const xmlText = [];
-    output.forEach(node => {
+    output.forEach((node) => {
         xmlText.push(node.outerHTML);
     });
     return {
         content: xmlText.join(''),
-        doc: xmlDoc
+        doc: xmlDoc,
     };
 }
 
@@ -166,14 +166,14 @@ export function exportXml(content, xmlDoc, metadata = {}) {
         null,
         {
             document: xmlDoc,
-            meta: metadata
+            meta: metadata,
         },
         {
-            language: evaluateXPath.XQUERY_3_1_LANGUAGE
-        }
+            language: evaluateXPath.XQUERY_3_1_LANGUAGE,
+        },
     );
     const serializer = new XMLSerializer();
-    return output.map(node => serializer.serializeToString(node)).join('');
+    return output.map((node) => serializer.serializeToString(node)).join('');
 }
 
 export function createDocument() {
@@ -191,8 +191,8 @@ export function createDocument() {
         {
             language: evaluateXPath.XQUERY_3_1_LANGUAGE,
             nodesFactory: inDoc,
-            debug: true
-        }
+            debug: true,
+        },
     );
     return importXml(doc);
 }
