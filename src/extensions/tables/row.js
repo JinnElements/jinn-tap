@@ -1,5 +1,5 @@
-import { mergeAttributes } from '@tiptap/core'
-import { Node } from '@tiptap/core'
+import { mergeAttributes } from '@tiptap/core';
+import { Node } from '@tiptap/core';
 
 export const JinnRow = Node.create({
     name: 'row',
@@ -15,9 +15,12 @@ export const JinnRow = Node.create({
                 role: {
                     default: null,
                 },
+                'data-preceding-pb': {
+                    default: null,
+                },
             },
             inputRules: [],
-        }
+        };
     },
 
     parseHTML() {
@@ -25,20 +28,20 @@ export const JinnRow = Node.create({
             {
                 tag: this.options.tag,
             },
-        ]
+        ];
     },
 
     renderHTML({ node, HTMLAttributes }) {
-        const isHeaderRow = node.attrs.role === 'label'
+        const isHeaderRow = node.attrs.role === 'label';
         // If we have a role label, we're actually a header
-        return [isHeaderRow ? 'thead' : 'tr', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0]
+        return [isHeaderRow ? 'thead' : 'tr', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0];
     },
 
     addAttributes() {
         /**
          * @type {import('@tiptap/core/dist/types').Attributes}
          */
-        const attributes = {}
+        const attributes = {};
         if (this.options.attributes) {
             Object.entries(this.options.attributes).forEach(([attrName, attrDef]) => {
                 attributes[attrName] = {
@@ -46,15 +49,15 @@ export const JinnRow = Node.create({
                     parseHTML: (element) => element.getAttribute(attrName),
                     renderHTML: (attributes) => {
                         if (!attributes[attrName]) {
-                            return {}
+                            return {};
                         }
                         return {
                             [attrName]: attributes[attrName],
-                        }
+                        };
                     },
-                }
-            })
+                };
+            });
         }
-        return attributes
+        return attributes;
     },
-})
+});

@@ -50,7 +50,7 @@ export const JinnCell = Node.create({
                 return parseInt(element.getAttribute('rows'), 10);
             },
             renderHTML: (attributes) => {
-                attributes.rows = attributes.rowspan;
+                attributes.rows = attributes.rowspan === 1 ? null : attributes.rowspan;
                 return {
                     rowspan: attributes.rowspan,
                 };
@@ -67,7 +67,7 @@ export const JinnCell = Node.create({
                 return parseInt(element.getAttribute('cols'), 10);
             },
             renderHTML: (attributes) => {
-                attributes.cols = attributes.colspan;
+                attributes.cols = attributes.colspan === 1 ? null : attributes.colspan;
                 return {
                     colspan: attributes.colspan,
                 };
