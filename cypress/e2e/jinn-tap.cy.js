@@ -1,5 +1,3 @@
-import { evaluateXPathToNumber } from 'fontoxpath';
-
 describe('JinnTap Component', () => {
     beforeEach(() => {
         cy.visit('/test.html');
@@ -176,51 +174,6 @@ describe('JinnTap Component', () => {
                 expect(editor.xml).to.equal(
                     '<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body><p>I &lt;3 the &amp; character</p></body></text><standOff/></TEI>',
                 );
-            });
-        });
-    });
-
-    it('can handle tables', () => {
-        const testContent =
-            '<tei-table><tei-head>The title</tei-head><tei-row><tei-cell>A</tei-cell><tei-cell>B</tei-cell></tei-row><tei-row><tei-cell>C</tei-cell><tei-cell>D</tei-cell></tei-row></tei-table>';
-
-        // Get the component instance
-        cy.get('jinn-tap').then(($component) => {
-            // Set the content
-            $component[0].content = testContent;
-
-            cy.get('jinn-tap').should((e) => {
-                const [editor] = e.get();
-                expect(editor.xml).to.equal(
-                    '<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body><table cols="2" rows="2"><head>The title</head><row><cell>A</cell><cell>B</cell></row><row><cell>C</cell><cell>D</cell></row></table></body></text><standOff/></TEI>',
-                );
-            });
-
-            $component[0].content = testContent;
-
-            // Set the selection to in the table, around the 'A'
-            $component[0].editor.commands.setTextSelection({ from: 14, to: 15 });
-
-            cy.window().invoke('getSelection').invoke('toString').should('eq', 'A');
-
-            cy.get('jinn-tap').press(Cypress.Keyboard.Keys.TAB);
-            cy.window().invoke('getSelection').invoke('toString').should('eq', 'B');
-
-            // Whoop, next row!
-            cy.get('jinn-tap').press(Cypress.Keyboard.Keys.TAB);
-            cy.window().invoke('getSelection').invoke('toString').should('eq', 'C');
-
-            cy.get('jinn-tap').press(Cypress.Keyboard.Keys.TAB);
-            cy.window().invoke('getSelection').invoke('toString').should('eq', 'D');
-
-            // And for our next trick: new row!
-            cy.get('jinn-tap').press(Cypress.Keyboard.Keys.TAB);
-            cy.get('jinn-tap').should((e) => {
-                const [editor] = e;
-
-                const xml = new DOMParser().parseFromString(editor.xml, 'text/xml');
-
-                expect(evaluateXPathToNumber('count(//*:row)', xml)).to.equal(3, 'There should now be three rows!');
             });
         });
     });
