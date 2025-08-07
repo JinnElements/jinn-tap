@@ -244,7 +244,6 @@ export const JinnTable = Node.create({
             BubbleMenu.configure({
                 element: document.querySelector('.table-menu'),
                 shouldShow: ({ editor }) => editor.isActive('table'),
-                updateDelay: 1000000,
             }),
         ];
     },
