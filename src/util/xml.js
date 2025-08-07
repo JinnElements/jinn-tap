@@ -4,6 +4,10 @@ import xqueryModule from './module.xq?raw';
 
 registerXQueryModule(xqueryModule);
 
+/**
+ * @param content {string|Node} - The content to transform to the internal XML
+ * @returns {{content: string, doc: Node}}
+ */
 export function importXml(content) {
     const xmlDoc = typeof content === 'string' ? parseXml(content) : content;
     if (!xmlDoc) return '';

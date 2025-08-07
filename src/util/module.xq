@@ -131,11 +131,14 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
                 }
             case element(tei:row) return
                 (
+                    if ($node/@data-preceding-pb) then (
+                        (: Add the pb element in again. TODO: attributes :)
+                        <tei:pb />
+                    ) else (
+                    ),
                     <tei:row>
                         { $node/@* except $node/@data-preceding-pb, jt:export($node/node(), $input, $meta) }
-                    </tei:row>,
-                    (: Add the pb element in again. TODO: attributes :)
-                    <tei:pb />
+                    </tei:row>
                 )
             case element() return
                 element {node-name($node)} { $node/@*, jt:export($node/node(), $input, $meta) }
