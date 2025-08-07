@@ -234,7 +234,7 @@ export class JinnTap extends HTMLElement {
                 </ul>
             </nav>
             <div class="editor-area"></div>
-			<nav class="table-menu"><ul class="toolbar"/></nav>
+			<div style="display:none"><nav class="table-menu"><ul class="toolbar"/></nav></div>
             <pre class="code-area" style="display: none;"></pre>
             <div class="aside">
                 <div class="user-info"></div>
