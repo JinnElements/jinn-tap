@@ -23,12 +23,14 @@
             "select": "Textcritical",
             "label": "<i class='bi bi-three-dots'></i>"
         },
-        "table": {
+        "Table": {
+			"select": "Blocks",
             "command": "insertSnippet",
             "args": [
-                "<tei-table><tei-head>The title</tei-head><tei-row><tei-cell>A</tei-cell><tei-cell>B</tei-cell></tei-row><tei-row><tei-cell>C</tei-cell><tei-cell>D</tei-cell></tei-row></tei-table>"
+                "<tei-table><tei-row><tei-cell>A</tei-cell><tei-cell>B</tei-cell></tei-row><tei-row><tei-cell>C</tei-cell><tei-cell>D</tei-cell></tei-row></tei-table>"
             ],
-            "label": "Table"
+            "label": "<i class='bi bi-table'></i>"
+
         },
         "Figure": {
             "command": "insertFigure",
@@ -108,6 +110,9 @@
                 }
             ]
         },
+		"underline": {
+			"type": "inline"
+		},
         "hi": {
             "type": "inline",
             "attributes": {
@@ -603,6 +608,14 @@
                 }
             }
         },
+		"gloss": {
+			"type": "inline",
+			"attributes": {"target": {"type": "string"}}
+		},
+		"footnote-reference": {
+			"type": "inline",
+			"attributes": {"n": {"type": "number"}}
+		},
         "supplied": {
             "type": "inline",
             "attributes": {
