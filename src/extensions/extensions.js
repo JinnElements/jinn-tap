@@ -91,5 +91,5 @@ export function createFromSchema(schemaDef) {
 
 // Custom document extension
 const JinnDocument = Document.extend({
-    content: 'block+ listAnnotation?',
+    content: 'heading* block+ listAnnotation?',
 });
