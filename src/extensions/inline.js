@@ -2,7 +2,7 @@ import { Mark } from '@tiptap/core';
 
 /**
  * Base inline mark
- * 
+ *
  * @param {Object} options - The options for the inline mark.
  * @param {string} options.tag - The tag name for the inline mark (computed from the name).
  * @param {Object} options.shortcuts - The shortcuts for the inline mark.
@@ -15,20 +15,20 @@ export const JinnInline = Mark.create({
         return {
             tag: `tei-${this.name}`,
             shortcuts: {},
-            attributes: {}
-        }
+            attributes: {},
+        };
     },
 
     parseHTML() {
         return [
             {
-                tag: this.options.tag
+                tag: this.options.tag,
             },
-        ]
+        ];
     },
 
     renderHTML({ HTMLAttributes }) {
-        return [this.options.tag, HTMLAttributes, 0]
+        return [this.options.tag, HTMLAttributes, 0];
     },
 
     addAttributes() {
@@ -37,14 +37,14 @@ export const JinnInline = Mark.create({
             Object.entries(this.options.attributes).forEach(([attrName, attrDef]) => {
                 attributes[attrName] = {
                     default: attrDef.default || null,
-                    parseHTML: element => element.getAttribute(attrName),
-                    renderHTML: attributes => {
+                    parseHTML: (element) => element.getAttribute(attrName),
+                    renderHTML: (attributes) => {
                         if (!attributes[attrName]) {
-                            return {}
+                            return {};
                         }
                         return {
                             [attrName]: attributes[attrName],
-                        }
+                        };
                     },
                 };
             });
@@ -58,7 +58,7 @@ export const JinnInline = Mark.create({
             Object.entries(this.options.shortcuts).forEach(([shortcut, config]) => {
                 shortcuts[shortcut] = () => {
                     return this.editor.commands.toggleMark(this.name, config.attributes);
-                }
+                };
             });
         }
         return shortcuts;
@@ -66,9 +66,11 @@ export const JinnInline = Mark.create({
 
     addCommands() {
         return {
-            [`toggle${this.name.charAt(0).toUpperCase() + this.name.slice(1)}`]: () => ({ commands, attributes }) => {
-                return commands.toggleMark(this.name, attributes);
-            }
-        }
-    }
-}); 
+            [`toggle${this.name.charAt(0).toUpperCase() + this.name.slice(1)}`]:
+                () =>
+                ({ commands, attributes }) => {
+                    return commands.toggleMark(this.name, attributes);
+                },
+        };
+    },
+});

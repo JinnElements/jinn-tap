@@ -10,20 +10,20 @@ export const JinnBlock = Node.create({
             tag: `tei-${this.name}`,
             shortcuts: {},
             attributes: {},
-            inputRules: []
-        }
+            inputRules: [],
+        };
     },
 
     parseHTML() {
         return [
             {
-                tag: this.options.tag
-            }
-        ]
+                tag: this.options.tag,
+            },
+        ];
     },
 
     renderHTML({ HTMLAttributes }) {
-        return [this.options.tag, HTMLAttributes, 0]
+        return [this.options.tag, HTMLAttributes, 0];
     },
 
     addAttributes() {
@@ -32,14 +32,14 @@ export const JinnBlock = Node.create({
             Object.entries(this.options.attributes).forEach(([attrName, attrDef]) => {
                 attributes[attrName] = {
                     default: attrDef.default || null,
-                    parseHTML: element => element.getAttribute(attrName),
-                    renderHTML: attributes => {
+                    parseHTML: (element) => element.getAttribute(attrName),
+                    renderHTML: (attributes) => {
                         if (!attributes[attrName]) {
-                            return {}
+                            return {};
                         }
                         return {
                             [attrName]: attributes[attrName],
-                        }
+                        };
                     },
                 };
             });
@@ -68,24 +68,26 @@ export const JinnBlock = Node.create({
     addCommands() {
         const ucName = this.name.charAt(0).toUpperCase() + this.name.slice(1);
         return {
-            [`wrap${ucName}`]: () => ({ commands, attributes }) => {
-                return commands.wrapIn(this.name, attributes);
-            }
-        }
+            [`wrap${ucName}`]:
+                () =>
+                ({ commands, attributes }) => {
+                    return commands.wrapIn(this.name, attributes);
+                },
+        };
     },
 
     addInputRules() {
         if (!this.options.inputRules || this.options.inputRules.length === 0) {
             return [];
         }
-        return this.options.inputRules.map(rule => {
+        return this.options.inputRules.map((rule) => {
             if (rule.type === 'textblock') {
                 return textblockTypeInputRule({
                     find: new RegExp(rule.find),
                     type: this.type,
                     getAttributes: () => {
                         return rule.attributes || {};
-                    }
+                    },
                 });
             } else if (rule.type === 'wrapping') {
                 return wrappingInputRule({
@@ -96,9 +98,9 @@ export const JinnBlock = Node.create({
                     getAttributes: () => {
                         return rule.attributes || {};
                     },
-                    editor: this.editor
+                    editor: this.editor,
                 });
             }
         });
-    }
-}); 
+    },
+});

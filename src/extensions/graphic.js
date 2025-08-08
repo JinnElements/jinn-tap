@@ -1,4 +1,4 @@
-import { JinnBlock } from "./block.js";
+import { JinnBlock } from './block.js';
 
 export const JinnGraphic = JinnBlock.extend({
     name: 'graphic',
@@ -10,11 +10,13 @@ export const JinnGraphic = JinnBlock.extend({
             dom.src = node.attrs.url;
             dom.addEventListener('click', () => {
                 const pos = this.editor.view.posAtDOM(dom);
-                this.editor.options.element.dispatchEvent(new CustomEvent('empty-element-clicked', { detail: { node, pos } }));
+                this.editor.options.element.dispatchEvent(
+                    new CustomEvent('empty-element-clicked', { detail: { node, pos } }),
+                );
             });
             return {
-                dom
-            }
-        }
-    }
+                dom,
+            };
+        };
+    },
 });

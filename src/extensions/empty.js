@@ -13,7 +13,7 @@ function getAttributeString(attrs) {
 
 /**
  * Empty element
- * 
+ *
  * @param {Object} options - The options for the empty element.
  * @param {string} options.tag - The tag name for the empty element (computed from the name).
  * @param {Object} options.shortcuts - The shortcuts for the empty element.
@@ -31,16 +31,16 @@ export const JinnEmptyElement = JinnBlock.extend({
             tag: `tei-${this.name}`,
             shortcuts: {},
             attributes: {},
-            label: 'Empty Element'
-        }
+            label: 'Empty Element',
+        };
     },
 
     parseHTML() {
         return [
             {
-                tag: this.options.tag
-            }
-        ]
+                tag: this.options.tag,
+            },
+        ];
     },
 
     addNodeView() {
@@ -54,10 +54,12 @@ export const JinnEmptyElement = JinnBlock.extend({
                     dom.setAttribute(key, value);
                 }
             });
-            
+
             dom.addEventListener('click', () => {
                 const pos = this.editor.view.posAtDOM(dom);
-                this.editor.options.element.dispatchEvent(new CustomEvent('empty-element-clicked', { detail: { node, pos } }));
+                this.editor.options.element.dispatchEvent(
+                    new CustomEvent('empty-element-clicked', { detail: { node, pos } }),
+                );
             });
             return {
                 dom,
@@ -79,9 +81,9 @@ export const JinnEmptyElement = JinnBlock.extend({
                         }
                     });
                     return true;
-                }
-            }
-        }
+                },
+            };
+        };
     },
 
     addKeyboardShortcuts() {
@@ -91,11 +93,11 @@ export const JinnEmptyElement = JinnBlock.extend({
                 shortcuts[shortcut] = () => {
                     return this.editor.commands.insertContent({
                         type: this.name,
-                        attrs: config.attributes
+                        attrs: config.attributes,
                     });
-                }
+                };
             });
         }
         return shortcuts;
-    }
-}); 
+    },
+});

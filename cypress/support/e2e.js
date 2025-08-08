@@ -1,9 +1,9 @@
 // Import commands.js using ES2015 syntax:
-import './commands'
+import './commands';
 
 // Import chai-xml and set it up
-const chaiXml = require('chai-xml')
-chai.use(chaiXml)
+const chaiXml = require('chai-xml');
+chai.use(chaiXml);
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
@@ -11,8 +11,8 @@ chai.use(chaiXml)
 // Hide XHR requests from command log
 const app = window.top;
 if (app) {
-  app.console.log = () => {};
+    app.console.log = () => {};
 }
 
 // You can modify the config values here:
-// Cypress.config('defaultCommandTimeout', 10000) 
+// Cypress.config('defaultCommandTimeout', 10000)
