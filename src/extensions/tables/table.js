@@ -21,7 +21,7 @@ import {
 
 export const JinnTable = Node.create({
     name: 'table',
-    content: 'heading* row*',
+    content: 'row*',
     group: 'block',
     isolating: true,
     tableRole: 'table',
@@ -243,7 +243,10 @@ export const JinnTable = Node.create({
         return [
             BubbleMenu.configure({
                 element: document.querySelector('.table-menu'),
-                shouldShow: ({ editor }) => editor.isActive('table'),
+                shouldShow: ({ editor }) => {
+                    const isTableActive = editor.isActive('table');
+                    return isTableActive;
+                },
             }),
         ];
     },
