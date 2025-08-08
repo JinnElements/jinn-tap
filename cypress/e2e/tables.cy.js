@@ -43,7 +43,7 @@ describe('Tables', () => {
             });
     });
 
-    it.only('can handle tables', () => {
+    it('can handle tables', () => {
         const testContent =
             '<tei-table><tei-head>The title</tei-head><tei-row><tei-cell>A</tei-cell><tei-cell>B</tei-cell></tei-row><tei-row><tei-cell>C</tei-cell><tei-cell>D</tei-cell></tei-row></tei-table>';
 
@@ -58,8 +58,6 @@ describe('Tables', () => {
                     '<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body><div><head>The title</head><table><row><cell>A</cell><cell>B</cell></row><row><cell>C</cell><cell>D</cell></row></table></div></body></text><standOff/></TEI>',
                 );
             });
-
-            $component[0].content = testContent;
 
             // Set the selection to in the table, around the 'A'
             $component[0].editor.commands.setTextSelection({ from: 15, to: 16 });
@@ -157,5 +155,25 @@ describe('Tables', () => {
                 'The full contents of the table should match',
             );
         });
+    });
+
+    it('opens the table menu when it should', () => {
+        const testContent =
+            '<tei-div><tei-p>Before</tei-p><tei-table><tei-row><tei-cell>A</tei-cell></tei-row></tei-table></tei-div>';
+
+        // Get the component instance
+        cy.get('jinn-tap').then(($component) => {
+            // Set the content
+            $component[0].content = testContent;
+        });
+
+        cy.get('.table-menu').should('be.not.visible');
+
+        cy.get('jinn-tap').then((e) => {
+            const [jinntap] = e.get();
+            jinntap.editor.commands.setTextSelection({ from: 11, to: 12 });
+        });
+
+        cy.get('.table-menu').should('be.visible');
     });
 });
