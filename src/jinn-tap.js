@@ -1,6 +1,5 @@
 import { Editor } from '@tiptap/core';
-import History from '@tiptap/extension-history';
-import Placeholder from '@tiptap/extension-placeholder';
+import { UndoRedo, Placeholder } from '@tiptap/extensions';
 import { Collaboration } from '@tiptap/extension-collaboration';
 import * as Y from 'yjs';
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
@@ -19,6 +18,7 @@ import { generateUsername } from 'unique-username-generator';
 import xmlFormat from 'xml-formatter';
 import schema from './schema.json';
 import './jinn-tap.css';
+import { TableMenu } from './extensions/tables/TableMenu.js';
 
 /**
  * JinnTap - A TEI XML Editor Web Component
@@ -70,6 +70,9 @@ export class JinnTap extends HTMLElement {
 
     constructor() {
         super();
+        /**
+         * @type {Editor}
+         */
         this.editor = null;
         this.toolbar = null;
         this.attributePanel = null;
@@ -231,6 +234,7 @@ export class JinnTap extends HTMLElement {
                 </ul>
             </nav>
             <div class="editor-area"></div>
+			<div style="display:none"><nav class="table-menu"><ul class="toolbar"/></nav></div>
             <pre class="code-area" style="display: none;"></pre>
             <div class="aside">
                 <div class="user-info"></div>
@@ -350,7 +354,7 @@ export class JinnTap extends HTMLElement {
             },
         };
         if (!this.collaboration) {
-            editorConfig.extensions.push(History);
+            editorConfig.extensions.push(UndoRedo);
             editorConfig.content = initialContent;
         } else {
             editorConfig.extensions.push(
@@ -369,6 +373,9 @@ export class JinnTap extends HTMLElement {
                 }),
             );
         }
+
+        this.tableMenu = new TableMenu(this);
+
         this.editor = new Editor(editorConfig);
 
         // Initialize attribute panel

@@ -23,6 +23,15 @@
             "select": "Textcritical",
             "label": "<i class='bi bi-three-dots'></i>"
         },
+        "Table": {
+			"select": "Blocks",
+            "command": "insertSnippet",
+            "args": [
+                "<tei-table><tei-row><tei-cell>A</tei-cell><tei-cell>B</tei-cell></tei-row><tei-row><tei-cell>C</tei-cell><tei-cell>D</tei-cell></tei-row></tei-table>"
+            ],
+            "label": "<i class='bi bi-table'></i>"
+
+        },
         "Figure": {
             "command": "insertFigure",
             "label": "<i class='bi bi-images'></i>",
@@ -50,10 +59,27 @@
         }
     },
     "schema": {
+        "cell": {
+            "type": "cell",
+            "attributes": {
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "row": {
+            "type": "row",
+            "role": {
+                "type": "string"
+            }
+        },
+        "table": {
+            "type": "table"
+        },
         "div": {
             "type": "block",
             "defining": true,
-            "content": "heading* block*",
+            "content": "heading* (block | table)*",
             "selectable": true,
             "attributes": {
                 "type": {
@@ -84,6 +110,9 @@
                 }
             ]
         },
+		"underline": {
+			"type": "inline"
+		},
         "hi": {
             "type": "inline",
             "attributes": {
@@ -579,6 +608,14 @@
                 }
             }
         },
+		"gloss": {
+			"type": "inline",
+			"attributes": {"target": {"type": "string"}}
+		},
+		"footnote-reference": {
+			"type": "inline",
+			"attributes": {"n": {"type": "number"}}
+		},
         "supplied": {
             "type": "inline",
             "attributes": {

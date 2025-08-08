@@ -11,11 +11,17 @@ export class Toolbar {
     /**
      * Create a new Toolbar instance.
      *
-     * @param {Object} editor - The editor instance.
+     * @param {import('./jinn-tap').JinnTap} editor - The editor instance.
      * @param {Object} schemaDef - The schema definition.
      */
     constructor(editor, schemaDef) {
+        /**
+         * @type {import('@tiptap/core').Editor}
+         */
         this.editor = editor.tiptap;
+        /**
+         * @type {Element}
+         */
         this.toolbar = editor.querySelector('.toolbar');
         this.schemaDef = schemaDef;
         this.selectElements = new Map();
@@ -162,6 +168,30 @@ export class Toolbar {
             }
         }
 
+        if (name === 'pb') {
+            // Check if we're in a table here. In tables, add the pb element between rows
+            const { state } = this.editor;
+            const { selection } = state;
+            const { $from, $to } = selection;
+            const fromRow = findParentNodeClosestToPos($from, (node) => node.type.name === 'row');
+            const toRow = findParentNodeClosestToPos($to, (node) => node.type.name === 'row');
+
+            if (fromRow) {
+                if (toRow.pos !== fromRow.pos) {
+                    // Selection spanning multiple rows. Don't.
+                    return false;
+                }
+                let chain = checkOnly ? this.editor.can().chain() : this.editor.chain();
+                const hasPrecedingPbNow = !!fromRow.node.attrs['data-preceding-pb'];
+                return chain
+                    .focus()
+                    .updateAttributes(fromRow.node.type, {
+                        'data-preceding-pb': hasPrecedingPbNow ? null : 'true',
+                    })
+                    .run();
+            }
+        }
+
         let chain;
         if (checkOnly) {
             chain = this.editor.can();
@@ -169,7 +199,7 @@ export class Toolbar {
             chain = this.editor.chain().focus();
         }
 
-        if (toolbarDef.command) {
+        if (toolbarDef?.command) {
             switch (toolbarDef.command) {
                 case 'toggleSource':
                     return checkOnly ? true : this.toggleSource();
@@ -179,26 +209,26 @@ export class Toolbar {
             if (toolbarDef.args) {
                 chain = chain[toolbarDef.command](...toolbarDef.args);
             } else {
-                chain = chain[toolbarDef.command](name, toolbarDef.attributes);
+                chain = chain[toolbarDef.command](name, def.attributes);
             }
         } else if (def.type === 'inline') {
-            chain = chain.toggleMark(name, toolbarDef.attributes);
+            chain = chain.toggleMark(name, def.attributes);
         } else if (def.type === 'list') {
-            chain = chain.toggleList(toolbarDef.attributes);
+            chain = chain.toggleList(def.attributes);
         } else if (def.type === 'anchor') {
-            chain = checkOnly ? true : chain.addAnchor(toolbarDef.attributes);
+            chain = checkOnly ? true : chain.addAnchor(def.attributes);
         } else if (def.type === 'empty' || def.type === 'graphic') {
             chain = chain.insertContent({
                 type: name,
-                attrs: toolbarDef.attributes,
+                attrs: def.attributes,
             });
         } else {
             // Check if the node's content model is a textBlock
             const nodeType = this.editor.schema.nodes[name];
             if (nodeType && nodeType.isTextblock) {
-                chain = chain.setNode(name, toolbarDef.attributes);
+                chain = chain.setNode(name, def.attributes);
             } else {
-                chain = chain.wrapIn(name, toolbarDef.attributes);
+                chain = chain.wrapIn(name, def.attributes);
             }
         }
 
@@ -237,12 +267,15 @@ export class Toolbar {
     updateButtonStates() {
         const buttons = this.toolbar.querySelectorAll('a[data-name]');
         buttons.forEach((button) => {
-            const nodeType = this.schemaDef.schema[button.dataset.name];
+            const buttonName = button.dataset.name;
+            const nodeType = this.schemaDef.schema[buttonName];
 
             if (!nodeType) return;
 
+            const toolbarDef = this.schemaDef.toolbar[buttonName];
+
             // Use nodeAction with checkOnly=true to determine if the action can be performed
-            const isValid = this.nodeAction(button.dataset.name, nodeType, nodeType, true);
+            const isValid = this.nodeAction(buttonName, nodeType, toolbarDef, true);
 
             button.disabled = !isValid;
             if (!isValid) {
@@ -250,7 +283,7 @@ export class Toolbar {
             } else {
                 button.classList.remove('disabled');
             }
-            button.classList.toggle('active', this.editor.isActive(button.dataset.name));
+            button.classList.toggle('active', this.editor.isActive(buttonName));
         });
     }
 
