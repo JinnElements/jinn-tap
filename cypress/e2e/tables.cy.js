@@ -157,7 +157,7 @@ describe('Tables', () => {
         });
     });
 
-    it('opens the table menu when it should', () => {
+    it.only('opens the table menu when it should', () => {
         const testContent =
             '<tei-div><tei-p>Before</tei-p><tei-table><tei-row><tei-cell>A</tei-cell></tei-row></tei-table></tei-div>';
 
@@ -174,6 +174,29 @@ describe('Tables', () => {
             jinntap.editor.commands.setTextSelection({ from: 11, to: 12 });
         });
 
-        cy.get('.table-menu').should('be.visible');
+        cy.get('.table-menu').should('be.visible').get('[data-tooltip="Insert Column"]').click();
+        cy.get('jinn-tap').should((e) => {
+            const [editor] = e.get();
+
+            const xml = new DOMParser().parseFromString(editor.xml, 'text/xml');
+            const table = evaluateXPathToFirstNode('//tei:table', xml, null, null, { namespaceResolver });
+
+            // Two cells now
+            expect(table.outerHTML).to.equal(
+                '<table xmlns="http://www.tei-c.org/ns/1.0" cols="2" rows="1"><row><cell>A</cell><cell/></row></table>',
+            );
+        });
+        cy.get('.table-menu').should('be.visible').get('[data-tooltip="Insert Row"]').click();
+        cy.get('jinn-tap').should((e) => {
+            const [editor] = e.get();
+
+            const xml = new DOMParser().parseFromString(editor.xml, 'text/xml');
+            const table = evaluateXPathToFirstNode('//tei:table', xml, null, null, { namespaceResolver });
+
+            // Two rows now
+            expect(table.outerHTML).to.equal(
+                '<table xmlns="http://www.tei-c.org/ns/1.0" cols="2" rows="2"><row><cell>A</cell><cell/></row><row><cell/><cell/></row></table>',
+            );
+        });
     });
 });

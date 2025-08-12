@@ -19,6 +19,53 @@ import {
     toggleHeaderCell,
 } from '@tiptap/pm/tables';
 
+/**
+ * @param {import('@tiptap/pm/state').Selection} selection
+ */
+const findTableAncestor = (selection) => {
+    const $head = selection.$head;
+    for (let d = $head.depth; d > 0; d--) {
+        if ($head.node(d).type.spec.tableRole == 'table') {
+            return { node: $head.node(d), pos: $head.before(d) };
+        }
+    }
+    return null;
+};
+
+/**
+ * @type {import('@tiptap/core').Command}
+ */
+const updateColsAndRows = ({ state, tr }, { cols: deltaCols = 0, rows: deltaRows = 0 } = {}) => {
+    const tablePos = findTableAncestor(state.selection);
+
+    if (!tablePos) {
+        return;
+    }
+
+    const { node: table, pos } = tablePos;
+
+    const rowChildren = table.children.filter((child) => child.type.spec.tableRole === 'row');
+
+    const rows = rowChildren.length;
+    // const rows = table.attrs.rows;
+    const firstRow = rowChildren[0];
+
+    const cells = [...firstRow.children].filter((child) => child.type.spec.tableRole === 'cell');
+    // Note colspanning cells. They take more room. We take the
+    // first row so there are no rowspanning cells 'coming from
+    // above'
+    const cols = cells.reduce((widthToNow, cell) => widthToNow + parseInt(cell.attrs.colspan), 0);
+    //const cols = table.attrs.cols;
+    if (deltaCols !== 0) {
+        tr = tr.setNodeAttribute(pos, 'cols', cols + deltaCols);
+    }
+    if (deltaRows !== 0) {
+        tr = tr.setNodeAttribute(pos, 'rows', rows + deltaRows);
+    }
+
+    return tr;
+};
+
 export const JinnTable = Node.create({
     name: 'table',
     content: 'row*',
@@ -40,13 +87,6 @@ export const JinnTable = Node.create({
         return [
             {
                 tag: this.options.tag,
-
-                getAttrs: (node) => {
-                    return {
-                        rowspan: node.getAttribute('rows'),
-                        colspan: node.getAttribute('cols'),
-                    };
-                },
             },
         ];
     },
@@ -61,14 +101,12 @@ export const JinnTable = Node.create({
          */
         const attributes = {};
         attributes.rows = {
+            default: null,
             parseHTML: (element) => {
-                const rowChildren = [...element.children].filter((child) => child.localName === 'tei-row');
-
-                return rowChildren.length;
+                return Array.from(element.children).filter((child) => child.localName === 'tei-row').length;
             },
-            renderHTML: () => {
-                // `rows` is of no use in HTML
-                return null;
+            renderHTML: (attrs) => {
+                return attrs.rows;
             },
         };
         attributes.cols = {
@@ -85,64 +123,57 @@ export const JinnTable = Node.create({
                 // first row so there are no rowspanning cells 'coming from
                 // above'
                 return cells.reduce(
-                    (widthToNow, cell) => widthToNow + parseInt(cell.getAttribute('cols') || '1', 0),
+                    (widthToNow, cell) => widthToNow + parseInt(cell.getAttribute('cols') || '1', 10),
                     0,
                 );
             },
-            renderHTML: () => {
-                // `cols` is of no use in HTML
-                return null;
+            renderHTML: (attrs) => {
+                return attrs.cols;
             },
         };
         return attributes;
     },
 
     addCommands() {
-        return {
-            insertTable:
-                ({ rows = 3, cols = 3, withHeaderRow = true } = {}) =>
-                ({ tr, dispatch, editor }) => {
-                    const node = createTable(editor.schema, rows, cols, withHeaderRow);
-
-                    if (dispatch) {
-                        const offset = tr.selection.from + 1;
-
-                        tr.replaceSelectionWith(node)
-                            .scrollIntoView()
-                            .setSelection(TextSelection.near(tr.doc.resolve(offset)));
-                    }
-
-                    return true;
-                },
+        /**
+         * @type {import('@tiptap/core').RawCommands}
+         */
+        const commands = {
             addColumnBefore:
                 () =>
-                ({ state, dispatch }) => {
-                    return addColumnBefore(state, dispatch);
+                ({ state, dispatch, editor }) => {
+                    return addColumnBefore(state, (tr) =>
+                        updateColsAndRows({ state, editor, dispatch, tr }, { cols: 1 }),
+                    );
                 },
             addColumnAfter:
                 () =>
-                ({ state, dispatch }) => {
-                    return addColumnAfter(state, dispatch);
+                ({ state, dispatch, editor }) => {
+                    return addColumnAfter(state, (tr) =>
+                        updateColsAndRows({ state, editor, dispatch, tr }, { cols: 1 }),
+                    );
                 },
             deleteColumn:
                 () =>
-                ({ state, dispatch }) => {
-                    return deleteColumn(state, dispatch);
+                ({ state, dispatch, editor }) => {
+                    return deleteColumn(state, (tr) =>
+                        updateColsAndRows({ state, editor, dispatch, tr }, { cols: -1 }),
+                    );
                 },
             addRowBefore:
                 () =>
-                ({ state, dispatch }) => {
-                    return addRowBefore(state, dispatch);
+                ({ state, dispatch, editor }) => {
+                    return addRowBefore(state, (tr) => updateColsAndRows({ state, editor, dispatch, tr }, { rows: 1 }));
                 },
             addRowAfter:
                 () =>
-                ({ state, dispatch }) => {
-                    return addRowAfter(state, dispatch);
+                ({ state, dispatch, editor }) => {
+                    return addRowAfter(state, (tr) => updateColsAndRows({ state, editor, dispatch, tr }, { rows: 1 }));
                 },
             deleteRow:
                 () =>
-                ({ state, dispatch }) => {
-                    return deleteRow(state, dispatch);
+                ({ state, dispatch, editor }) => {
+                    return deleteRow(state, (tr) => updateColsAndRows({ state, editor, dispatch, tr }, { rows: -1 }));
                 },
             deleteTable:
                 () =>
@@ -151,12 +182,12 @@ export const JinnTable = Node.create({
                 },
             mergeCells:
                 () =>
-                ({ state, dispatch }) => {
-                    return mergeCells(state, dispatch);
+                ({ state, dispatch, editor }) => {
+                    return mergeCells(state, tr);
                 },
             splitCell:
                 () =>
-                ({ state, dispatch }) => {
+                ({ state, dispatch, editor }) => {
                     return splitCell(state, dispatch);
                 },
             toggleHeaderColumn:
@@ -176,12 +207,12 @@ export const JinnTable = Node.create({
                 },
             mergeOrSplit:
                 () =>
-                ({ state, dispatch }) => {
+                ({ state, dispatch, editor }) => {
                     if (mergeCells(state, dispatch)) {
-                        return true;
+                        return updateColsAndRows({ state, editor, dispatch });
                     }
 
-                    return splitCell(state, dispatch);
+                    return splitCell(state, dispatch) && updateColsAndRows({ state, editor, dispatch });
                 },
             setCellAttribute:
                 (name, value) =>
@@ -220,6 +251,8 @@ export const JinnTable = Node.create({
                     return true;
                 },
         };
+
+        return commands;
     },
 
     addKeyboardShortcuts() {
@@ -243,6 +276,13 @@ export const JinnTable = Node.create({
         return [
             BubbleMenu.configure({
                 element: document.querySelector('.table-menu'),
+                options: {
+                    offset: 50,
+                    // Place at the bottom to prevent it from overlapping with the toolbar
+                    // TODO: redo the HTML structure there to prevent this from happening at all
+                    placement: 'bottom',
+                    shift: true,
+                },
                 shouldShow: ({ editor }) => {
                     const isTableActive = editor.isActive('table');
                     return isTableActive;
