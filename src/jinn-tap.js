@@ -1,6 +1,5 @@
 import { Editor } from '@tiptap/core';
-import History from '@tiptap/extension-history';
-import Placeholder from '@tiptap/extension-placeholder';
+import { UndoRedo, Placeholder } from '@tiptap/extensions';
 import { Collaboration } from '@tiptap/extension-collaboration';
 import * as Y from 'yjs';
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
@@ -350,7 +349,7 @@ export class JinnTap extends HTMLElement {
             },
         };
         if (!this.collaboration) {
-            editorConfig.extensions.push(History);
+            editorConfig.extensions.push(UndoRedo);
             editorConfig.content = initialContent;
         } else {
             editorConfig.extensions.push(
