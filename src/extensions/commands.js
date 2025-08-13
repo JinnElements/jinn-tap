@@ -1,4 +1,5 @@
 import { Extension, createNodeFromContent } from '@tiptap/core';
+import { TextSelection } from '@tiptap/pm/state';
 
 export const JinnTapCommands = Extension.create({
     name: 'jinnTapCommands',
@@ -49,11 +50,13 @@ export const JinnTapCommands = Extension.create({
                     const mappedTo = tr.mapping.map(to);
                     tr.doc.nodesBetween(from, mappedTo, (node, pos) => {
                         if (node.type.name === 'text' && node.text !== selectedText) {
-                            tr.setSelection(state.selection.constructor.create(tr.doc, pos, pos + node.nodeSize));
+                            tr.setSelection(TextSelection.create(tr.doc, pos, pos + node.nodeSize));
                         }
                     });
 
-                    dispatch(tr);
+                    if (dispatch) {
+                        dispatch(tr);
+                    }
                     return true;
                 },
             insertFigure:

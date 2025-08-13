@@ -7,7 +7,10 @@ jinn-tap {
         "editor aside";
     column-gap: 1rem;
     row-gap: .5rem;
-    /* height: 100%; */
+    height: fit-content;
+	/* Add a bit of space under the viewport to allow one to scroll a bit beyond the end of the
+   document */
+	margin-bottom:50vh
 }
 
 jinn-tap > nav {
