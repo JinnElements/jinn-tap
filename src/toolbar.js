@@ -212,6 +212,7 @@ export class Toolbar {
             chain = this.editor.chain().focus();
         }
 
+        const attributes = toolbarDef?.attributes ?? {};
         if (toolbarDef?.command) {
             switch (toolbarDef.command) {
                 case 'toggleSource':
@@ -222,26 +223,26 @@ export class Toolbar {
             if (toolbarDef.args) {
                 chain = chain[toolbarDef.command](...toolbarDef.args);
             } else {
-                chain = chain[toolbarDef.command](name, def.attributes);
+                chain = chain[toolbarDef.command](name, attributes);
             }
         } else if (def.type === 'inline') {
-            chain = chain.toggleMark(name, def.attributes);
+            chain = chain.toggleMark(name, attributes);
         } else if (def.type === 'list') {
-            chain = chain.toggleList(def.attributes);
+            chain = chain.toggleList(attributes);
         } else if (def.type === 'anchor') {
-            chain = checkOnly ? true : chain.addAnchor(def.attributes);
+            chain = checkOnly ? true : chain.addAnchor(attributes);
         } else if (def.type === 'empty' || def.type === 'graphic') {
             chain = chain.insertContent({
                 type: name,
-                attrs: def.attributes,
+                attrs: attributes,
             });
         } else {
             // Check if the node's content model is a textBlock
             const nodeType = this.editor.schema.nodes[name];
             if (nodeType && nodeType.isTextblock) {
-                chain = chain.setNode(name, def.attributes);
+                chain = chain.setNode(name, attributes);
             } else {
-                chain = chain.wrapIn(name, def.attributes);
+                chain = chain.wrapIn(name, attributes);
             }
         }
 
