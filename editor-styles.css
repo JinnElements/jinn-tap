@@ -283,31 +283,29 @@ tei-lb {
     cursor: pointer;
 }
 
-tr[data-preceding-pb] {
+tr:has(td:first-child tei-pb) {
     /* Position the pb widget relative to here */
     position: relative;
     border-top: 4px double #ffa500;
-    /* Note: putting this in the before breaks the table layout*/
-    td:first-child {
-        &::before {
-            position: absolute;
-            /* Place this just next to the table, in the middle of the border line to not overlap any table content */
-            top: -1.5rem;
-            width: 2rem;
-            height: 2rem;
-            float: left;
-            left: -2rem;
-            display: inline-block;
 
-            /* Display this the same as an lb in normal content */
-            content: 'pb';
-            background-color: #ffa500;
-            font-size: 1rem;
-            font-weight: normal;
-            border-radius: 4px;
-            padding: 2px 6px;
-            cursor: pointer;
-        }
+    td:first-child tei-pb {
+        position: absolute;
+        /* Place this just next to the table, in the middle of the border line to not overlap any table content */
+        top: -1.5rem;
+        width: 2rem;
+        height: 2rem;
+        float: left;
+        left: -2rem;
+        display: inline-block;
+
+        /* Display this the same as an lb in normal content */
+        content: 'pb';
+        background-color: #ffa500;
+        font-size: 1rem;
+        font-weight: normal;
+        border-radius: 4px;
+        padding: 2px 6px;
+        cursor: pointer;
     }
 }
 

@@ -68,15 +68,15 @@ declare function jt:import ($nodes as node()*, $importNotes as xs:boolean) {
                             else
                                 generate-id($node)
                         }" />
-            case element(tei:row) return
-                (: If there is a pb element directly after the row, fold it into the row as an attribute :)
-                let $preceding-pb := $node/preceding-sibling::*[1][self::tei:pb]
+            case element(tei:cell) return
+                (: If there is a pb element directly after the row, fold it into the first cell in the row :)
+                let $preceding-pb := $node/../preceding-sibling::*[1][self::tei:pb]
                 return if (empty($preceding-pb)) then (
                         jt:transform-to-same-node($node, $importNotes)
                     ) else (
-                        <tei-row>
-                            { $node/@*, attribute data-preceding-pb { true() }, jt:import($node/node(), $importNotes) }
-                        </tei-row>
+                        <tei-cell>
+                            { $node/@*, $preceding-pb, jt:import($node/node(), $importNotes) }
+                        </tei-cell>
                     )
             case element(tei:pb) return
                 if ($node/parent::tei:table) then (
@@ -130,17 +130,6 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
                     (: Filter out rowspan and colspan. They are added while the TEI table is an HTML table :)
                     $node/@* except $node/(@colspan, @rowspan), jt:export($node/node(), $input, $meta)
                 }
-            case element(tei:row) return
-                (
-                    if ($node/@data-preceding-pb) then (
-                        (: Add the pb element in again. TODO: attributes :)
-                        <tei:pb />
-                    ) else (
-                    ),
-                    <tei:row>
-                        { $node/@* except $node/@data-preceding-pb, jt:export($node/node(), $input, $meta) }
-                    </tei:row>
-                )
             case element() return
                 element {node-name($node)} { $node/@*, jt:export($node/node(), $input, $meta) }
 

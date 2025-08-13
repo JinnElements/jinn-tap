@@ -182,12 +182,12 @@ export const JinnTable = Node.create({
                 },
             mergeCells:
                 () =>
-                ({ state, dispatch, editor }) => {
-                    return mergeCells(state, tr);
+                ({ state, dispatch }) => {
+                    return mergeCells(state, dispatch);
                 },
             splitCell:
                 () =>
-                ({ state, dispatch, editor }) => {
+                ({ state, dispatch }) => {
                     return splitCell(state, dispatch);
                 },
             toggleHeaderColumn:

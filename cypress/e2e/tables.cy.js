@@ -91,7 +91,7 @@ describe('Tables', () => {
 
     it('can handle pb elements in tables', () => {
         const testContent =
-            '<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body><table cols="2" rows="2"><row><cell>A</cell><cell>B</cell></row><pb/><row><cell>C</cell><cell>D</cell></row></table></body></text><standOff/></TEI>';
+            '<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body><table cols="2" rows="2"><row><cell>A</cell><cell>B</cell></row><row><cell><pb/>C</cell><cell>D</cell></row></table></body></text><standOff/></TEI>';
 
         // Get the component instance
         cy.get('jinn-tap').then(($component) => {
@@ -145,19 +145,63 @@ describe('Tables', () => {
                 }),
             ).to.equal(2, 'There should be two cells in the second row');
             expect(
-                evaluateXPathToBoolean('tei:row/preceding-sibling::*[1]/self::tei:pb', table, null, null, {
+                evaluateXPathToBoolean('tei:row[2]/tei:cell[1]/tei:pb', table, null, null, {
                     namespaceResolver,
                 }),
-            ).to.equal(true, 'There should be a `pb` before the second row');
+            ).to.equal(true, 'There should be a `pb` at the start of the second row');
 
             expect(table.outerHTML).to.equal(
-                '<table xmlns="http://www.tei-c.org/ns/1.0" cols="2" rows="2"><row><cell>A</cell><cell>B</cell></row><pb/><row><cell>C</cell><cell>D</cell></row></table>',
+                '<table xmlns="http://www.tei-c.org/ns/1.0" cols="2" rows="2"><row><cell>A</cell><cell>B</cell></row><row><cell><pb/>C</cell><cell>D</cell></row></table>',
                 'The full contents of the table should match',
             );
         });
+
+        // Toggle a pb
+        cy.get('jinn-tap')
+            .then((e) => {
+                const [editor] = e.get();
+                // Set the selection to somewhere in row 2
+                editor.editor.commands.setTextSelection({ from: 14, to: 14 });
+
+                editor.toolbar.nodeAction('pb');
+
+                return e;
+            })
+            .should((e) => {
+                const [editor] = e.get();
+                const xml = new DOMParser().parseFromString(editor.xml, 'text/xml');
+                const table = evaluateXPathToFirstNode('//tei:table', xml, null, null, { namespaceResolver });
+                expect(
+                    evaluateXPathToBoolean('tei:row[2]/tei:cell[1]/tei:pb', table, null, null, {
+                        namespaceResolver,
+                    }),
+                ).to.equal(false, 'There should be no `pb` anymore at the start of the second row');
+            });
+
+        // Toggle a pb in again
+        cy.get('jinn-tap')
+            .then((e) => {
+                const [editor] = e.get();
+                // Set the selection to somewhere in row 2
+                editor.editor.commands.setTextSelection({ from: 14, to: 14 });
+
+                editor.toolbar.nodeAction('pb');
+
+                return e;
+            })
+            .should((e) => {
+                const [editor] = e.get();
+                const xml = new DOMParser().parseFromString(editor.xml, 'text/xml');
+                const table = evaluateXPathToFirstNode('//tei:table', xml, null, null, { namespaceResolver });
+                expect(
+                    evaluateXPathToBoolean('tei:row[2]/tei:cell[1]/tei:pb', table, null, null, {
+                        namespaceResolver,
+                    }),
+                ).to.equal(true, 'There should be  `pb` again at the start of the second row');
+            });
     });
 
-    it.only('opens the table menu when it should', () => {
+    it('opens the table menu when it should', () => {
         const testContent =
             '<tei-div><tei-p>Before</tei-p><tei-table><tei-row><tei-cell>A</tei-cell></tei-row></tei-table></tei-div>';
 

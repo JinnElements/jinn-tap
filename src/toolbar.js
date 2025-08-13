@@ -1,4 +1,4 @@
-import { findParentNodeClosestToPos } from '@tiptap/core';
+import { createNodeFromContent, findParentNodeClosestToPos, findChildren } from '@tiptap/core';
 
 /**
  * Toolbar class for the editor.
@@ -169,7 +169,7 @@ export class Toolbar {
         }
 
         if (name === 'pb') {
-            // Check if we're in a table here. In tables, add the pb element between rows
+            // Check if we're in a table here. In tables, add the pb element at the start of the row
             const { state } = this.editor;
             const { selection } = state;
             const { $from, $to } = selection;
@@ -181,13 +181,26 @@ export class Toolbar {
                     // Selection spanning multiple rows. Don't.
                     return false;
                 }
-                let chain = checkOnly ? this.editor.can().chain() : this.editor.chain();
-                const hasPrecedingPbNow = !!fromRow.node.attrs['data-preceding-pb'];
+                const [firstCellInRow] = findChildren(fromRow.node, (child) => child.type.name === 'cell');
+                const firstCellStartPosition = fromRow.start + firstCellInRow.pos + 1;
+
+                const chain = checkOnly ? this.editor.can().chain() : this.editor.chain();
+                const [pbElement] = findChildren(firstCellInRow.node, (child) => child.type.name === 'pb');
+                if (pbElement) {
+                    //                    debugger;
+                    // Remove the pb instead
+                    console.log($from, $to);
+                    return chain
+                        .focus()
+                        .deleteRange({
+                            from: firstCellStartPosition + pbElement.pos,
+                            to: firstCellStartPosition + pbElement.pos + 1,
+                        })
+                        .run();
+                }
                 return chain
                     .focus()
-                    .updateAttributes(fromRow.node.type, {
-                        'data-preceding-pb': hasPrecedingPbNow ? null : 'true',
-                    })
+                    .insertContentAt(firstCellStartPosition, createNodeFromContent('<tei-pb/>', this.editor.schema))
                     .run();
             }
         }
