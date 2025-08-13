@@ -50,6 +50,7 @@ declare function jt:import ($nodes as node()*, $importNotes as xs:boolean) {
             case element(tei:note) return
                 if ($importNotes) then
                     <tei-note
+                        n="{$node/@n}"
                         target="{
                             if ($node/@target) then
                                 $node/@target

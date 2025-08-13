@@ -222,6 +222,10 @@ tei-note::before {
     content: '?';
     margin-right: 0.5em;
 }
+tei-note[n]::before {
+    content: attr(n);
+    margin-right: 0.5em;
+}
 
 tei-note[_reference]::before {
     content: attr(_reference) '.';
