@@ -1,3 +1,34 @@
+# [1.23.0](https://github.com/JinnElements/jinn-tap/compare/v1.22.4...v1.23.0) (2025-08-13)
+
+
+### Bug Fixes
+
+* add a bit of space under the document to allow scrolling ([ff49ee7](https://github.com/JinnElements/jinn-tap/commit/ff49ee7d07134e84f448bcfa622f0ec4c07426fd))
+* **pb:** retain pb in tables by moving them to the cell ([c0477b7](https://github.com/JinnElements/jinn-tap/commit/c0477b7fee078d0e154a6003a598951dda2c07dc))
+* **schema:** allow heading elements directly under body ([854e28c](https://github.com/JinnElements/jinn-tap/commit/854e28ca5272f50c82936e8be35d60670c4ed4e2))
+* **table-menu:** hide table menu initially ([328467f](https://github.com/JinnElements/jinn-tap/commit/328467fb9b77aaef464e988949e63b9d1b285dda))
+* **table-menu:** remove updatedelay used for debugging ([caad58f](https://github.com/JinnElements/jinn-tap/commit/caad58fa9054223b1eec2ddd9260b0a2ff0a16ac))
+* **table-pb:** improve styling of the pb in tables ([df60615](https://github.com/JinnElements/jinn-tap/commit/df60615a628232c59094f9510b5a5e6377915931))
+* **table-selection:** do not try to make a table selection over text ([5c708ae](https://github.com/JinnElements/jinn-tap/commit/5c708ae54b774cef2ba53a03cfa5f626f3afd72f))
+* **table:** improve toolbar option ([ededcc7](https://github.com/JinnElements/jinn-tap/commit/ededcc7ef96b96dfa8c75fb14c80be0e5e99ccb4))
+* **tables:** calculate the cols and rows on table correctly ([a8711bb](https://github.com/JinnElements/jinn-tap/commit/a8711bbf8b59c283880298f367fff9aa38131f2f))
+* **tables:** disallow headings in tables for now ([de42d4f](https://github.com/JinnElements/jinn-tap/commit/de42d4f4c660c0d83cd0ae707d09c0b06ff2fce3))
+* **tables:** insert pb elements at the correct place ([76db6cd](https://github.com/JinnElements/jinn-tap/commit/76db6cdd67194f0949b730396cb1b945ce4bd96f))
+* **tableS:** remove rowspand and colspan attributes ([04f0df7](https://github.com/JinnElements/jinn-tap/commit/04f0df74a38dee1d89ebbd1747b3fbf73074b1bb))
+* **toolbar:** use correct source for attributes ([8b4964a](https://github.com/JinnElements/jinn-tap/commit/8b4964aa4fcfb328d6a3e3ebf3c6561086cb8069))
+* **toolbar:** use toolbar definition to add config for buttons ([ce4ec9c](https://github.com/JinnElements/jinn-tap/commit/ce4ec9c4b252f5c2604457ed62e669b3d576effc))
+
+
+### Features
+
+* **footnotes:** render `n` attribute for footnotes ([3e46dc4](https://github.com/JinnElements/jinn-tap/commit/3e46dc456dacf5f8c68af8bc37282d49ef902d95))
+* make page begin elements in tables editable ([50afbc3](https://github.com/JinnElements/jinn-tap/commit/50afbc3be0f9cb1dda369a2dba65d0ac1783a32b))
+* **tables:** add a table menu ([e74eb4f](https://github.com/JinnElements/jinn-tap/commit/e74eb4fd76520a7719288839682454bfa36873fa))
+* **tables:** enable cell selection and simplify colspans ([ba3ba76](https://github.com/JinnElements/jinn-tap/commit/ba3ba76513716f063d9daff4ba3762444e929778))
+* **tables:** implement TEI tables ([85f8e64](https://github.com/JinnElements/jinn-tap/commit/85f8e64223bfc98d3d7d996d74178055452c3f3f))
+* **tables:** make insert row and insert column work ([307d111](https://github.com/JinnElements/jinn-tap/commit/307d1113d10b0577287e890a5b8e193d47f7db13))
+* **tables:** make tab navigation work ([6cd87bd](https://github.com/JinnElements/jinn-tap/commit/6cd87bd3d84bfa3afd7da8155e5ce68ff5ca1231))
+
 ## [1.22.4](https://github.com/JinnElements/jinn-tap/compare/v1.22.3...v1.22.4) (2025-07-22)
 
 
