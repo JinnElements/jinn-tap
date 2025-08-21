@@ -1,3 +1,10 @@
+# [1.24.0](https://github.com/JinnElements/jinn-tap/compare/v1.23.0...v1.24.0) (2025-08-21)
+
+
+### Features
+
+* sidebar and toolbar can now be displayed in a container outside ([dc208d5](https://github.com/JinnElements/jinn-tap/commit/dc208d50d719e25d0c737f06fc4f21476eb92b6a))
+
 # [1.23.0](https://github.com/JinnElements/jinn-tap/compare/v1.22.4...v1.23.0) (2025-08-13)
 
 
