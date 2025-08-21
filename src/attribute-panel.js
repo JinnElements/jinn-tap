@@ -91,7 +91,7 @@ export class AttributePanel {
     createAttributeInput(form, attrName, attrDef, currentValue, placeholder = '') {
         const label = document.createElement('label');
         label.textContent = attrName;
-        form.appendChild(label);
+        label.setAttribute('for', attrName);
 
         let input;
         if (attrDef.enum) {
@@ -123,6 +123,8 @@ export class AttributePanel {
         input.placeholder = placeholder;
         input.value = currentValue || attrDef.default || '';
         input.name = attrName;
+        form.appendChild(label);
+        input.setAttribute('id', attrName);
 
         form.appendChild(input);
         return input;
@@ -173,7 +175,7 @@ export class AttributePanel {
                 input.readOnly = true;
                 input.name = attrName;
                 input.placeholder = 'No reference assigned';
-                fieldset.appendChild(label);
+                input.appendChild(label);
                 fieldset.appendChild(input);
 
                 const details = document.createElement('details');
