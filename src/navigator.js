@@ -4,7 +4,7 @@ export class NavigationPanel {
     constructor(editor, attributePanel) {
         this.editor = editor.tiptap;
         this.attributePanel = attributePanel;
-        this.panel = editor.querySelector('.navigation-panel');
+        this.panel = editor.sidebarContainer.querySelector('.navigation-panel');
         this.setupEventListeners();
     }
 

@@ -12,7 +12,7 @@ export class AttributePanel {
     constructor(editor, schemaDef) {
         this.editor = editor.tiptap;
         this.schemaDef = schemaDef;
-        this.panel = editor.querySelector('.attribute-panel');
+        this.panel = editor.sidebarContainer.querySelector('.attribute-panel');
         this.currentElement = null;
         this.currentMark = null;
         this.setupEventListeners(editor);

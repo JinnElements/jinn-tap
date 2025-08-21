@@ -12,6 +12,7 @@ import { JinnTapCommands } from './extensions/commands.js';
 import { AttributePanel } from './attribute-panel.js';
 import { NavigationPanel } from './navigator.js';
 import { Toolbar } from './toolbar.js';
+import { applySlots } from './util/slots.js';
 import { generateRandomColor, colorCssFromSchema } from './util/colors.js';
 import { importXml, exportXml, createDocument } from './util/xml.js';
 import { generateUsername } from 'unique-username-generator';
@@ -42,6 +43,8 @@ import { TableMenu } from './extensions/tables/TableMenu.js';
  * @attr {string} token - JWT token to use for authentication with the collaboration server.
  * @attr {string} name - Unique name for the collaboration session.
  * @attr {string} user - The user name to use for collaboration.
+ * @attr {string} toolbar - A selector pointing to an HTML element which should be used to host the toolbar. If not present, the toolbar will be created inside the jinn-tap element.
+ * @attr {string} sidebar - A selector pointing to an HTML element which should be used to host the sidebar. If not present, the sidebar will be created inside the jinn-tap element.
  *
  * @attr {boolean} debug - When present, enables debug mode which adds a debug class
  *                         to the component for styling purposes.
@@ -228,24 +231,47 @@ export class JinnTap extends HTMLElement {
 
         // Create the editor container structure
         this.innerHTML = `
-            <nav>
-                <ul class="toolbar">
-                    <slot name="toolbar"></slot>
-                </ul>
-            </nav>
             <div class="editor-area"></div>
 			<div style="display:none"><nav class="table-menu"><ul class="toolbar"/></nav></div>
             <pre class="code-area" style="display: none;"></pre>
-            <div class="aside">
-                <div class="user-info"></div>
-                <slot name="aside"></slot>
-                <nav class="navigation-panel" aria-label="breadcrumb"></nav>
-                <div class="attribute-panel"></div>
-            </div>
+        `;
+        // if attribute sidebar-container is not present, create one within the jinn-tap component
+        const sidebarContainerSelector = this.getAttribute('sidebar');
+        if (sidebarContainerSelector) {
+            this.sidebarContainer = document.querySelector(sidebarContainerSelector);
+        } else {
+            this.sidebarContainer = document.createElement('div');
+            this.sidebarContainer.classList.add('aside');
+            this.appendChild(this.sidebarContainer);
+        }
+        this.sidebarContainer.classList.add('jinn-tap-aside');
+        this.sidebarContainer.innerHTML = `
+            <div class="user-info"></div>
+            <slot name="aside"></slot>
+            <nav class="navigation-panel" aria-label="breadcrumb"></nav>
+            <div class="attribute-panel"></div>
         `;
 
+        // if attribute toolbar-container is not present, create one within the jinn-tap component
+        const toolbarContainerSelector = this.getAttribute('toolbar');
+        if (toolbarContainerSelector) {
+            this.toolbarContainer = document.querySelector(toolbarContainerSelector);
+        } else {
+            const nav = document.createElement('nav');
+            this.toolbarContainer = document.createElement('ul');
+            this.toolbarContainer.classList.add('toolbar');
+            nav.appendChild(this.toolbarContainer);
+
+            this.appendChild(nav);
+        }
+        this.toolbarContainer.classList.add('jinn-tap-toolbar');
+        this.toolbarContainer.innerHTML = `<slot name="toolbar"></slot>`;
+
         // Fill in the slots and clean up the current content
-        this.applySlots(temp);
+        applySlots(this, temp);
+        applySlots(this.sidebarContainer, temp);
+        applySlots(this.toolbarContainer, temp);
+
         let initialContent = temp.innerHTML.trim();
 
         // Check if URL attribute is present
@@ -448,28 +474,6 @@ export class JinnTap extends HTMLElement {
         return this.editor;
     }
 
-    applySlots(content) {
-        const slotElements = this.querySelectorAll('slot');
-        for (const slotElement of slotElements) {
-            const name = slotElement.name;
-            const slotContents = content.querySelectorAll(`[slot="${name}"]`);
-            if (slotContents.length > 0) {
-                const parent = slotElement.parentNode;
-                slotContents.forEach((slotContent) => {
-                    // Create temporary node to parse the outerHTML
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = slotContent.outerHTML;
-                    const children = Array.from(tempDiv.children);
-                    children.forEach((child) => parent.insertBefore(child, slotElement));
-                    slotContent.remove();
-                });
-            }
-        }
-        // Remove all slot elements after processing
-        slotElements.forEach((slot) => slot.remove());
-        return content;
-    }
-
     onAuthenticated() {
         const content = (close) => {
             const div = document.createElement('div');
@@ -511,7 +515,7 @@ export class JinnTap extends HTMLElement {
     }
 
     updateUserInfo() {
-        this.querySelector('.user-info').textContent = `Connected as ${this.collaboration.user}`;
+        this.sidebarContainer.querySelector('.user-info').textContent = `Connected as ${this.collaboration.user}`;
     }
 }
 

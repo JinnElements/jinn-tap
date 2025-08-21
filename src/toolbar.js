@@ -22,7 +22,7 @@ export class Toolbar {
         /**
          * @type {Element}
          */
-        this.toolbar = editor.querySelector('.toolbar');
+        this.toolbar = editor.toolbarContainer;
         this.schemaDef = schemaDef;
         this.selectElements = new Map();
 

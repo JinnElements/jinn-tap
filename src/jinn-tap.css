@@ -13,6 +13,10 @@ jinn-tap {
 	margin-bottom:50vh
 }
 
+jinn-tap[sidebar] {
+    grid-template-columns: 1fr;
+}
+
 jinn-tap > nav {
     grid-area: toolbar;
     position: sticky;
@@ -21,7 +25,7 @@ jinn-tap > nav {
     background-color: var(--jinn-tap-background-color, white);
 }
 
-jinn-tap .user-info {
+.jinn-tap-aside .user-info {
     font-size: 0.75rem;
 }
 
@@ -30,7 +34,7 @@ jinn-tap .editor-area, jinn-tap .code-area {
     min-height: 1rem;
 }
 
-jinn-tap .aside {
+jinn-tap .jinn-tap-aside {
     grid-area: aside;
     background: var(--jinn-tap-background-color, white);
     padding: 20px;
@@ -40,11 +44,11 @@ jinn-tap .aside {
     z-index: 10;
 }
 
-jinn-tap .attribute-panel > div {
+.jinn-tap-aside .attribute-panel > div {
     overflow-y: auto;
 }
 
-jinn-tap .attribute-panel fieldset {
+.jinn-tap-aside .attribute-panel fieldset {
     display: grid;
     grid-template-columns: min-content 1fr;
     grid-auto-rows: min-content;
@@ -57,60 +61,60 @@ jinn-tap .attribute-panel fieldset {
     margin: 0;
 }
 
-jinn-tap .attribute-panel fieldset label {
+.jinn-tap-aside .attribute-panel fieldset label {
     display: block;
     padding-right: 1rem;
 }
 
-jinn-tap .attribute-panel fieldset input,
-jinn-tap .attribute-panel fieldset select {
+.jinn-tap-aside .attribute-panel fieldset input,
+.jinn-tap-aside .attribute-panel fieldset select {
     display: block;
     margin: 0;
 }
 
-jinn-tap .attribute-panel details {
+.jinn-tap-aside .attribute-panel details {
     margin-top: 1rem;
 }
 
-jinn-tap .attribute-panel footer {
+.jinn-tap-aside .attribute-panel footer {
     display: flex;
     justify-content: flex-end;
     margin-top: 1rem;
 }
 
-jinn-tap pb-authority-lookup {
+.jinn-tap-aside pb-authority-lookup {
     overflow-y: auto;
     height: 20rem;
 }
 
-jinn-tap .occurrences {
+.jinn-tap-aside .occurrences {
     margin-top: 1rem;
     overflow-y: auto;
 }
 
-jinn-tap .occurrences [role="group"] {
+.jinn-tap-aside .occurrences [role="group"] {
     float: right;
     width: fit-content;
 }
 
-jinn-tap .occurrences ul {
+.jinn-tap-aside .occurrences ul {
     height: 20rem;
     overflow-y: auto;
     margin: 0;
     padding: 0;
 }
 
-jinn-tap .occurrences li {
+.jinn-tap-aside .occurrences li {
     list-style: none;
 }
 
-jinn-tap .toolbar .disabled {
+.jinn-tap-toolbar .toolbar .disabled {
     opacity: 0.5;
     cursor: not-allowed;
     pointer-events: none;
 }
 
-jinn-tap .toolbar details i {
+.jinn-tap-toolbar .toolbar details i {
     padding-right: 0.5rem;
 }
 
