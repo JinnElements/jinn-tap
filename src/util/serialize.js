@@ -21,7 +21,7 @@ function compareMarks(mark1, mark2) {
     return mark1.type === mark2.type && JSON.stringify(mark1.attrs) === JSON.stringify(mark2.attrs);
 }
 
-class Serializer {
+export class Serializer {
     constructor(editor, schemaDef) {
         this.editor = editor;
         this.openMarks = [];
