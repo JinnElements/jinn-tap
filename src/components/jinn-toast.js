@@ -168,4 +168,6 @@ export class JinnToast extends HTMLElement {
     }
 }
 
-customElements.define('jinn-toast', JinnToast);
+if (!customElements.get('jinn-toast')) {
+    customElements.define('jinn-toast', JinnToast);
+}
