@@ -113,6 +113,17 @@
 		"underline": {
 			"type": "inline"
 		},
+		"rs": {
+			"type": "inline",
+			"attributes": {
+				"corresp": {
+					"type": "string"
+				},
+				"type": {
+					"type": "string"
+				}
+			}
+		},
         "hi": {
             "type": "inline",
             "attributes": {
@@ -185,6 +196,10 @@
                 }
             }
         },
+		"quote": {
+			"type": "block",
+			"content": "block*"
+		},
         "figure": {
             "type": "block",
             "selectable": true,
