@@ -24,13 +24,12 @@
             "label": "<i class='bi bi-three-dots'></i>"
         },
         "Table": {
-			"select": "Blocks",
+            "select": "Blocks",
             "command": "insertSnippet",
             "args": [
                 "<tei-table><tei-row><tei-cell>A</tei-cell><tei-cell>B</tei-cell></tei-row><tei-row><tei-cell>C</tei-cell><tei-cell>D</tei-cell></tei-row></tei-table>"
             ],
             "label": "<i class='bi bi-table'></i>"
-
         },
         "Figure": {
             "command": "insertFigure",
@@ -59,23 +58,6 @@
         }
     },
     "schema": {
-        "cell": {
-            "type": "cell",
-            "attributes": {
-                "role": {
-                    "type": "string"
-                }
-            }
-        },
-        "row": {
-            "type": "row",
-            "role": {
-                "type": "string"
-            }
-        },
-        "table": {
-            "type": "table"
-        },
         "div": {
             "type": "block",
             "defining": true,
@@ -110,20 +92,20 @@
                 }
             ]
         },
-		"underline": {
-			"type": "inline"
-		},
-		"rs": {
-			"type": "inline",
-			"attributes": {
-				"corresp": {
-					"type": "string"
-				},
-				"type": {
-					"type": "string"
-				}
-			}
-		},
+        "underline": {
+            "type": "inline"
+        },
+        "rs": {
+            "type": "inline",
+            "attributes": {
+                "corresp": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "hi": {
             "type": "inline",
             "attributes": {
@@ -196,10 +178,10 @@
                 }
             }
         },
-		"quote": {
-			"type": "block",
-			"content": "block*"
-		},
+        "quote": {
+            "type": "block",
+            "content": "block*"
+        },
         "figure": {
             "type": "block",
             "selectable": true,
@@ -623,14 +605,14 @@
                 }
             }
         },
-		"gloss": {
-			"type": "inline",
-			"attributes": {"target": {"type": "string"}}
-		},
-		"footnote-reference": {
-			"type": "inline",
-			"attributes": {"n": {"type": "number"}}
-		},
+        "gloss": {
+            "type": "inline",
+            "attributes": { "target": { "type": "string" } }
+        },
+        "footnote-reference": {
+            "type": "inline",
+            "attributes": { "n": { "type": "number" } }
+        },
         "supplied": {
             "type": "inline",
             "attributes": {
@@ -681,6 +663,23 @@
                     "order": 3
                 }
             }
+        },
+        "cell": {
+            "type": "cell",
+            "attributes": {
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "row": {
+            "type": "row",
+            "role": {
+                "type": "string"
+            }
+        },
+        "table": {
+            "type": "table"
         }
     }
 }
