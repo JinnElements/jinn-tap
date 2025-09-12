@@ -1,3 +1,10 @@
+## [1.24.1](https://github.com/JinnElements/jinn-tap/compare/v1.24.0...v1.24.1) (2025-09-12)
+
+
+### Bug Fixes
+
+* **toolbar:** remove z-index on toolbar ([42c2b13](https://github.com/JinnElements/jinn-tap/commit/42c2b1328a2dac989289114e8b29f8c037f59453))
+
 # [1.24.0](https://github.com/JinnElements/jinn-tap/compare/v1.23.0...v1.24.0) (2025-08-21)
 
 
