@@ -1,3 +1,15 @@
+# [1.25.0](https://github.com/JinnElements/jinn-tap/compare/v1.24.1...v1.25.0) (2025-09-12)
+
+
+### Bug Fixes
+
+* **jinn-toast:** do not register jinn-toast if its already there ([dccdb87](https://github.com/JinnElements/jinn-tap/commit/dccdb87e34225fca7ee14e7decced30a25d75165))
+
+
+### Features
+
+* **schema:** support more elements: ([dd35d45](https://github.com/JinnElements/jinn-tap/commit/dd35d45fe5daee3c68f0d93d89f13d7c83d92fb4))
+
 ## [1.24.1](https://github.com/JinnElements/jinn-tap/compare/v1.24.0...v1.24.1) (2025-09-12)
 
 
