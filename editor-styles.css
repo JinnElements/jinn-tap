@@ -331,6 +331,17 @@ tei-ref {
     text-decoration: underline;
 }
 
+tei-quote{
+    &::before {
+        content: "“";
+        font-size: var(--s2);
+        position: absolute;
+    }
+    > * {
+        padding-left: 2rem
+    }
+}
+
 .ProseMirror-selectednode {
     outline: 2px solid var(--pico-primary);
 }
