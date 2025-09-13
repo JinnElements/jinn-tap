@@ -1,3 +1,15 @@
+# [1.26.0](https://github.com/JinnElements/jinn-tap/compare/v1.25.0...v1.26.0) (2025-09-13)
+
+
+### Bug Fixes
+
+* **paste:** make paragraphs a prefered way of pasting ([a3f303b](https://github.com/JinnElements/jinn-tap/commit/a3f303b4d15d7dcf2d7106906f61465cde58b4ed))
+
+
+### Features
+
+* add clickable marker to links to open target URL ([4fe3693](https://github.com/JinnElements/jinn-tap/commit/4fe36933bb554ce262cc84665a8801e8cabd5c1c))
+
 # [1.25.0](https://github.com/JinnElements/jinn-tap/compare/v1.24.1...v1.25.0) (2025-09-12)
 
 
