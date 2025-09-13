@@ -9,6 +9,8 @@ import { JinnGraphic } from './graphic.js';
 import { JinnTable } from './tables/table.js';
 import { JinnRow } from './tables/row.js';
 import { JinnCell } from './tables/cell.js';
+import { JinnReference } from './ref.js';
+
 /**
  * Create nodes and marks from a schema definition.
  *
@@ -27,6 +29,11 @@ export function createFromSchema(schemaDef) {
                 break;
             case 'anchor':
                 NodeOrMark = JinnAnchor.extend({
+                    name: name,
+                });
+                break;
+            case 'ref':
+                NodeOrMark = JinnReference.extend({
                     name: name,
                 });
                 break;

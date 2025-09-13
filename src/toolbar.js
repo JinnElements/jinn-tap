@@ -225,7 +225,7 @@ export class Toolbar {
             } else {
                 chain = chain[toolbarDef.command](name, attributes);
             }
-        } else if (def.type === 'inline') {
+        } else if (def.type === 'inline' || def.type === 'ref') {
             chain = chain.toggleMark(name, attributes);
         } else if (def.type === 'list') {
             chain = chain.toggleList(attributes);

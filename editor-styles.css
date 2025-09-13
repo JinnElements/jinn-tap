@@ -189,7 +189,7 @@ tei-dateline {
 }
 
 tei-opener {
-    margin-bottom: 1rem;
+    margin: .75rem 0 1rem 0;
 }
 
 tei-closer {
@@ -220,11 +220,11 @@ tei-note::before {
 
 tei-note::before {
     content: '?';
-    margin-right: 0.5em;
+    margin-right: 0.5rem;
 }
 tei-note[n]::before {
     content: attr(n);
-    margin-right: 0.5em;
+    margin-right: 0.5rem;
 }
 
 tei-note[_reference]::before {
@@ -236,7 +236,7 @@ tei-note:not([_reference]) {
 }
 
 tei-anchor {
-    font-size: 0.8em;
+    font-size: 0.85rem;
     vertical-align: super;
     cursor: pointer;
     line-height: 1;
@@ -324,6 +324,25 @@ tei-p.is-empty::before {
     position: absolute;
     height: 0;
     pointer-events: none;
+}
+
+a.reference::after {
+    content: '↗';
+    margin-left: 4px;
+    font-size: 0.75rem;
+    vertical-align: super;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-block;
+    pointer-events: auto;
+    position: relative;
+    z-index: 1;
+}
+
+a.reference:hover::after {
+    color: #004499;
+    transform: scale(1.1);
+    cursor: pointer;
 }
 
 tei-ref {

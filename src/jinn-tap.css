@@ -33,6 +33,10 @@ jinn-tap .editor-area, jinn-tap .code-area {
     min-height: 1rem;
 }
 
+jinn-tap .code-area {
+    text-wrap: wrap;
+}
+
 jinn-tap .jinn-tap-aside {
     grid-area: aside;
     background: var(--jinn-tap-background-color, white);
