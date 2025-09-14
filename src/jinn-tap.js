@@ -426,7 +426,7 @@ export class JinnTap extends HTMLElement {
     }
 
     dispatchContentChange() {
-        if (!this.initialized) {
+        if (!this.initialized && this.collaboration) {
             return;
         }
         const body = serialize(this.editor, this._schema);
