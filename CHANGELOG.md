@@ -1,3 +1,10 @@
+## [1.26.1](https://github.com/JinnElements/jinn-tap/compare/v1.26.0...v1.26.1) (2025-09-14)
+
+
+### Bug Fixes
+
+* make sure the schema has been downloaded before the editor is initalized ([adce48a](https://github.com/JinnElements/jinn-tap/commit/adce48a9d2409b75efd249a63a4096fa7130a5ae))
+
 # [1.26.0](https://github.com/JinnElements/jinn-tap/compare/v1.25.0...v1.26.0) (2025-09-13)
 
 
