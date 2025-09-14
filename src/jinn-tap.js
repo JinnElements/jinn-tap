@@ -2,7 +2,7 @@ import { Editor } from '@tiptap/core';
 import { UndoRedo, Placeholder } from '@tiptap/extensions';
 import { Collaboration } from '@tiptap/extension-collaboration';
 import * as Y from 'yjs';
-import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
+import CollaborationCaret from '@tiptap/extension-collaboration-caret';
 import { HocuspocusProvider } from '@hocuspocus/provider';
 import { serialize } from './util/serialize.js';
 import { createFromSchema } from './extensions/extensions.js';
@@ -397,13 +397,13 @@ export class JinnTap extends HTMLElement {
                 }),
             );
             editorConfig.extensions.push(
-                CollaborationCursor.configure({
+                CollaborationCaret.configure({
                     provider: this.provider,
                     user: {
                         name: this.collaboration.user,
                         color: this.collaboration.color,
                     },
-                }),
+                })
             );
         }
 
@@ -426,6 +426,9 @@ export class JinnTap extends HTMLElement {
     }
 
     dispatchContentChange() {
+        if (!this.initialized) {
+            return;
+        }
         const body = serialize(this.editor, this._schema);
         this.dispatchEvent(
             new CustomEvent('content-change', {

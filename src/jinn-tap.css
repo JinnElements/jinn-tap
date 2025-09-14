@@ -127,7 +127,7 @@ jinn-tap .ProseMirror {
 }
 
 /* Collaboration cursor styles */
-.collaboration-cursor__caret {
+.collaboration-carets__caret {
     position: relative;
     margin-left: 1px;
     border-left: 1px solid;
@@ -135,7 +135,7 @@ jinn-tap .ProseMirror {
     border-radius: 2px;
 }
 
-.collaboration-cursor__label {
+.collaboration-carets__label {
     position: absolute;
     top: -1.5em;
     left: -1px;
@@ -166,7 +166,7 @@ jinn-tap .ProseMirror {
     }
 }
 
-.collaboration-cursor__caret:hover .collaboration-cursor__label {
+.collaboration-carets__caret:hover .collaboration-carets__label {
     animation: none;
     opacity: 1;
 }
