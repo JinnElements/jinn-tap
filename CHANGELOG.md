@@ -1,3 +1,17 @@
+# [1.27.0](https://github.com/JinnElements/jinn-tap/compare/v1.26.1...v1.27.0) (2025-09-14)
+
+
+### Bug Fixes
+
+* ci dependencies ([7aa5982](https://github.com/JinnElements/jinn-tap/commit/7aa59821774b9cf75ff8197977aaf7f7ac04d811))
+* collaboration feature ([c3bd083](https://github.com/JinnElements/jinn-tap/commit/c3bd083e70d4b5eb52656963d1127aa6b1103ce8))
+* dispatchContentChange should not dispatch immediately in collaboration mode ([c9d8bb5](https://github.com/JinnElements/jinn-tap/commit/c9d8bb5b652c8a1b6cf4788c2da05a53da37ff69))
+
+
+### Features
+
+* fix ci ([ced5ea5](https://github.com/JinnElements/jinn-tap/commit/ced5ea5bf7313c629e35bcd476b992e7309ea459))
+
 ## [1.26.1](https://github.com/JinnElements/jinn-tap/compare/v1.26.0...v1.26.1) (2025-09-14)
 
 
