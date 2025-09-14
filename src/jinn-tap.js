@@ -100,7 +100,7 @@ export class JinnTap extends HTMLElement {
             }
         } else if (name === 'url' && newValue && this._initialized) {
             this.loadFromUrl(newValue);
-        } else if (name === 'schema' && newValue) {
+        } else if (name === 'schema' && newValue && this._initialized) {
             this.loadSchema(newValue);
         }
     }
@@ -172,6 +172,7 @@ export class JinnTap extends HTMLElement {
             this.notesWrapper = this.getAttribute('notes-wrapper');
         }
         this.notes = this.getAttribute('notes') || 'disconnected';
+        this._schema = this.getAttribute('schema');
 
         const collabServer = this.getAttribute('server') || null;
         if (collabServer) {
@@ -207,6 +208,18 @@ export class JinnTap extends HTMLElement {
             }
         }
 
+        this.setupEditor();
+
+        this._initialized = true;
+    }
+
+    async setupEditor() {
+        if (this._schema) {
+            await this.loadSchema(this._schema);
+        } else {
+            this._schema = schema;
+        }
+
         // Generate CSS for schema colors
         const colorCss = colorCssFromSchema(this._schema);
         let style = document.getElementById('jinn-tap-color-css');
@@ -219,12 +232,6 @@ export class JinnTap extends HTMLElement {
             style.textContent = colorCss;
         }
 
-        this.setupEditor();
-
-        this._initialized = true;
-    }
-
-    async setupEditor() {
         // Create a temporary container to parse the content
         const temp = document.createElement('div');
         temp.innerHTML = this.innerHTML;
