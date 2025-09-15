@@ -1,3 +1,10 @@
+## [1.27.1](https://github.com/JinnElements/jinn-tap/compare/v1.27.0...v1.27.1) (2025-09-15)
+
+
+### Bug Fixes
+
+* type and defer initialization ([82fef29](https://github.com/JinnElements/jinn-tap/commit/82fef295eb0342a8b98afe296bf4d0ef52ea0e5f))
+
 # [1.27.0](https://github.com/JinnElements/jinn-tap/compare/v1.26.1...v1.27.0) (2025-09-14)
 
 
