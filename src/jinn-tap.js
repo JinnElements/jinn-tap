@@ -209,8 +209,6 @@ export class JinnTap extends HTMLElement {
         }
 
         this.setupEditor();
-
-        this._initialized = true;
     }
 
     async setupEditor() {
@@ -354,6 +352,7 @@ export class JinnTap extends HTMLElement {
             ],
             autofocus: false,
             onCreate: () => {
+                this._initialized = true;
                 this.dispatchEvent(new CustomEvent('ready'));
             },
             onTransaction: ({ editor, transaction }) => {
@@ -426,7 +425,7 @@ export class JinnTap extends HTMLElement {
     }
 
     dispatchContentChange() {
-        if (!this.initialized && this.collaboration) {
+        if (!this._initialized && this.collaboration) {
             return;
         }
         const body = serialize(this.editor, this._schema);
