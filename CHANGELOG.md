@@ -1,3 +1,10 @@
+## [1.27.2](https://github.com/JinnElements/jinn-tap/compare/v1.27.1...v1.27.2) (2025-09-18)
+
+
+### Bug Fixes
+
+* a figure should have a head by default ([8cbe745](https://github.com/JinnElements/jinn-tap/commit/8cbe7457368eeb24f7fa2ca162f8b441ea47c414))
+
 ## [1.27.1](https://github.com/JinnElements/jinn-tap/compare/v1.27.0...v1.27.1) (2025-09-15)
 
 
