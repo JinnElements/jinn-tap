@@ -4,6 +4,8 @@
 
 Edit TEI XML documents using a rich text editor. JinnTap preserves the structure of the XML in the editor. There's no need for complex transformation steps from TEI to HTML and back. The representation of the document in the editor corresponds directly with the XML. TEI elements are converted to HTML custom elements, preserving all attributes and structural features.
 
+JinnTap comes as a web component. While it can be used standalone, it is usually meant to be embedded into a larger application context such as TEI Publisher 10, which will include JinnTap and does allow saving and reloading documents. TP 10 has not been released yet.
+
 ## Installation
 
 ```bash
@@ -68,7 +70,7 @@ npm run cypress:run
         document.addEventListener('DOMContentLoaded', () => {
             const editor = document.querySelector('jinn-tap');
             const output = document.querySelector('#output');
-            
+
             editor.addEventListener('content-change', (event) => {
                 output.textContent = event.detail.teiXml;
             });
