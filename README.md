@@ -9,7 +9,7 @@ JinnTap comes as a web component. While it can be used standalone, it is usually
 ## Installation
 
 ```bash
-npm install jinn-tap
+npm install @jinntec/jinntap
 ```
 
 ## Development Setup
@@ -61,7 +61,11 @@ npm run cypress:run
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script type="module" src="node_modules/jinn-tap/dist/jinn-tap.es.js"></script>
+	<!-- Import the general editor styles-->
+    <link rel="stylesheet" href="node_modules/@jinntec/jinntap/dist/jinn-tap.css" />
+	<!-- Import the styles for displaying TEI documents -->
+    <link rel="stylesheet" href="node_modules/@jinntec/jinntap/dist/editor-styles.css" />
+    <script type="module" src="node_modules/@jinntec/jinntap/dist/jinn-tap.es.js"></script>
 </head>
 <body>
     <jinn-tap></jinn-tap>
