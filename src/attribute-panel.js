@@ -189,15 +189,55 @@ export class AttributePanel {
                 lookup.setAttribute('auto', needsLookup);
                 lookup.setAttribute('no-occurrences', true);
                 const authority = document.createElement('pb-authority');
+                // Common options
+                authority.setAttribute('base', attrDef.connector.base);
                 authority.setAttribute('connector', attrDef.connector.name);
                 authority.setAttribute('name', attrDef.connector.type);
+
+                switch (attrDef.connector.name) {
+                    case 'GND':
+                        authority.setAttribute('prefix', attrDef.connector.prefix);
+                        break;
+                    case 'GeoNames':
+                        authority.setAttribute('user', attrDef.connector.user);
+                        break;
+                    case 'Airtable':
+                        authority.setAttribute('api-key', attrDef.connector.apiKey);
+                        authority.setAttribute('table', attrDef.connector.table);
+                        authority.setAttribute('tokenize', attrDef.connector.tokenize.join(', '));
+                        authority.setAttribute('filter', attrDef.connector.filter);
+                        authority.setAttribute('fields', attrDef.connector.fields.join(', '));
+                        authority.setAttribute('label', attrDef.connector.label);
+                        break;
+                    case 'KBGA':
+                        authority.setAttribute('api', attrDef.connector.api);
+                        authority.setAttribute('limit', attrDef.connector.limit);
+                        break;
+                    case 'Anton':
+                    case 'GF':
+                        authority.setAttribute('api', attrDef.connector.api);
+                        authority.setAttribute('url', attrDef.connector.url);
+                        authority.setAttribute('limit', attrDef.connector.limit);
+                        authority.setAttribute('provider', attrDef.connector.provider);
+                        break;
+                    case 'ReconciliationService':
+                        authority.setAttribute('endpoint', attrDef.connector.endpoint);
+                        authority.setAttribute('debug', attrDef.connector.debug);
+                        break;
+                    case 'Custom':
+                        // @TODO: support this if we ever need to
+                        throw new Error('Not implemented: custom authority connector');
+                    default:
+                }
                 if (attrDef.connector.user) {
                     authority.setAttribute('user', attrDef.connector.user);
                 }
                 lookup.appendChild(authority);
 
                 document.addEventListener('pb-authority-select', (event) => {
-                    const value = `${attrDef.connector.prefix}-${event.detail.properties.ref}`;
+                    const value = attrDef.connector.prefix
+                        ? `${attrDef.connector.prefix}-${event.detail.properties.ref}`
+                        : event.detail.properties.ref;
                     input.value = value;
                     details.open = false;
                     this.handleAttributeUpdate(nodeOrMark, pos, { [attrName]: value });
