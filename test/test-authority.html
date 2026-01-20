@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JinnTap Test</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script type="module" src="/src/jinn-tap.js"></script>
+	<script type="module">
+	  // Vite treeshakes the marked dependency because it is unused. Manually import it and assign
+	  // to window
+	  import * as marked from "marked";
+	  window.marked = marked;
+	  </script>
+	<script type="module">
+	  import "@teipublisher/pb-components/dist/pb-components-bundle.js";
+	</script>
+
+</head>
+<body>
+  <div class="container">
+	<pb-page>
+      <jinn-tap schema="./authority-schema.json">
+<tei-div><tei-p>Hello world! <tei-rs type="gnd" corresp="gnd-4040841-3">GND connector</tei-rs><tei-rs type="airtable" corresp="airtable-1234">Airtable connector</tei-rs></tei-p></tei-div>
+	  </jinn-tap>
+        <pre id="output"></pre>
+  </div>
+  </pb-page>
+</body>
+</html>
