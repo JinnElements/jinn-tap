@@ -1,0 +1,56 @@
+{
+    "toolbar": {},
+    "selects": {},
+    "schema": {
+        "heading": {
+            "type": "block"
+        },
+        "listAnnotation": {
+            "type": "block"
+        },
+        "div": {
+            "type": "block",
+            "defining": true,
+            "content": "block*",
+            "selectable": true
+        },
+        "p": {
+            "type": "block"
+        },
+        "rs": {
+            "type": "inline",
+            "attributes": {
+                "corresp": [
+                    {
+                        "when": "@type = 'gnd'",
+                        "type": "string",
+                        "connector": {
+                            "name": "GND",
+                            "type": "person",
+                            "prefix": "gnd"
+                        }
+                    },
+                    {
+                        "when": "@type = 'airtable'",
+                        "type": "string",
+                        "connector": {
+                            "name": "Airtable",
+                            "type": "organisation",
+                            "table": "Organisations",
+                            "prefix": "airtable",
+                            "apiKey": "my-api-key",
+                            "fields": ["Name", "Abbreviation"],
+                            "label": "${Name}",
+                            "base": "my-base",
+                            "tokenize": ["Name", "Variants"],
+                            "filter": "or(find('${key}', lower({Name})), find('${key}', lower({Abbreviation})))"
+                        }
+                    }
+                ],
+                "type": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
