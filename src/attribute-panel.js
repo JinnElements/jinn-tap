@@ -153,6 +153,11 @@ export class AttributePanel {
                 authority.setAttribute('filter', attrDef.connector.filter);
                 authority.setAttribute('fields', attrDef.connector.fields.join(', '));
                 authority.setAttribute('label', attrDef.connector.label);
+
+                const info = document.createElement('template');
+                info.classList.add('info');
+                info.content.appendChild(document.createTextNode(attrDef.connector.label));
+                authority.appendChild(info);
                 break;
             case 'KBGA':
                 authority.setAttribute('api', attrDef.connector.api);
