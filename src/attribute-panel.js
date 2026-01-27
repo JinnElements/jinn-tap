@@ -141,7 +141,7 @@ export class AttributePanel {
 
         switch (attrDef.connector.name) {
             case 'GND':
-                authority.setAttribute('prefix', attrDef.connector.prefix);
+                // No additional config needed
                 break;
             case 'GeoNames':
                 authority.setAttribute('user', attrDef.connector.user);

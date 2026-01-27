@@ -55,4 +55,31 @@ describe('p-authority integration', () => {
             .should('have.attr', 'fields', 'Name, Abbreviation')
             .should('have.attr', 'label', '${Name}');
     });
+
+    it.only('can make a new GND entity', () => {
+        cy.get('jinn-tap').then((e) => {
+            const [jinntap] = e.get();
+            jinntap.editor.commands.setTextSelection({ from: 47, to: 56 });
+        });
+
+        // Apply the element
+        cy.get('jinn-tap').then((e) => {
+            const [jinntap] = e.get();
+            jinntap.editor.commands.toggleMark('rs', { type: 'gnd' });
+        });
+
+        // Make the link
+        cy.get('pb-authority-lookup')
+            .shadow()
+            .find('div:has(a[href="https://d-nb.info/gnd/118774352"])')
+            .find('button')
+            .first()
+            .click();
+
+        // Check that the link was made correctly
+        cy.get('.attribute-panel').find('input').first().should('have.value', 'gnd-118774352');
+
+        // Finally, assert the lookup shows the link
+        cy.get('.attribute-panel').find('.label').should('contain', 'Heyn, Piet');
+    });
 });
