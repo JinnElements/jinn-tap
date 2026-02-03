@@ -188,8 +188,9 @@ describe('JinnTap Component', () => {
             // Set the content
             $component[0].content = testContent;
         });
-
-        cy.get('jinn-tap').invoke('attr', 'block-typing', 'true');
+        cy.get('jinn-tap').then(($component) => {
+            $component[0].editor.commands.togglePreventTyping();
+        });
 
         // Typing, backspace, CUT should all be blocked now
         cy.get('jinn-tap[block-typing]')
@@ -238,8 +239,9 @@ describe('JinnTap Component', () => {
 
             expect(editor.xml).to.equal(wrapInTEIBoilerplate('Initial Content'));
         });
-
-        cy.get('jinn-tap').invoke('attr', 'block-typing', null);
+        cy.get('jinn-tap').then(($component) => {
+            $component[0].editor.commands.togglePreventTyping();
+        });
         cy.get('jinn-tap').then(($component) => {
             $component[0].editor.commands.setTextSelection({ from: 1, to: 1 });
         });
