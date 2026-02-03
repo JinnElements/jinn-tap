@@ -121,7 +121,14 @@
                 },
                 "Cmd-i": {
                     "attributes": { "rend": "i" }
+                },
+				"ctrl-b": {
+                    "attributes": { "rend": "b" }
+                },
+                "ctrl-i": {
+                    "attributes": { "rend": "i" }
                 }
+
             },
             "toolbar": {
                 "Bold": {

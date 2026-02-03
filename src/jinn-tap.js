@@ -36,15 +36,20 @@ import { TableMenu } from './extensions/tables/TableMenu.js';
  *                         and used to configure the editor's capabilities. If not provided,
  *                         a default schema will be used.
  * @attr {string} notes-wrapper - The wrapper element to use for notes. The default is 'listAnnotation'.
- * @attr {string} notes - Which of the two modes for editing notes should be used. Default is 'connected',
- * i.e. deleting an anchor will delete the associated note. The alternative, 'disconnected', allows notes to be
- * detached from their anchor.
+ * @attr {string} notes - Which of the two modes for editing notes should be used. Default is 'connected', i.e. deleting
+ * an anchor will delete the associated note. The alternative, 'disconnected', allows notes to be detached from their
+ * anchor.
  * @attr {string} server - The websocket server URL to use for collaboration.
  * @attr {string} token - JWT token to use for authentication with the collaboration server.
  * @attr {string} name - Unique name for the collaboration session.
  * @attr {string} user - The user name to use for collaboration.
- * @attr {string} toolbar - A selector pointing to an HTML element which should be used to host the toolbar. If not present, the toolbar will be created inside the jinn-tap element.
- * @attr {string} sidebar - A selector pointing to an HTML element which should be used to host the sidebar. If not present, the sidebar will be created inside the jinn-tap element.
+ * @attr {string} toolbar - A selector pointing to an HTML element which should be used to host the toolbar. If not
+ * present, the toolbar will be created inside the jinn-tap element.
+ * @attr {string} sidebar - A selector pointing to an HTML element which should be used to host the sidebar. If not
+ * present, the sidebar will be created inside the jinn-tap element.
+ * @attr {boolean} block-typing - A boolean attribute determining whether the editor should respond to typing. If set,
+ * the editor will not respond to typing. This is useful when an author is only expected to apply mark-up, and not edit
+ * the document. The toolbar still works.
  *
  * @attr {boolean} debug - When present, enables debug mode which adds a debug class
  *                         to the component for styling purposes.
@@ -68,7 +73,7 @@ import { TableMenu } from './extensions/tables/TableMenu.js';
  */
 export class JinnTap extends HTMLElement {
     static get observedAttributes() {
-        return ['debug', 'url', 'schema'];
+        return ['debug', 'url', 'schema', 'block-typing'];
     }
 
     constructor() {
@@ -89,19 +94,69 @@ export class JinnTap extends HTMLElement {
         };
         this._schema = schema; // Default schema
         this._initialized = false;
+
+        this.isTypingBlocked = false;
+
+        /**
+         * Block backspace and delete as well when blocking typing. They are the same.
+         *
+         * @type {(event: KeyboardEvent): void}
+         */
+        this._preventBackSpaceAndDelete = (event) => {
+            if (!this.isTypingBlocked) {
+                return;
+            }
+
+            const keysToBlock = ['Backspace', 'Delete'];
+            if (keysToBlock.includes(event.key)) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        };
+        /**
+         * Also block cut. It may accidentally remove content. And paste inserts content. Also block that
+         *
+         * @type {(event: ClipboardEvent): void}
+         */
+        this._preventClipboardEvent = (event) => {
+            if (!this.isTypingBlocked) {
+                return;
+            }
+            event.preventDefault();
+            event.stopPropagation();
+        };
     }
 
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (name === 'debug') {
-            if (newValue !== null) {
-                this.classList.add('debug');
-            } else {
-                this.classList.remove('debug');
+    /**
+     * Called whenever any of the watched attributes change value
+     *
+     * @param {string} name - The attribute name
+     * @param {string} _oldValue - The old value of the attribute
+     * @param {string} newValue - The new value of the attribute
+     */
+    attributeChangedCallback(name, _oldValue, newValue) {
+        switch (name) {
+            case 'debug': {
+                if (newValue !== null) {
+                    this.classList.add('debug');
+                } else {
+                    this.classList.remove('debug');
+                }
+                break;
             }
-        } else if (name === 'url' && newValue && this._initialized) {
-            this.loadFromUrl(newValue);
-        } else if (name === 'schema' && newValue && this._initialized) {
-            this.loadSchema(newValue);
+            case 'url':
+                if (newValue && this._initialized) {
+                    this.loadFromUrl(newValue);
+                }
+                break;
+            case 'schema':
+                if (newValue && this._initialized) {
+                    this.loadSchema(newValue);
+                }
+                break;
+            case 'block-typing': {
+                this.setEditable();
+            }
         }
     }
 
@@ -171,6 +226,8 @@ export class JinnTap extends HTMLElement {
         if (this.hasAttribute('notesWrapper')) {
             this.notesWrapper = this.getAttribute('notes-wrapper');
         }
+
+        this._disconnectedSignal = new AbortController();
         this.notes = this.getAttribute('notes') || 'disconnected';
         this._schema = this.getAttribute('schema');
 
@@ -208,7 +265,24 @@ export class JinnTap extends HTMLElement {
             }
         }
 
+        this.addEventListener('keydown', this._preventBackSpaceAndDelete, {
+            capture: true,
+            signal: this._disconnectedSignal.signal,
+        });
+        this.addEventListener('cut', this._preventClipboardEvent, {
+            capture: true,
+            signal: this._disconnectedSignal.signal,
+        });
+        this.addEventListener('paste', this._preventClipboardEvent, {
+            capture: true,
+            signal: this._disconnectedSignal.signal,
+        });
+
         this.setupEditor();
+    }
+
+    disconnectedCallback() {
+        this._disconnectedAbortController.signal();
     }
 
     async setupEditor() {
@@ -293,13 +367,19 @@ export class JinnTap extends HTMLElement {
         }
 
         this._codeArea = this.querySelector('.code-area');
-        this.addEventListener('content-change', (event) => {
-            try {
-                this._codeArea.textContent = xmlFormat(event.detail.xml, { collapseContent: true });
-            } catch (error) {
-                this._codeArea.textContent = event.detail.xml;
-            }
-        });
+        this.addEventListener(
+            'content-change',
+            (event) => {
+                try {
+                    this._codeArea.textContent = xmlFormat(event.detail.xml, { collapseContent: true });
+                } catch (error) {
+                    this._codeArea.textContent = event.detail.xml;
+                }
+            },
+            {
+                signal: this._disconnectedSignal.signal,
+            },
+        );
 
         // Initialize the editor
         const extensions = createFromSchema(this._schema);
@@ -402,13 +482,15 @@ export class JinnTap extends HTMLElement {
                         name: this.collaboration.user,
                         color: this.collaboration.color,
                     },
-                })
+                }),
             );
         }
 
         this.tableMenu = new TableMenu(this);
 
         this.editor = new Editor(editorConfig);
+
+        this.setEditable();
 
         // Initialize attribute panel
         this.attributePanel = new AttributePanel(this, this._schema);
@@ -421,6 +503,19 @@ export class JinnTap extends HTMLElement {
 
         if (!this.collaboration) {
             this.content = initialContent;
+        }
+    }
+
+    setEditable() {
+        // In some cases authors should not make textual edits to a document. But the toolbar (and its shortcuts) should
+        // still work.  In this case, disable the content-editable aspect of tiptap: this prevents typing. Furthermore,
+        // disable the cut command, the delete shortcut and the backspace shortcut.
+        this.isTypingBlocked = !!this.hasAttribute('block-typing');
+        if (this.isTypingBlocked) {
+            this.editor?.view.dom.setAttribute('contenteditable', 'false');
+        } else {
+            this.editor?.view.dom.setAttribute('contenteditable', 'true');
+            this.editor?.setEditable(true);
         }
     }
 
@@ -498,17 +593,21 @@ export class JinnTap extends HTMLElement {
                 </fieldset>
             `;
             const button = div.querySelector('button');
-            button.addEventListener('click', () => {
-                const newUser = div.querySelector('#collab-user').value;
-                this.collaboration.user = newUser;
-                localStorage.setItem('jinn-tap-username', newUser);
-                this.editor.commands.updateUser({
-                    name: newUser,
-                    color: generateRandomColor(),
-                });
-                this.updateUserInfo();
-                close();
-            });
+            button.addEventListener(
+                'click',
+                () => {
+                    const newUser = div.querySelector('#collab-user').value;
+                    this.collaboration.user = newUser;
+                    localStorage.setItem('jinn-tap-username', newUser);
+                    this.editor.commands.updateUser({
+                        name: newUser,
+                        color: generateRandomColor(),
+                    });
+                    this.updateUserInfo();
+                    close();
+                },
+                { signal: this._disconnectedSignal.signal },
+            );
             return div;
         };
         this.updateUserInfo();
