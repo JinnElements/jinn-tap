@@ -1,3 +1,7 @@
+const wrapInTEIBoilerplate = (input) => {
+    return `<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body><p>${input}</p></body></text><standOff/></TEI>`;
+};
+
 describe('JinnTap Component', () => {
     beforeEach(() => {
         cy.visit('/test/test.html');
@@ -198,16 +202,122 @@ describe('JinnTap Component', () => {
         cy.get('jinn-tap').then(($component) => {
             // Set the content
             $component[0].content = testContent;
+        });
 
-            cy.get('jinn-tap').type('I <3 the & character');
+        cy.get('jinn-tap').type('I <3 the & character');
 
-            cy.get('jinn-tap').should((e) => {
-                const [editor] = e.get();
+        cy.get('jinn-tap').should((e) => {
+            const [editor] = e.get();
 
-                expect(editor.xml).to.equal(
-                    '<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body><p>I &lt;3 the &amp; character</p></body></text><standOff/></TEI>',
-                );
+            expect(editor.xml).to.equal(wrapInTEIBoilerplate('I &lt;3 the &amp; character'));
+        });
+    });
+
+    it('handles becoming semi read-only', () => {
+        const testContent = '<tei-p>Initial Content</tei-p>';
+
+        // Get the component instance
+        cy.get('jinn-tap').then(($component) => {
+            // Set the content
+            $component[0].content = testContent;
+        });
+
+        cy.get('jinn-tap').invoke('attr', 'block-typing', 'true');
+
+        // Typing, backspace, CUT should all be blocked now
+        cy.get('jinn-tap[block-typing]')
+            .type('Hello there!')
+            .press(Cypress.Keyboard.Keys.BACKSPACE)
+            .press(Cypress.Keyboard.Keys.DELETE);
+
+        cy.get('jinn-tap').should((e) => {
+            const [editor] = e.get();
+
+            expect(editor.xml).to.equal(wrapInTEIBoilerplate('Initial Content'));
+        });
+
+        cy.get('jinn-tap').then(($component) => {
+            $component[0].editor.commands.setTextSelection({ from: 1, to: 4 });
+        });
+
+        // Emulate a 'cut'. Should not change the content
+        cy.get('jinn-tap tei-p').then(([jinntap]) => {
+            const cutEvent = Object.assign(new Event('cut', { bubbles: true, cancelable: true }), {
+                clipboardData: { setData: () => {}, clearData: () => {} },
             });
+            jinntap.dispatchEvent(cutEvent);
+        });
+        cy.get('jinn-tap').should((e) => {
+            const [editor] = e.get();
+
+            expect(editor.xml).to.equal(wrapInTEIBoilerplate('Initial Content'));
+        });
+
+        // Simulate a 'paste' Should also not be applied
+        cy.get('jinn-tap tei-p').then(([jinntap]) => {
+            const payload = {
+                'text/html': `<div><p>A</p><br/><p>B</p><br/><p>C</p></div>`,
+            };
+            const pasteEvent = Object.assign(new Event('paste', { bubbles: true, cancelable: true }), {
+                clipboardData: {
+                    getData: (type) => payload[type],
+                },
+            });
+            jinntap.dispatchEvent(pasteEvent);
+        });
+
+        cy.get('jinn-tap').should((e) => {
+            const [editor] = e.get();
+
+            expect(editor.xml).to.equal(wrapInTEIBoilerplate('Initial Content'));
+        });
+
+        cy.get('jinn-tap').invoke('attr', 'block-typing', null);
+        cy.get('jinn-tap').then(($component) => {
+            $component[0].editor.commands.setTextSelection({ from: 1, to: 1 });
+        });
+
+        cy.get('jinn-tap').type('Hello There! ');
+
+        cy.get('jinn-tap').should((e) => {
+            const [editor] = e.get();
+
+            expect(editor.xml).to.equal(wrapInTEIBoilerplate('Hello There! Initial Content'));
+        });
+
+        // Test whether 'cut' works now!
+        cy.get('jinn-tap').then(($component) => {
+            $component[0].editor.commands.setTextSelection({ from: 1, to: 14 });
+        });
+
+        cy.get('jinn-tap tei-p').then(([jinntap]) => {
+            const cutEvent = Object.assign(new Event('cut', { bubbles: true, cancelable: true }), {
+                clipboardData: { setData: () => {}, clearData: () => {} },
+            });
+            jinntap.dispatchEvent(cutEvent);
+        });
+        cy.get('jinn-tap').should((e) => {
+            const [editor] = e.get();
+
+            expect(editor.xml).to.equal(wrapInTEIBoilerplate('Initial Content'));
+        });
+        // Paste should work again!
+        cy.get('jinn-tap tei-p').then(([jinntap]) => {
+            const payload = {
+                'text/html': `<div><p>A</p><br/><p>B</p><br/><p>C</p></div>`,
+            };
+            const pasteEvent = Object.assign(new Event('paste', { bubbles: true, cancelable: true }), {
+                clipboardData: {
+                    getData: (type) => payload[type],
+                },
+            });
+            jinntap.dispatchEvent(pasteEvent);
+        });
+
+        cy.get('jinn-tap').should((e) => {
+            const [editor] = e.get();
+
+            expect(editor.xml).to.equal(wrapInTEIBoilerplate('A</p>\n<p>B</p>\n<p>CInitial Content'));
         });
     });
 });
