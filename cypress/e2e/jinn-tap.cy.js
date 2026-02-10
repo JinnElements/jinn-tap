@@ -4,7 +4,7 @@ const wrapInTEIBoilerplate = (input) => {
 
 describe('JinnTap Component', () => {
     beforeEach(() => {
-        cy.visit('/test.html');
+        cy.visit('/test/test.html');
 
         // Wait for the component to be defined
         cy.window().then((win) => {
