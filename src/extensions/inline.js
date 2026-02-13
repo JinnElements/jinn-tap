@@ -13,22 +13,25 @@ export const JinnInline = Mark.create({
 
     addOptions() {
         return {
-            tag: `tei-${this.name}`,
+            prefix: 'tei-', // Default prefix, can be overridden in configure()
             shortcuts: {},
             attributes: {},
         };
     },
 
     parseHTML() {
+        const prefix = this.options.prefix || 'tei-';
         return [
             {
-                tag: this.options.tag,
+                tag: `${prefix}${this.name}`,
             },
         ];
     },
 
     renderHTML({ HTMLAttributes }) {
-        return [this.options.tag, HTMLAttributes, 0];
+        const prefix = this.options.prefix || 'tei-';
+        const tag = `${prefix}${this.name}`;
+        return [tag, HTMLAttributes, 0];
     },
 
     addAttributes() {

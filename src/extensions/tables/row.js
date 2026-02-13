@@ -9,7 +9,7 @@ export const JinnRow = Node.create({
 
     addOptions() {
         return {
-            tag: `tei-row`,
+            prefix: 'tei-', // Default prefix, can be overridden in configure()
             shortcuts: {},
             attributes: {
                 role: {
@@ -24,9 +24,10 @@ export const JinnRow = Node.create({
     },
 
     parseHTML() {
+        const prefix = this.options.prefix || 'tei-';
         return [
             {
-                tag: this.options.tag,
+                tag: `${prefix}row`,
             },
         ];
     },

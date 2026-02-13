@@ -336,6 +336,11 @@ export class Toolbar {
         const editorArea = component.querySelector('.editor-area');
         const codeArea = component.querySelector('.code-area');
         if (codeArea.style.display === 'none') {
+            // Update XML content before showing code area
+            // Dispatch a content-change event to update the code area
+            if (component.dispatchContentChange) {
+                component.dispatchContentChange();
+            }
             codeArea.style.display = 'block';
             editorArea.style.display = 'none';
         } else {

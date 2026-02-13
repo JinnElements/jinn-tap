@@ -28,7 +28,7 @@ export const JinnEmptyElement = JinnBlock.extend({
 
     addOptions() {
         return {
-            tag: `tei-${this.name}`,
+            prefix: 'tei-', // Default prefix, can be overridden in configure()
             shortcuts: {},
             attributes: {},
             label: 'Empty Element',
@@ -36,9 +36,10 @@ export const JinnEmptyElement = JinnBlock.extend({
     },
 
     parseHTML() {
+        const prefix = this.options.prefix || 'tei-';
         return [
             {
-                tag: this.options.tag,
+                tag: `${prefix}${this.name}`,
             },
         ];
     },

@@ -1,21 +1,66 @@
 import { parseXml } from './util';
 import { registerXQueryModule, evaluateXPathToNodes, evaluateXPath, evaluateXPathToFirstNode } from 'fontoxpath';
-import xqueryModule from './module.xq?raw';
+import teiModule from './module-tei.xq?raw';
+import jatsModule from './module-jats.xq?raw';
+import { getFormat } from './xml-formats.js';
 
-registerXQueryModule(xqueryModule);
+// Register both modules at initialization - they use different namespace URIs
+registerXQueryModule(teiModule);  // namespace: http://jinntec.de/jinntap
+registerXQueryModule(jatsModule); // namespace: http://jinntec.de/jinntap/jats
+
+/**
+ * Get the module namespace URI and prefix based on format
+ * @param {string} formatId - Format identifier ('tei', 'jats', etc.)
+ * @returns {{namespace: string, prefix: string}}
+ */
+function getModuleNamespace(formatId) {
+    if (formatId === 'jats') {
+        return {
+            namespace: 'http://jinntec.de/jinntap/jats',
+            prefix: 'jt-jats'
+        };
+    } else {
+        // Default to TEI
+        return {
+            namespace: 'http://jinntec.de/jinntap',
+            prefix: 'jt'
+        };
+    }
+}
 
 /**
  * @param content {string|Node} - The content to transform to the internal XML
- * @returns {{content: string, doc: Node}}
+ * @param formatId {string} - Format identifier ('tei', 'jats', etc.). Required - format is not auto-detected.
+ * @returns {{content: string, doc: Node, format: string}}
  */
-export function importXml(content) {
+export function importXml(content, formatId) {
     const xmlDoc = typeof content === 'string' ? parseXml(content) : content;
     if (!xmlDoc) return '';
+    
+    if (!formatId) {
+        throw new Error('formatId is required - format autodetection is disabled');
+    }
+    
+    // Always use the provided formatId - no autodetection
+    const finalFormat = formatId;
+    const format = getFormat(finalFormat);
+    
+    // Get the correct module namespace based on format
+    const moduleNs = getModuleNamespace(finalFormat);
+    
+    // Build namespace declaration for XQuery (skip if empty namespace)
+    const namespacePrefix = format.namespace === 'http://www.tei-c.org/ns/1.0' ? 'tei' : 
+                           (format.namespace === '' || !format.namespace) ? '' : 'ns';
+    const namespaceDecl = format.namespace && format.namespace !== '' 
+        ? `declare namespace ${namespacePrefix}="${format.namespace}";` 
+        : '';
+    
     const output = evaluateXPathToNodes(
         `
-            import module namespace jt="http://jinntec.de/jinntap";
+            import module namespace ${moduleNs.prefix}="${moduleNs.namespace}";
+            ${namespaceDecl}
 
-            jt:import(.)
+            ${moduleNs.prefix}:import(.)
         `,
         xmlDoc,
         null,
@@ -33,17 +78,50 @@ export function importXml(content) {
     return {
         content: xmlText.join(''),
         doc: xmlDoc,
+        format: finalFormat,
     };
 }
 
-export function exportXml(content, xmlDoc, metadata = {}) {
+/**
+ * @param content {string} - The HTML content to export
+ * @param xmlDoc {Node} - The original XML document
+ * @param metadata {Object} - Metadata to include in export
+ * @param formatId {string} - Format identifier ('tei', 'jats', etc.). Required - format is not auto-detected.
+ * @returns {string} - Exported XML string
+ */
+export function exportXml(content, xmlDoc, metadata = {}, formatId) {
     if (!xmlDoc) return content;
-    const nodes = parseXml(`<body xmlns="http://www.tei-c.org/ns/1.0">${content}</body>`);
+    
+    if (!formatId) {
+        throw new Error('formatId is required - format autodetection is disabled');
+    }
+    
+    // Always use the provided formatId - no autodetection
+    const finalFormat = formatId;
+    const format = getFormat(finalFormat);
+    
+    // Get the correct module namespace based on format
+    const moduleNs = getModuleNamespace(finalFormat);
+    
+    // Build namespace declaration for XQuery (skip if empty namespace)
+    const namespacePrefix = format.namespace === 'http://www.tei-c.org/ns/1.0' ? 'tei' : 
+                           (format.namespace === '' || !format.namespace) ? '' : 'ns';
+    const namespaceDecl = format.namespace && format.namespace !== '' 
+        ? `declare namespace ${namespacePrefix}="${format.namespace}";` 
+        : '';
+    
+    // Build body wrapper with or without namespace
+    const bodyWrapperXml = format.namespace && format.namespace !== ''
+        ? `<${format.bodyWrapper} xmlns="${format.namespace}">${content}</${format.bodyWrapper}>`
+        : `<${format.bodyWrapper} xmlns:xlink="http://www.w3.org/1999/xlink">${content}</${format.bodyWrapper}>`;
+    
+    const nodes = parseXml(bodyWrapperXml);
     const output = evaluateXPathToNodes(
         `
-            import module namespace jt="http://jinntec.de/jinntap";
+            import module namespace ${moduleNs.prefix}="${moduleNs.namespace}";
+            ${namespaceDecl}
 
-            jt:export($document, ., $meta)
+            ${moduleNs.prefix}:export($document, ., $meta)
         `,
         nodes,
         null,
@@ -59,14 +137,33 @@ export function exportXml(content, xmlDoc, metadata = {}) {
     return output.map((node) => serializer.serializeToString(node)).join('');
 }
 
-export function createDocument() {
+/**
+ * @param formatId {string} - Format identifier ('tei', 'jats', etc.). Defaults to 'tei'.
+ * @returns {{content: string, doc: Node, format: string}}
+ */
+export function createDocument(formatId = 'tei') {
+    const format = getFormat(formatId);
+    
+    // Get the correct module namespace based on format
+    const moduleNs = getModuleNamespace(formatId);
+    
     // to be used as nodesFactory, which should produce XML nodes
-    const inDoc = new DOMParser().parseFromString('<TEI xmlns="http://www.tei-c.org/ns/1.0"></TEI>', 'application/xml');
+    const template = format.newDocumentTemplate();
+    const inDoc = new DOMParser().parseFromString(template, 'application/xml');
+    
+    // Build namespace declaration for XQuery (skip if empty namespace)
+    const namespacePrefix = format.namespace === 'http://www.tei-c.org/ns/1.0' ? 'tei' : 
+                           (format.namespace === '' || !format.namespace) ? '' : 'ns';
+    const namespaceDecl = format.namespace && format.namespace !== '' 
+        ? `declare namespace ${namespacePrefix}="${format.namespace}";` 
+        : '';
+    
     const doc = evaluateXPathToFirstNode(
         `
-            import module namespace jt="http://jinntec.de/jinntap";
+            import module namespace ${moduleNs.prefix}="${moduleNs.namespace}";
+            ${namespaceDecl}
 
-            jt:new-document()
+            ${moduleNs.prefix}:new-document()
         `,
         null,
         null,
@@ -77,5 +174,5 @@ export function createDocument() {
             debug: true,
         },
     );
-    return importXml(doc);
+    return importXml(doc, formatId);
 }

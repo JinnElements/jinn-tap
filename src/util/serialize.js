@@ -26,7 +26,7 @@ class Serializer {
         this.editor = editor;
         this.openMarks = [];
         this.schemaDef = schemaDef;
-    }
+    }    
 
     serialize(node, previous, next) {
         if (node.type === 'text') {
@@ -94,7 +94,11 @@ class Serializer {
             return text;
         }
 
-        const tagName = node.type;
+        // Get tag name from schema definition (tagName) or fall back to node.type
+        const nodeDef = this.schemaDef.schema[node.type];
+        let tagName = nodeDef?.tagName || node.type;
+        // If tagName is defined (custom tag), use it as-is (no prefix in XML output)
+        // The prefix is only for HTML custom elements in the editor, not for XML output
         const attrs = node.attrs
             ? Object.entries(node.attrs)
                   .filter(([key, value]) => value !== null && !key.startsWith('_'))

@@ -94,22 +94,58 @@ export const JinnAnchor = JinnEmptyElement.extend({
                                 );
                             });
 
-                        // Find the first note without a target and scroll it into view
+                        // Find the first unconnected note and scroll it into view
                         const { view } = this.editor;
                         let foundNote = false;
+                        const noteName = this.options.noteName || 'note';
+                        const anchorName = this.options.anchorName || 'anchor';
+                        const linkDirection = this.options.linkDirection || 'note-to-anchor';
+                        
                         view.state.doc.descendants((node, pos) => {
-                            if (node.type.name === 'note' && !node.attrs.target) {
-                                const noteElement = view.domAtPos(pos).node;
-                                if (noteElement) {
-                                    noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                    // Set selection at the start of the note
-                                    commands.setNodeSelection(pos + 1);
-                                    this.editor.options.element.dispatchEvent(
-                                        new CustomEvent('empty-element-clicked', { detail: { node, pos } }),
-                                    );
-                                    foundNote = true;
+                            if (node.type.name === noteName) {
+                                let isUnconnected = false;
+                                
+                                if (linkDirection === 'note-to-anchor') {
+                                    // TEI: note without target is unconnected
+                                    isUnconnected = !node.attrs.target;
+                                } else {
+                                    // JATS: note without an anchor pointing to it is unconnected
+                                    const noteId = node.attrs.id;
+                                    if (noteId) {
+                                        // Check if any anchor points to this note
+                                        let hasAnchor = false;
+                                        view.state.doc.descendants((anchorNode, anchorPos) => {
+                                            if (anchorNode.type.name === anchorName) {
+                                                const rid = anchorNode.attrs.rid || anchorNode.attrs.target;
+                                                if (rid) {
+                                                    const ridId = rid.startsWith('#') ? rid.substring(1) : rid;
+                                                    if (ridId === noteId) {
+                                                        hasAnchor = true;
+                                                        return false; // Stop searching
+                                                    }
+                                                }
+                                            }
+                                        });
+                                        isUnconnected = !hasAnchor;
+                                    } else {
+                                        // Note without id is unconnected
+                                        isUnconnected = true;
+                                    }
                                 }
-                                return foundNote; // Stop searching
+                                
+                                if (isUnconnected) {
+                                    const noteElement = view.domAtPos(pos).node;
+                                    if (noteElement) {
+                                        noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        // Set selection at the start of the note
+                                        commands.setNodeSelection(pos + 1);
+                                        this.editor.options.element.dispatchEvent(
+                                            new CustomEvent('empty-element-clicked', { detail: { node, pos } }),
+                                        );
+                                        foundNote = true;
+                                    }
+                                    return foundNote; // Stop searching
+                                }
                             }
                         });
                     }
@@ -118,8 +154,10 @@ export const JinnAnchor = JinnEmptyElement.extend({
                 (id) =>
                 ({ commands, editor }) => {
                     const target = `#${id}`;
+                    // Use the noteName from options if available, fallback to 'note'
+                    const noteName = this.options.noteName || 'note';
                     editor.view.state.doc.descendants((node, pos) => {
-                        if (node.type.name === 'note' && node.attrs.target === target) {
+                        if (node.type.name === noteName && node.attrs.target === target) {
                             const noteElement = editor.view.domAtPos(pos).node;
                             noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                             commands.setNodeSelection(pos + 1);
@@ -132,7 +170,8 @@ export const JinnAnchor = JinnEmptyElement.extend({
 
     addNodeView() {
         return ({ node, editor }) => {
-            const dom = document.createElement(`tei-${this.name}`);
+            const prefix = this.options.prefix || 'tei-';
+            const dom = document.createElement(`${prefix}${this.name}`);
 
             // Set all attributes on the DOM element
             Object.entries(node.attrs).forEach(([key, value]) => {
@@ -164,13 +203,16 @@ export const JinnAnchor = JinnEmptyElement.extend({
     },
     addProseMirrorPlugins() {
         const { editor } = this;
+        const options = this.options;
         return [
             new Plugin({
                 key: new PluginKey('footnoteRefClick'),
 
                 props: {
                     handleClickOn(view, pos, node, nodePos, event) {
-                        if (node.type.name === 'anchor') {
+                        // Use the anchorName from options if available, fallback to 'anchor'
+                        const anchorName = options.anchorName || 'anchor';
+                        if (node.type.name === anchorName) {
                             if (event.ctrlKey || event.metaKey) {
                                 // Get the reference number and set it as text content
                                 const reference = getAnchorReference(node.attrs.id);

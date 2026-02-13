@@ -15,9 +15,13 @@ import { JinnReference } from './ref.js';
  * Create nodes and marks from a schema definition.
  *
  * @param {Object} schemaDef - The schema definition
+ * @param {string} prefix - Prefix for HTML custom elements (e.g., 'tei-', 'jats-')
+ * @param {string} notesWrapper - Notes wrapper element name
+ * @param {Object} footnoteOptions - Options for footnote handling (noteName, anchorName, linkDirection)
  * @returns {Array} - nodes and marks
  */
-export function createFromSchema(schemaDef) {
+export function createFromSchema(schemaDef, prefix = 'tei-', notesWrapper = 'listAnnotation', footnoteOptions = {}) {
+    const JinnDocument = createDocumentExtension(notesWrapper);
     const extensions = [JinnDocument, Text];
     Object.entries(schemaDef.schema).forEach(([name, def]) => {
         let NodeOrMark;
@@ -52,6 +56,34 @@ export function createFromSchema(schemaDef) {
                 NodeOrMark = JinnItem.extend({
                     name: name,
                     content: def.content || 'p block*',
+                    addOptions() {
+                        return {
+                            ...this.parent?.(),
+                            tagName: def.tagName, // Allow custom tag name override
+                        };
+                    },
+                    renderHTML({ HTMLAttributes }) {
+                        const prefix = this.options.prefix || 'tei-';
+                        // Use custom tagName if provided, but add prefix for HTML custom elements
+                        // (prefix is only omitted in XML output, not in editor HTML)
+                        if (this.options.tagName) {
+                            return [`${prefix}${this.options.tagName}`, HTMLAttributes, 0];
+                        }
+                        const tag = `${prefix}${this.name}`;
+                        return [tag, HTMLAttributes, 0];
+                    },
+                    parseHTML() {
+                        const prefix = this.options.prefix || 'tei-';
+                        const customTag = this.options.tagName;
+                        const defaultTag = `${prefix}${this.name}`;
+                        
+                        const tags = [];
+                        if (customTag) {
+                            tags.push({ tag: customTag });
+                        }
+                        tags.push({ tag: defaultTag });
+                        return tags;
+                    },
                 });
                 break;
             case 'block':
@@ -84,6 +116,7 @@ export function createFromSchema(schemaDef) {
         // Merge global attributes with node-specific attributes
         const attributes = { ...schemaDef.attributes, ...def.attributes };
         const config = {
+            prefix: prefix, // Pass the format prefix to extensions
             shortcuts: def.keyboard,
             attributes: attributes,
             label: def.label,
@@ -91,12 +124,30 @@ export function createFromSchema(schemaDef) {
         if (def.inputRules) {
             config.inputRules = def.inputRules;
         }
+        // Pass footnote options to anchor extension
+        if (def.type === 'anchor' && footnoteOptions) {
+            if (footnoteOptions.noteName) {
+                config.noteName = footnoteOptions.noteName;
+            }
+            if (footnoteOptions.anchorName) {
+                config.anchorName = footnoteOptions.anchorName;
+            }
+            if (footnoteOptions.linkDirection) {
+                config.linkDirection = footnoteOptions.linkDirection;
+            }
+        }
         extensions.push(NodeOrMark.configure(config));
     });
     return extensions;
 }
 
-// Custom document extension
-const JinnDocument = Document.extend({
-    content: 'heading* block+ listAnnotation?',
-});
+/**
+ * Create a custom document extension with dynamic content based on notesWrapper
+ * @param {string} notesWrapper - The notes wrapper node name (e.g., 'listAnnotation', 'fn-group')
+ * @returns {Extension} Document extension
+ */
+export function createDocumentExtension(notesWrapper = 'listAnnotation') {
+    return Document.extend({
+        content: `heading* block+ ${notesWrapper}?`,
+    });
+}

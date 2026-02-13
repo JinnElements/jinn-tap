@@ -12,7 +12,7 @@ export const JinnCell = Node.create({
 
     addOptions() {
         return {
-            tag: `tei-cell`,
+            prefix: 'tei-', // Default prefix, can be overridden in configure()
             attributes: {
                 ana: {
                     default: null,
@@ -25,9 +25,10 @@ export const JinnCell = Node.create({
     },
 
     parseHTML() {
+        const prefix = this.options.prefix || 'tei-';
         return [
             {
-                tag: this.options.tag,
+                tag: `${prefix}cell`,
             },
         ];
     },
