@@ -15,9 +15,11 @@ import { Toolbar } from './toolbar.js';
 import { applySlots } from './util/slots.js';
 import { generateRandomColor, colorCssFromSchema } from './util/colors.js';
 import { importXml, exportXml, createDocument } from './util/xml.js';
+import { getFormat } from './util/xml-formats.js';
 import { generateUsername } from 'unique-username-generator';
 import xmlFormat from 'xml-formatter';
 import schema from './schema.json';
+import jatsSchema from './jats-schema.json';
 import './jinn-tap.css';
 import { TableMenu } from './extensions/tables/TableMenu.js';
 
@@ -73,7 +75,7 @@ import { TableMenu } from './extensions/tables/TableMenu.js';
  */
 export class JinnTap extends HTMLElement {
     static get observedAttributes() {
-        return ['debug', 'url', 'schema', 'block-typing'];
+        return ['debug', 'url', 'schema', 'block-typing', 'format'];
     }
 
     constructor() {
@@ -84,7 +86,6 @@ export class JinnTap extends HTMLElement {
         this.editor = null;
         this.toolbar = null;
         this.attributePanel = null;
-        this.notesWrapper = 'listAnnotation';
         this.collaboration = null;
         this.provider = null;
         this.notes = 'disconnected';
@@ -92,9 +93,10 @@ export class JinnTap extends HTMLElement {
             title: 'Untitled Document',
             name: 'untitled.xml',
         };
-        this._schema = schema; // Default schema
         this._initialized = false;
-
+        this._format = 'tei'; // Default format
+        this._schema = null; // Will be set in connectedCallback or via getDefaultSchema()
+        // Format is set at initialization and cannot be changed
         this.isTypingBlocked = false;
 
         /**
@@ -128,6 +130,31 @@ export class JinnTap extends HTMLElement {
     }
 
     /**
+     * Get the default schema for the current format
+     * @returns {Object} Schema object
+     */
+    getDefaultSchema() {
+        return this._format === 'jats' ? jatsSchema : schema;
+    }
+
+    /**
+     * Update schema based on format
+     * @param {string} formatId - Format identifier
+     * @param {boolean} recreateEditor - Whether to recreate the editor if it's already initialized
+     */
+    updateSchemaForFormat(formatId, recreateEditor = true) {
+        const format = formatId || this._format;
+        // Only update if schema wasn't explicitly set via attribute
+        if (!this.hasAttribute('schema')) {
+            this._schema = format === 'jats' ? jatsSchema : schema;
+            // If editor is already initialized, recreate it with new schema
+            if (recreateEditor && this.editor && this._initialized) {
+                this.setupEditor();
+            }
+        }
+    }
+
+    /**
      * Called whenever any of the watched attributes change value
      *
      * @param {string} name - The attribute name
@@ -136,14 +163,22 @@ export class JinnTap extends HTMLElement {
      */
     attributeChangedCallback(name, _oldValue, newValue) {
         switch (name) {
-            case 'debug': {
+            case 'format':
+                if (newValue) {
+                    const oldFormat = this._format;
+                    this._format = newValue.toLowerCase();
+                    if (oldFormat !== this._format) {
+                        this.updateSchemaForFormat();
+                    }
+                }
+                break;
+            case 'debug':
                 if (newValue !== null) {
                     this.classList.add('debug');
                 } else {
                     this.classList.remove('debug');
                 }
                 break;
-            }
             case 'url':
                 if (newValue && this._initialized) {
                     this.loadFromUrl(newValue);
@@ -154,9 +189,11 @@ export class JinnTap extends HTMLElement {
                     this.loadSchema(newValue);
                 }
                 break;
-            case 'block-typing': {
+            case 'block-typing':
                 this.setEditable();
-            }
+                break;
+            default:
+                break;
         }
     }
 
@@ -193,7 +230,11 @@ export class JinnTap extends HTMLElement {
 
             if (contentType?.includes('application/xml') || contentType?.includes('text/xml')) {
                 const xml = await response.text();
-                const parsed = importXml(xml);
+                // Always use the format set at initialization - no autodetection
+                if (!this._format) {
+                    throw new Error('Format must be set before loading XML content. Use the format attribute when creating the editor.');
+                }
+                const parsed = importXml(xml, this._format);
                 content = parsed.content;
                 this.document = parsed.doc;
             } else if (contentType?.includes('text/html')) {
@@ -202,9 +243,15 @@ export class JinnTap extends HTMLElement {
                 throw new Error(`Unsupported content type: ${contentType}`);
             }
 
-            if (setContent && this.editor) {
-                this.content = content;
-            }
+        if (setContent && this.editor) {
+            this.content = content;
+            // Update footnote references after content is loaded
+            setTimeout(() => {
+                if (this.editor) {
+                    this.editor.commands.updateNotes();
+                }
+            }, 0);
+        }
             this.metadata = {
                 name: url.split('/').pop(),
             };
@@ -229,7 +276,19 @@ export class JinnTap extends HTMLElement {
 
         this._disconnectedSignal = new AbortController();
         this.notes = this.getAttribute('notes') || 'disconnected';
-        this._schema = this.getAttribute('schema');
+        const schemaAttr = this.getAttribute('schema');
+        if (schemaAttr) {
+            this._schema = schemaAttr; // Will be loaded asynchronously
+        } else {
+            // Use default schema for format
+            if (this.hasAttribute('format')) {
+                this._format = this.getAttribute('format').toLowerCase();
+            } else {
+                // Default to 'tei' if no format is specified
+                this._format = 'tei';
+            }
+            this._schema = this.getDefaultSchema();
+        }
 
         const collabServer = this.getAttribute('server') || null;
         if (collabServer) {
@@ -286,10 +345,15 @@ export class JinnTap extends HTMLElement {
     }
 
     async setupEditor() {
-        if (this._schema) {
+        if (this._schema && typeof this._schema === 'string') {
+            // Schema is a URL, load it
             await this.loadSchema(this._schema);
-        } else {
-            this._schema = schema;
+        } else if (!this._schema || (this.hasAttribute('schema') && typeof this._schema === 'string')) {
+            // No schema set or schema attribute is set but not loaded yet
+            this._schema = this.getDefaultSchema();
+        } else if (!this.hasAttribute('schema')) {
+            // Use default schema for current format
+            this._schema = this.getDefaultSchema();
         }
 
         // Generate CSS for schema colors
@@ -361,7 +425,7 @@ export class JinnTap extends HTMLElement {
         }
         // if no initial content, create a default document
         if (!initialContent) {
-            const { doc, content } = createDocument();
+            const { doc, content } = createDocument(this._format);
             initialContent = content;
             this.document = doc;
         }
@@ -382,7 +446,13 @@ export class JinnTap extends HTMLElement {
         );
 
         // Initialize the editor
-        const extensions = createFromSchema(this._schema);
+        // Get the format prefix for HTML custom elements
+        const format = getFormat(this._format);
+        const extensions = createFromSchema(this._schema, format.prefix, format.notesWrapper || 'listAnnotation', {
+            noteName: format.noteName || 'note',
+            anchorName: format.anchorName || 'anchor',
+            linkDirection: format.linkDirection || 'note-to-anchor',
+        });
 
         if (this.collaboration) {
             // configure Y.js document and provider if collaboration is enabled
@@ -422,8 +492,11 @@ export class JinnTap extends HTMLElement {
                 InputRules,
                 JinnTapCommands,
                 FootnoteRules.configure({
-                    notesWrapper: this.notesWrapper,
+                    notesWrapper: format.notesWrapper || 'listAnnotation',
                     notesWithoutAnchor: this.notes !== 'connected',
+                    noteName: format.noteName || 'note',
+                    anchorName: format.anchorName || 'anchor',
+                    linkDirection: format.linkDirection || 'note-to-anchor',
                 }),
                 Placeholder.configure({
                     placeholder: 'Write something...',
@@ -433,6 +506,12 @@ export class JinnTap extends HTMLElement {
             autofocus: false,
             onCreate: () => {
                 this._initialized = true;
+                // Trigger footnote reference update on initial load
+                setTimeout(() => {
+                    if (this.editor) {
+                        this.editor.commands.updateNotes();
+                    }
+                }, 0);
                 this.dispatchEvent(new CustomEvent('ready'));
             },
             onTransaction: ({ editor, transaction }) => {
@@ -489,6 +568,7 @@ export class JinnTap extends HTMLElement {
         this.tableMenu = new TableMenu(this);
 
         this.editor = new Editor(editorConfig);
+        this._initialized = true;
 
         this.setEditable();
 
@@ -501,9 +581,7 @@ export class JinnTap extends HTMLElement {
         // Initialize toolbar
         this.toolbar = new Toolbar(this, this._schema);
 
-        if (!this.collaboration) {
-            this.content = initialContent;
-        }
+        // Content is set via editorConfig.content above for non-collaboration mode
     }
 
     setEditable() {
@@ -528,7 +606,7 @@ export class JinnTap extends HTMLElement {
             new CustomEvent('content-change', {
                 detail: {
                     body: body,
-                    xml: exportXml(body, this.document, this.metadata),
+                    xml: exportXml(body, this.document, this.metadata, this._format),
                 },
             }),
         );
@@ -544,28 +622,56 @@ export class JinnTap extends HTMLElement {
     // not the full XML content.
     set content(value) {
         this.editor.chain().focus().setContent(value).setTextSelection(0).run();
+        // Update footnote references after content is set
+        setTimeout(() => {
+            if (this.editor) {
+                this.editor.commands.updateNotes();
+            }
+        }, 0);
         this.dispatchContentChange();
     }
 
     // Getter for the full XML content
     get xml() {
-        return exportXml(serialize(this.editor, this._schema), this.document, this.metadata);
+        return exportXml(serialize(this.editor, this._schema), this.document, this.metadata, this._format);
     }
 
     // Setter for the full XML content
     set xml(value) {
-        const { doc, content } = importXml(value);
+        // Always use the format set at initialization - format cannot be changed
+        if (!this._format) {
+            throw new Error('Format must be set before setting XML content. Use the format attribute when creating the editor.');
+        }
+        const { doc, content } = importXml(value, this._format);
         this.content = content;
         this.document = doc;
     }
 
-    newDocument() {
-        const { doc, content } = createDocument();
+    // Getter/setter for format
+    get format() {
+        return this._format;
+    }
+
+    set format(value) {
+        this._format = value ? value.toLowerCase() : 'tei';
+        if (this.hasAttribute('format')) {
+            this.setAttribute('format', this._format);
+        }
+    }
+
+    newDocument(format = null) {
+        const docFormat = format || this._format;
+        const { doc, content } = createDocument(docFormat);
         this.document = doc;
         this.content = content;
         this.metadata = {
             name: 'untitled.xml',
         };
+        if (docFormat !== this._format) {
+            this._format = docFormat;
+            // Update schema for new format
+            this.updateSchemaForFormat();
+        }
     }
 
     // Method to focus the editor

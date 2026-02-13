@@ -75,7 +75,7 @@ export const JinnTable = Node.create({
 
     addOptions() {
         return {
-            tag: `tei-table`,
+            prefix: 'tei-', // Default prefix, can be overridden in configure()
             shortcuts: {},
             attributes: {},
             inputRules: [],
@@ -84,9 +84,10 @@ export const JinnTable = Node.create({
     },
 
     parseHTML() {
+        const prefix = this.options.prefix || 'tei-';
         return [
             {
-                tag: this.options.tag,
+                tag: `${prefix}table`,
             },
         ];
     },

@@ -97,12 +97,13 @@ describe('Tables', () => {
         cy.get('jinn-tap').then(($component) => {
             // Set the content
 
-            cy.readFile('src/util/module.xq', 'utf-8').then((text) => {
+            cy.readFile('src/util/module-tei.xq', 'utf-8').then((text) => {
                 registerXQueryModule(text);
 
                 const output = evaluateXPathToNodes(
                     `
             import module namespace jt="http://jinntec.de/jinntap";
+            declare namespace tei="http://www.tei-c.org/ns/1.0";
 
             jt:import(.)
         `,

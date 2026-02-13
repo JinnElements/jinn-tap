@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JinnTap - JATS Editor</title>
+    <link rel="icon" type="image/x-icon" href="jinn_favicon.ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="jats-editor-styles.css">
+</head>
+
+<body>
+    <pb-page api-version="1.0.0">
+        <div class="container">
+            <!-- JATS editor - format is set to "jats" and cannot be changed -->
+            <jinn-tap format="jats" url="musk-trump-tei-publisher.xml" notes="connected">
+                <img slot="aside" class="logo" src="jinntap-logo-128.png" alt="JinnTap">
+                <li slot="toolbar">
+                    <a href="#" class="toolbar-button" data-tooltip="New Document" data-placement="bottom">
+                        <i class="bi bi-file-earmark-plus"></i>
+                    </a>
+                </li>
+                <li slot="toolbar">
+                    <label for="xmlFile" class="toolbar-button" data-tooltip="Upload XML" data-placement="bottom">
+                        <i class="bi bi-upload"></i>
+                        <input type="file" id="xmlFile" accept=".xml" style="display: none;">
+                    </label>
+                </li>
+                <li slot="toolbar">
+                    <a href="#" class="toolbar-button" data-tooltip="Download XML" data-placement="bottom">
+                        <i class="bi bi-download"></i>
+                    </a>
+                </li>
+                <li slot="toolbar">
+                    <a href="#" class="toolbar-button" data-tooltip="Copy JATS to clipboard" data-placement="bottom">
+                        <i class="bi bi-clipboard-plus"></i>
+                    </a>
+                </li>
+            </jinn-tap>
+            <jinn-toast></jinn-toast>
+        </div>
+    </pb-page>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@teipublisher/pb-components@2.25.2/dist/pb-components-bundle.js"></script>
+    <script type="module" src="/src/demo.js"></script>
+</body>
+
+</html>
