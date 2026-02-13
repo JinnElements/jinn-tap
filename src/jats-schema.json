@@ -187,14 +187,14 @@
                 }
             ]
         },
-        "figure": {
+        "fig": {
             "type": "block",
             "selectable": true,
-            "content": "(graphic|figDesc|title)*"
+            "content": "(graphic|caption)*"
         },
-        "figDesc": {
+        "caption": {
             "type": "block",
-            "content": "inline*",
+            "content": "p+",
             "priority": 99
         },
         "graphic": {
@@ -316,14 +316,45 @@
         "named-content": {
             "type": "inline",
             "attributes": {
-                "specific-use": {
-                    "connector": {
-                        "name": "GND",
-                        "type": "person",
-                        "prefix": "gnd"
+                "specific-use": [
+                    {
+                        "when": "@content-type = 'person'",
+                        "type": "string",
+                        "connector": {
+                            "name": "GND",
+                            "type": "person",
+                            "prefix": "gnd"
+                        }
                     },
-                    "type": "string"
-                },
+                    {
+                        "when": "@content-type = 'organization'",
+                        "type": "string",
+                        "connector": {
+                            "name": "GND",
+                            "type": "organization",
+                            "prefix": "gnd"
+                        }
+                    },
+                    {
+                        "when": "@content-type = 'place'",
+                        "type": "string",
+                        "connector": {
+                            "name": "GeoNames",
+                            "type": "place",
+                            "prefix": "geo",
+                            "user": "existdb"
+                        }
+                    },
+                    {
+                        "when": "@content-type = 'term'",
+                        "type": "string",
+                        "connector": {
+                            "name": "GND",
+                            "type": "term",
+                            "prefix": "gnd"
+                        }
+                    }
+                ],
                 "content-type": {
                     "type": "string",
                     "enum": ["person", "organization", "place", "term"]
@@ -340,6 +371,27 @@
                         "content-type": "person"
                     },
                     "label": "<i class='bi bi-person'></i>",
+                    "order": 11
+                },
+                "Place": {
+                    "attributes": {
+                        "content-type": "place"
+                    },
+                    "label": "<i class='bi bi-geo-alt'></i>",
+                    "order": 11
+                },
+                "Organization": {
+                    "attributes": {
+                        "content-type": "organization"
+                    },
+                    "label": "<i class='bi bi-people'></i>",
+                    "order": 11
+                },
+                "Term": {
+                    "attributes": {
+                        "content-type": "term"
+                    },
+                    "label": "<i class='bi bi-bookmark'></i>",
                     "order": 11
                 }
             }

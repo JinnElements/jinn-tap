@@ -8,13 +8,13 @@ jats-title {
 }
 
 jats-title {
-    font-size: 2rem;
     font-weight: 700;
     line-height: 1.125;
 }
 
 jats-sec > jats-title {
     margin-top: 3rem;
+    font-size: 2.25rem;
 }
 
 .tiptap > jats-sec:first-child > jats-title:first-child {
@@ -95,7 +95,7 @@ jats-underline {
     text-decoration: underline;
 }
 
-jats-figure {
+jats-fig {
     display: block;
     margin: 1rem 0;
     padding: 0.5rem;
@@ -103,13 +103,13 @@ jats-figure {
     border-radius: 4px;
 }
 
-jats-figure > img {
+jats-fig > img {
     display: block;
     margin: 0 auto;
     cursor: pointer;
 }
 
-jats-figure > jats-figDesc {
+jats-fig > jats-caption {
     display: block;
     text-align: right;
     font-size: 0.8rem;
@@ -190,7 +190,7 @@ jats-fn:not([_reference]) {
 }
 
 jats-xref {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     vertical-align: super;
     cursor: pointer;
     line-height: 1;
