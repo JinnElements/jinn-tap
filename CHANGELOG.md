@@ -1,3 +1,17 @@
+# [1.28.0](https://github.com/JinnElements/jinn-tap/compare/v1.27.2...v1.28.0) (2026-02-13)
+
+
+### Bug Fixes
+
+* **authority:** do not pass the prefix to pb-authority ([b802144](https://github.com/JinnElements/jinn-tap/commit/b802144f0715d4a0929d122c150c32e9ffb4b000))
+
+
+### Features
+
+* **attributes:** allow multiple attribute defs on the same element ([bf46d48](https://github.com/JinnElements/jinn-tap/commit/bf46d488ac5645397c5fc9ea0ed9f67e076673c2))
+* **attributes:** support other authority providers ([ddbc5e3](https://github.com/JinnElements/jinn-tap/commit/ddbc5e33bb87ef4658627b3a5dbe6535ff6458c5))
+* **authority:** add info div to Airtable connector ([c7f236f](https://github.com/JinnElements/jinn-tap/commit/c7f236f04ce4c8464902f8d0c1e1f63ede599aa1))
+
 ## [1.27.2](https://github.com/JinnElements/jinn-tap/compare/v1.27.1...v1.27.2) (2025-09-18)
 
 
