@@ -3,6 +3,27 @@ import { kwicText } from './util/kwic.js';
 import { Mark } from '@tiptap/pm/model';
 
 /**
+ * @typedef ConnectorDefinition
+ *
+ * @property {string} name - The connector to use. Airtable or GND or other
+ */
+
+/**
+ * @typedef AttributeDefinition
+ *
+ * @property {string} type - The type of the attribute
+ * @property {ConnectorDefinition} connector - Any connector to use to set the value
+ */
+
+/**
+ * @typedef ConditionalAttributeDefinition
+ *
+ * @extends AttributeDefinition
+ *
+ * @property {string} when - An optional XPath that determines when a definition should apply
+ */
+
+/**
  * Panel for editing the attributes of the current node or mark.
  *
  * @param {Editor} editor - The editor instance.
@@ -88,6 +109,104 @@ export class AttributePanel {
         this.updatePanel();
     }
 
+    createAttributeConnector(fieldset, attrName, attrDef, currentValue, info, nodeOrMark, pos, text) {
+        const label = document.createElement('label');
+        label.textContent = attrName;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentValue;
+        input.readOnly = true;
+        input.name = attrName;
+        input.placeholder = 'No reference assigned';
+        fieldset.appendChild(label);
+        fieldset.appendChild(input);
+
+        const details = document.createElement('details');
+        details.open = !currentValue;
+        const summary = document.createElement('summary');
+        summary.textContent = 'Lookup';
+        details.appendChild(summary);
+
+        const lookup = document.createElement('pb-authority-lookup');
+        const needsLookup = !currentValue;
+        lookup.setAttribute('type', attrDef.connector.type);
+        lookup.setAttribute('query', text);
+        lookup.setAttribute('auto', needsLookup);
+        lookup.setAttribute('no-occurrences', true);
+        const authority = document.createElement('pb-authority');
+        // Common options
+        authority.setAttribute('base', attrDef.connector.base);
+        authority.setAttribute('connector', attrDef.connector.name);
+        authority.setAttribute('name', attrDef.connector.type);
+
+        switch (attrDef.connector.name) {
+            case 'GND':
+                // No additional config needed
+                break;
+            case 'GeoNames':
+                authority.setAttribute('user', attrDef.connector.user);
+                break;
+            case 'Airtable':
+                authority.setAttribute('api-key', attrDef.connector.apiKey);
+                authority.setAttribute('table', attrDef.connector.table);
+                authority.setAttribute('tokenize', attrDef.connector.tokenize.join(', '));
+                authority.setAttribute('filter', attrDef.connector.filter);
+                authority.setAttribute('fields', attrDef.connector.fields.join(', '));
+                authority.setAttribute('label', attrDef.connector.label);
+
+                const info = document.createElement('template');
+                info.classList.add('info');
+                info.content.appendChild(document.createTextNode(attrDef.connector.label));
+                authority.appendChild(info);
+                break;
+            case 'KBGA':
+                authority.setAttribute('api', attrDef.connector.api);
+                authority.setAttribute('limit', attrDef.connector.limit);
+                break;
+            case 'Anton':
+            case 'GF':
+                authority.setAttribute('api', attrDef.connector.api);
+                authority.setAttribute('url', attrDef.connector.url);
+                authority.setAttribute('limit', attrDef.connector.limit);
+                authority.setAttribute('provider', attrDef.connector.provider);
+                break;
+            case 'ReconciliationService':
+                authority.setAttribute('endpoint', attrDef.connector.endpoint);
+                authority.setAttribute('debug', attrDef.connector.debug);
+                break;
+            case 'Custom':
+                // @TODO: support this if we ever need to
+                throw new Error('Not implemented: custom authority connector');
+            default:
+        }
+        if (attrDef.connector.user) {
+            authority.setAttribute('user', attrDef.connector.user);
+        }
+        lookup.appendChild(authority);
+
+        document.addEventListener('pb-authority-select', (event) => {
+            const value = attrDef.connector.prefix
+                ? `${attrDef.connector.prefix}-${event.detail.properties.ref}`
+                : event.detail.properties.ref;
+            input.value = value;
+            details.open = false;
+            this.handleAttributeUpdate(nodeOrMark, pos, { [attrName]: value });
+        });
+        details.appendChild(lookup);
+        fieldset.parentNode.appendChild(details);
+
+        if (currentValue) {
+            const ref = currentValue.substring(currentValue.indexOf('-') + 1);
+            lookup.lookup(attrDef.connector.type, ref, info).then((occurrences) => {
+                const strings = occurrences.strings;
+                // Sort strings by length in descending order
+                strings.sort((a, b) => b.length - a.length);
+                strings.unshift(text);
+                this.updateOccurrences(this.editor, nodeOrMark, strings);
+            });
+        }
+    }
+
     createAttributeInput(form, attrName, attrDef, currentValue, placeholder = '') {
         const label = document.createElement('label');
         label.textContent = attrName;
@@ -128,6 +247,54 @@ export class AttributePanel {
         return input;
     }
 
+    /**
+     * @param {string} test
+     * @param {import('@tiptap/pm/model').Node|Mark} nodeOrMark
+     *
+     */
+    _evaluateXPathTest(test, nodeOrMark) {
+        // For now, assume tests are always of the form @attr='value'.
+        // TODO: Use a FontoXPath dom facade to execute XPaths over the tree and just evaluate XPath!
+        const xpathParts = /@(?<namePart>(?:[a-zA-Z0-9]|-|_)*)\s*=\s*['"](?<valuePart>[^"']*)["']/.exec(test);
+        if (!xpathParts) {
+            console.error(`Unsupported attribute test ${test}. Only XPaths of the form @name='value' are supported`);
+            return false;
+        }
+
+        const { namePart, valuePart } = xpathParts.groups;
+        return nodeOrMark.attrs[namePart] === valuePart;
+    }
+
+    /**
+     * @param {import('@tiptap/pm/model').Node|Mark} nodeOrMark
+     * @param {Record<string, AttributeDefinition|AttributeDefinition[]>} schemaDefAttributes
+     *
+     * @returns {Record<string, AttributeDefinition>}
+     */
+    _findAttributeDefinitions(nodeOrMark, schemaDefAttributes) {
+        /**
+         * @type {Record<string, AttributeDefinition>}
+         */
+        const applicableDefinitions = {};
+
+        for (const [attrName, def] of Object.entries(schemaDefAttributes)) {
+            if (!Array.isArray(def)) {
+                applicableDefinitions[attrName] = def;
+                continue;
+            }
+
+            for (const conditionalDefinition of def) {
+                if (!this._evaluateXPathTest(conditionalDefinition.when, nodeOrMark)) {
+                    continue;
+                }
+                applicableDefinitions[attrName] = conditionalDefinition;
+                break;
+            }
+        }
+
+        return applicableDefinitions;
+    }
+
     updatePanel(nodeOrMark, pos, text) {
         if (!this.panel) return;
 
@@ -157,64 +324,27 @@ export class AttributePanel {
         const fieldset = document.createElement('fieldset');
         form.appendChild(fieldset);
 
+        const globalAttributes = this.schemaDef.attributes;
+        const schemaDefAttributes = this._findAttributeDefinitions(nodeOrMark, def.attributes ?? {});
+
         // Merge global attributes with node-specific attributes
-        const attributes = { ...this.schemaDef.attributes, ...def.attributes };
+        const attributes = { ...globalAttributes, ...schemaDefAttributes };
 
         Object.entries(attributes).forEach(([attrName, attrDef]) => {
             if (attrName.startsWith('_')) {
                 return;
             }
             if (attrDef.connector) {
-                const label = document.createElement('label');
-                label.textContent = attrName;
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.value = nodeOrMark.attrs[attrName];
-                input.readOnly = true;
-                input.name = attrName;
-                input.placeholder = 'No reference assigned';
-                fieldset.appendChild(label);
-                fieldset.appendChild(input);
-
-                const details = document.createElement('details');
-                details.open = !nodeOrMark.attrs[attrName];
-                const summary = document.createElement('summary');
-                summary.textContent = 'Lookup';
-                details.appendChild(summary);
-
-                const lookup = document.createElement('pb-authority-lookup');
-                const needsLookup = nodeOrMark.attrs[attrName] || nodeOrMark.attrs[attrName] === '';
-                lookup.setAttribute('type', attrDef.connector.type);
-                lookup.setAttribute('query', text);
-                lookup.setAttribute('auto', needsLookup);
-                lookup.setAttribute('no-occurrences', true);
-                const authority = document.createElement('pb-authority');
-                authority.setAttribute('connector', attrDef.connector.name);
-                authority.setAttribute('name', attrDef.connector.type);
-                if (attrDef.connector.user) {
-                    authority.setAttribute('user', attrDef.connector.user);
-                }
-                lookup.appendChild(authority);
-
-                document.addEventListener('pb-authority-select', (event) => {
-                    const value = `${attrDef.connector.prefix}-${event.detail.properties.ref}`;
-                    input.value = value;
-                    details.open = false;
-                    this.handleAttributeUpdate(nodeOrMark, pos, { [attrName]: value });
-                });
-                details.appendChild(lookup);
-                form.appendChild(details);
-
-                if (nodeOrMark.attrs[attrName]) {
-                    const ref = nodeOrMark.attrs[attrName].substring(nodeOrMark.attrs[attrName].indexOf('-') + 1);
-                    lookup.lookup(attrDef.connector.type, ref, info).then((occurrences) => {
-                        const strings = occurrences.strings;
-                        // Sort strings by length in descending order
-                        strings.sort((a, b) => b.length - a.length);
-                        strings.unshift(text);
-                        this.updateOccurrences(this.editor, nodeOrMark, strings);
-                    });
-                }
+                this.createAttributeConnector(
+                    fieldset,
+                    attrName,
+                    attrDef,
+                    nodeOrMark.attrs[attrName],
+                    info,
+                    nodeOrMark,
+                    pos,
+                    text,
+                );
             } else {
                 this.createAttributeInput(fieldset, attrName, attrDef, nodeOrMark.attrs[attrName]);
             }

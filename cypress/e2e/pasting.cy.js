@@ -1,13 +1,4 @@
-import {
-    evaluateXPath,
-    evaluateXPathToBoolean,
-    evaluateXPathToFirstNode,
-    evaluateXPathToNodes,
-    evaluateXPathToNumber,
-    registerXQueryModule,
-} from 'fontoxpath';
-import { parseXml } from '../../src/util/util';
-//import { importXml } from '../../src/util/xml';
+import { evaluateXPathToFirstNode } from 'fontoxpath';
 
 // Some XPath assertions use the TEI namespace
 const namespaceResolver = (prefix) => {
@@ -15,7 +6,7 @@ const namespaceResolver = (prefix) => {
 };
 describe('Tables', () => {
     beforeEach(() => {
-        cy.visit('/test.html');
+        cy.visit('/test/test.html');
 
         // Wait for the component to be defined
         cy.window().then((win) => {

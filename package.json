@@ -101,5 +101,8 @@
       "@semantic-release/github",
       "@semantic-release/git"
     ]
+  },
+  "peerDependencies": {
+    "@teipublisher/pb-components": "^3.0.5"
   }
 }
