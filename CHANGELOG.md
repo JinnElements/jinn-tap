@@ -1,3 +1,10 @@
+## [1.28.1](https://github.com/JinnElements/jinn-tap/compare/v1.28.0...v1.28.1) (2026-02-17)
+
+
+### Bug Fixes
+
+* keep facsimile (and other) elements in a TEI file ([8097665](https://github.com/JinnElements/jinn-tap/commit/80976653eb336b7044c21a0923d1957502ae5b76))
+
 # [1.28.0](https://github.com/JinnElements/jinn-tap/compare/v1.27.2...v1.28.0) (2026-02-13)
 
 
