@@ -56,6 +56,39 @@ describe('JinnTap Component', () => {
         });
     });
 
+    it('keeps all ignored metadata elements intact', () => {
+        cy.get('jinn-tap').then(($component) => {
+            $component[0].xml = `<TEI xmlns="http://www.tei-c.org/ns/1.0">
+<teiHeader>
+<!-- ... -->
+</teiHeader>
+<facsimile id="firstpage">
+<graphic url="firstpage.png" />
+</facsimile>
+<text xml:lang="en">
+<body><p>Hello World</p></body>
+</text>
+</TEI>
+         `;
+        });
+
+        cy.get('jinn-tap').type('More Text!');
+
+        cy.get('jinn-tap').should(($component) => {
+            const jinntap = $component[0];
+
+            expect(jinntap.xml).to.be.xml;
+            expect(jinntap.xml).to.equal(`<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader>
+<!-- ... -->
+</teiHeader><text xml:lang="en">
+<body><p>More Text!Hello World</p>
+</body>
+</text><facsimile id="firstpage">
+<graphic url="firstpage.png"/>
+</facsimile><standOff><listAnnotation/></standOff></TEI>`);
+        });
+    });
+
     it('handle nested marks', () => {
         const testContent =
             '<tei-div><tei-p><tei-persName><tei-hi rend="b">Rudi</tei-hi> <tei-hi rend="i">Rüssel</tei-hi></tei-hi></tei-persName></tei-p></tei-div>';
