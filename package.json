@@ -21,10 +21,13 @@
   },
   "files": [
     "dist/jinn-tap.es.js",
+    "dist/jinn-tap.es.js.map",
     "dist/jinn-tap.d.ts",
     "dist/jinn-toast.es.js",
+    "dist/jinn-toast.es.js.map",
     "dist/jinn-toast.d.ts",
     "dist/index.es.js",
+    "dist/index.es.js.map",
     "dist/index.d.ts",
     "dist/editor-styles.css",
     "dist/jinn-tap.css",
