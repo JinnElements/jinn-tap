@@ -5,7 +5,7 @@ import jatsModule from './module-jats.xq?raw';
 import { getFormat } from './xml-formats.js';
 
 // Register both modules at initialization - they use different namespace URIs
-registerXQueryModule(teiModule);  // namespace: http://jinntec.de/jinntap
+registerXQueryModule(teiModule); // namespace: http://jinntec.de/jinntap
 registerXQueryModule(jatsModule); // namespace: http://jinntec.de/jinntap/jats
 
 /**
@@ -17,13 +17,13 @@ function getModuleNamespace(formatId) {
     if (formatId === 'jats') {
         return {
             namespace: 'http://jinntec.de/jinntap/jats',
-            prefix: 'jt-jats'
+            prefix: 'jt-jats',
         };
     } else {
         // Default to TEI
         return {
             namespace: 'http://jinntec.de/jinntap',
-            prefix: 'jt'
+            prefix: 'jt',
         };
     }
 }
@@ -36,31 +36,19 @@ function getModuleNamespace(formatId) {
 export function importXml(content, formatId) {
     const xmlDoc = typeof content === 'string' ? parseXml(content) : content;
     if (!xmlDoc) return '';
-    
+
     if (!formatId) {
         throw new Error('formatId is required - format autodetection is disabled');
     }
-    
+
     // Always use the provided formatId - no autodetection
     const finalFormat = formatId;
-    const format = getFormat(finalFormat);
-    
+
     // Get the correct module namespace based on format
     const moduleNs = getModuleNamespace(finalFormat);
-    
-    // Build namespace declaration for XQuery (skip if empty namespace)
-    const namespacePrefix = format.namespace === 'http://www.tei-c.org/ns/1.0' ? 'tei' : 
-                           (format.namespace === '' || !format.namespace) ? '' : 'ns';
-    const namespaceDecl = format.namespace && format.namespace !== '' 
-        ? `declare namespace ${namespacePrefix}="${format.namespace}";` 
-        : '';
-    
     const output = evaluateXPathToNodes(
         `
-            import module namespace ${moduleNs.prefix}="${moduleNs.namespace}";
-            ${namespaceDecl}
-
-            ${moduleNs.prefix}:import(.)
+            jt:import(.)
         `,
         xmlDoc,
         null,
@@ -69,6 +57,9 @@ export function importXml(content, formatId) {
             language: evaluateXPath.XQUERY_3_1_LANGUAGE,
             // we want to create HTML, not XML nodes
             nodesFactory: document,
+            moduleImports: {
+                jt: moduleNs.namespace,
+            },
         },
     );
     const xmlText = [];
@@ -91,37 +82,28 @@ export function importXml(content, formatId) {
  */
 export function exportXml(content, xmlDoc, metadata = {}, formatId) {
     if (!xmlDoc) return content;
-    
+
     if (!formatId) {
         throw new Error('formatId is required - format autodetection is disabled');
     }
-    
+
     // Always use the provided formatId - no autodetection
     const finalFormat = formatId;
     const format = getFormat(finalFormat);
-    
+
     // Get the correct module namespace based on format
     const moduleNs = getModuleNamespace(finalFormat);
-    
-    // Build namespace declaration for XQuery (skip if empty namespace)
-    const namespacePrefix = format.namespace === 'http://www.tei-c.org/ns/1.0' ? 'tei' : 
-                           (format.namespace === '' || !format.namespace) ? '' : 'ns';
-    const namespaceDecl = format.namespace && format.namespace !== '' 
-        ? `declare namespace ${namespacePrefix}="${format.namespace}";` 
-        : '';
-    
+
     // Build body wrapper with or without namespace
-    const bodyWrapperXml = format.namespace && format.namespace !== ''
-        ? `<${format.bodyWrapper} xmlns="${format.namespace}">${content}</${format.bodyWrapper}>`
-        : `<${format.bodyWrapper} xmlns:xlink="http://www.w3.org/1999/xlink">${content}</${format.bodyWrapper}>`;
-    
+    const bodyWrapperXml =
+        format.namespace && format.namespace !== ''
+            ? `<${format.bodyWrapper} xmlns="${format.namespace}">${content}</${format.bodyWrapper}>`
+            : `<${format.bodyWrapper} xmlns:xlink="http://www.w3.org/1999/xlink">${content}</${format.bodyWrapper}>`;
+
     const nodes = parseXml(bodyWrapperXml);
     const output = evaluateXPathToNodes(
         `
-            import module namespace ${moduleNs.prefix}="${moduleNs.namespace}";
-            ${namespaceDecl}
-
-            ${moduleNs.prefix}:export($document, ., $meta)
+            jt:export($document, ., $meta)
         `,
         nodes,
         null,
@@ -131,6 +113,9 @@ export function exportXml(content, xmlDoc, metadata = {}, formatId) {
         },
         {
             language: evaluateXPath.XQUERY_3_1_LANGUAGE,
+            moduleImports: {
+                jt: moduleNs.namespace,
+            },
         },
     );
     const serializer = new XMLSerializer();
@@ -143,27 +128,17 @@ export function exportXml(content, xmlDoc, metadata = {}, formatId) {
  */
 export function createDocument(formatId = 'tei') {
     const format = getFormat(formatId);
-    
+
     // Get the correct module namespace based on format
     const moduleNs = getModuleNamespace(formatId);
-    
+
     // to be used as nodesFactory, which should produce XML nodes
     const template = format.newDocumentTemplate();
     const inDoc = new DOMParser().parseFromString(template, 'application/xml');
-    
-    // Build namespace declaration for XQuery (skip if empty namespace)
-    const namespacePrefix = format.namespace === 'http://www.tei-c.org/ns/1.0' ? 'tei' : 
-                           (format.namespace === '' || !format.namespace) ? '' : 'ns';
-    const namespaceDecl = format.namespace && format.namespace !== '' 
-        ? `declare namespace ${namespacePrefix}="${format.namespace}";` 
-        : '';
-    
+
     const doc = evaluateXPathToFirstNode(
         `
-            import module namespace ${moduleNs.prefix}="${moduleNs.namespace}";
-            ${namespaceDecl}
-
-            ${moduleNs.prefix}:new-document()
+            jt:new-document()
         `,
         null,
         null,
@@ -172,6 +147,9 @@ export function createDocument(formatId = 'tei') {
             language: evaluateXPath.XQUERY_3_1_LANGUAGE,
             nodesFactory: inDoc,
             debug: true,
+            moduleImports: {
+                jt: moduleNs.namespace,
+            },
         },
     );
     return importXml(doc, formatId);
