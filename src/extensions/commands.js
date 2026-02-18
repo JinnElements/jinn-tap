@@ -5,7 +5,20 @@ export const JinnTapCommands = Extension.create({
     name: 'jinnTapCommands',
 
     addCommands() {
-        return {
+        /**
+         *
+         * @type {import('@tiptap/core').AnyCommands}
+         */
+        const commands = {
+            togglePreventTyping:
+                () =>
+                ({ view, dispatch }) => {
+                    if (dispatch) {
+                        view.dom.closest('jinn-tap').toggleAttribute('block-typing');
+                    }
+
+                    return view.dom.closest('jinn-tap').hasAttribute('block-typing');
+                },
             moveUp:
                 () =>
                 ({ commands, state }) => {
@@ -73,5 +86,7 @@ export const JinnTapCommands = Extension.create({
                     return true;
                 },
         };
+
+        return commands;
     },
 });
