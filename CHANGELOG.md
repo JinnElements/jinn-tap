@@ -1,3 +1,11 @@
+# [1.29.0](https://github.com/JinnElements/jinn-tap/compare/v1.28.1...v1.29.0) (2026-02-18)
+
+
+### Features
+
+* **block-typing:** add a new attribute to block typing ([5d78e97](https://github.com/JinnElements/jinn-tap/commit/5d78e9766f9e2cb56d3d4c01dcaffecbcb443ac9))
+* **block-typing:** add command to block typing ([520333d](https://github.com/JinnElements/jinn-tap/commit/520333d42918fe33958dbb3a57217b0d41fc455e))
+
 ## [1.28.1](https://github.com/JinnElements/jinn-tap/compare/v1.28.0...v1.28.1) (2026-02-17)
 
 
