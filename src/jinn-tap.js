@@ -96,6 +96,7 @@ export class JinnTap extends HTMLElement {
         this._initialized = false;
         this._format = 'tei'; // Default format
         this._schema = null; // Will be set in connectedCallback or via getDefaultSchema()
+        this._suspendUrlLoad = false;
         // Format is set at initialization and cannot be changed
         this.isTypingBlocked = false;
 
@@ -180,7 +181,7 @@ export class JinnTap extends HTMLElement {
                 }
                 break;
             case 'url':
-                if (newValue && this._initialized) {
+                if (newValue && this._initialized && !this._suspendUrlLoad) {
                     this.loadFromUrl(newValue);
                 }
                 break;
@@ -671,6 +672,47 @@ export class JinnTap extends HTMLElement {
             this._format = docFormat;
             // Update schema for new format
             this.updateSchemaForFormat();
+        }
+    }
+
+    async load(format, url, timeoutMs = 4000) {
+        const targetFormat = format ? format.toLowerCase() : 'tei';
+        const requiresFormatSwitch = targetFormat !== this._format;
+
+        if (requiresFormatSwitch) {
+            const waitForReady = new Promise((resolve, reject) => {
+                const timeoutId = window.setTimeout(() => {
+                    this.removeEventListener('ready', onReady);
+                    reject(new Error(`Timed out while switching editor format to "${targetFormat}"`));
+                }, timeoutMs);
+
+                const onReady = () => {
+                    window.clearTimeout(timeoutId);
+                    this.removeEventListener('ready', onReady);
+                    resolve();
+                };
+
+                this.addEventListener('ready', onReady, { once: true });
+            });
+
+            // Suspend URL-triggered loading while switching format to avoid
+            // parsing the target document with the previous format/schema.
+            this._suspendUrlLoad = true;
+            try {
+                if (url) {
+                    // Keep URL available so setupEditor loads the target document
+                    // as part of the new format initialization.
+                    this.setAttribute('url', url);
+                } else {
+                    this.removeAttribute('url');
+                }
+                this.setAttribute('format', targetFormat);
+                await waitForReady;
+            } finally {
+                this._suspendUrlLoad = false;
+            }
+        } else if (url) {
+            this.setAttribute('url', url);
         }
     }
 

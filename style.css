@@ -1,10 +1,45 @@
 .container {
     display: grid;
-    grid-template-rows: 1fr minmax(5rem, 33%);
+    grid-template-rows: auto 1fr minmax(5rem, 33%);
     padding: 1rem 0 1rem 0;
     min-height: 100vh;
     position: relative;
     --jinn-tap-overlay-color: var(--pico-mark-background-color);
+}
+
+.editor-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.editor-menu ul {
+    margin: 0;
+}
+
+.editor-menu .editor-format-link {
+    border-radius: var(--pico-border-radius);
+    padding: 0.3rem 0.8rem;
+    text-decoration: none;
+}
+
+.editor-menu .editor-format-link.is-active {
+    background: var(--pico-primary-background);
+    color: var(--pico-primary-inverse);
+}
+
+.editor-menu .editor-format-link:not(.is-active) {
+    color: var(--pico-color);
+}
+
+.editor-menu .editor-format-link:not(.is-active):hover {
+    background: var(--pico-muted-border-color);
+}
+
+.editor-menu select {
+    margin: 0;
+    width: auto;
+    min-width: 10rem;
 }
 
 .logo {
