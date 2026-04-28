@@ -97,7 +97,7 @@ describe('Tables', () => {
         cy.get('jinn-tap').then(($component) => {
             // Set the content
 
-            cy.readFile('src/util/module.xq', 'utf-8').then((text) => {
+            cy.readFile('src/util/module-tei.xq', 'utf-8').then((text) => {
                 registerXQueryModule(text);
 
                 const output = evaluateXPathToNodes(

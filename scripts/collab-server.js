@@ -1,4 +1,4 @@
-import { Hocuspocus } from '@hocuspocus/server';
+import { Server } from '@hocuspocus/server';
 import { Logger } from '@hocuspocus/extension-logger';
 import jsonwebtoken from 'jsonwebtoken';
 
@@ -7,7 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const PORT = process.env.PORT || 8082;
 const ALLOWED_GROUP = process.env.ALLOWED_GROUP || 'tei';
 
-const server = new Hocuspocus({
+const server = new Server({
     name: 'hocuspocus-jinntap',
     port: PORT,
     timeout: 30000,
@@ -39,4 +39,4 @@ const server = new Hocuspocus({
     },
 });
 
-server.listen();
+await server.listen(PORT);

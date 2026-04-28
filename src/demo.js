@@ -2,16 +2,54 @@ import './index.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const editor = document.querySelector('jinn-tap');
-    const output = document.getElementById('output');
+    const formatLinks = Array.from(document.querySelectorAll('.editor-format-link'));
+    const jatsStylesheet = document.getElementById('jatsEditorStyles');
     const fileInput = document.getElementById('xmlFile');
-    const copyButton = editor.querySelector('[data-tooltip="Copy TEI to clipboard"]');
+    const copyButton = editor.querySelector('.toolbar-button[data-tooltip*="Copy"]');
     const newButton = editor.querySelector('[data-tooltip="New Document"]');
     const downloadButton = editor.querySelector('[data-tooltip="Download XML"]');
 
-    if (!fileInput) {
-        console.error('File input element not found!');
+    if (!fileInput || formatLinks.length === 0) {
+        console.error('Required UI elements not found!');
         return;
     }
+
+    const copyTooltip = 'Copy to clipboard';
+    const defaultDocumentByFormat = {
+        tei: 'docs.xml',
+        jats: 'musk-trump-tei-publisher.xml',
+    };
+
+    const applyFormatUi = (format) => {
+        const normalizedFormat = format === 'jats' ? 'jats' : 'tei';
+        formatLinks.forEach((link) => {
+            const isActive = link.dataset.format === normalizedFormat;
+            link.classList.toggle('is-active', isActive);
+            link.setAttribute('aria-current', isActive ? 'page' : 'false');
+        });
+        if (jatsStylesheet) {
+            jatsStylesheet.disabled = normalizedFormat !== 'jats';
+        }
+    };
+
+    const normalizeFormat = (value) => (value === 'jats' ? 'jats' : 'tei');
+    const getDefaultDocumentForFormat = (format) => defaultDocumentByFormat[normalizeFormat(format)];
+    const loadDefaultDocumentForFormat = async (format) => {
+        const nextUrl = getDefaultDocumentForFormat(format);
+        await editor.load(format, nextUrl);
+    };
+
+    applyFormatUi(editor.format);
+    loadDefaultDocumentForFormat(editor.format).catch((error) => {
+        document.dispatchEvent(
+            new CustomEvent('jinn-toast', {
+                detail: {
+                    message: error.message || 'Failed to load default document',
+                    type: 'error',
+                },
+            }),
+        );
+    });
 
     // Handle file upload
     fileInput.addEventListener('change', (event) => {
@@ -37,6 +75,41 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
         reader.readAsText(file);
+    });
+
+    formatLinks.forEach((link) => {
+        link.addEventListener('click', async (event) => {
+            event.preventDefault();
+            const selectedFormat = normalizeFormat(link.dataset.format);
+            if (selectedFormat === editor.format) {
+                return;
+            }
+
+            const confirmed = window.confirm(
+                `Switching to ${selectedFormat.toUpperCase()} will replace current content. Continue?`,
+            );
+
+            if (!confirmed) {
+                applyFormatUi(editor.format);
+                return;
+            }
+
+            try {
+                await loadDefaultDocumentForFormat(selectedFormat);
+            } catch (error) {
+                document.dispatchEvent(
+                    new CustomEvent('jinn-toast', {
+                        detail: {
+                            message: error.message || 'Failed to switch editor format',
+                            type: 'error',
+                        },
+                    }),
+                );
+                applyFormatUi(editor.format);
+                return;
+            }
+            applyFormatUi(selectedFormat);
+        });
     });
 
     // Handle copy to clipboard
@@ -65,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Failed to copy to clipboard:', error);
                 copyButton.dataset.tooltip = 'Failed to copy';
                 setTimeout(() => {
-                    copyButton.dataset.tooltip = 'Copy TEI to clipboard';
+                    copyButton.dataset.tooltip = copyTooltip;
                 }, 2000);
             }
         });
