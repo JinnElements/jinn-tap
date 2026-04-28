@@ -103,7 +103,6 @@ describe('Tables', () => {
                 const output = evaluateXPathToNodes(
                     `
             import module namespace jt="http://jinntec.de/jinntap";
-            declare namespace tei="http://www.tei-c.org/ns/1.0";
 
             jt:import(.)
         `,
