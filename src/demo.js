@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const confirmed = window.confirm(
-                `Switching to ${selectedFormat.toUpperCase()} will create a new empty document and replace current content. Continue?`,
+                `Switching to ${selectedFormat.toUpperCase()} will replace current content. Continue?`,
             );
 
             if (!confirmed) {
