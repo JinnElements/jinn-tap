@@ -1,3 +1,11 @@
+# [1.30.0](https://github.com/JinnElements/jinn-tap/compare/v1.29.0...v1.30.0) (2026-04-29)
+
+
+### Features
+
+* add support for different XML formats ([050b921](https://github.com/JinnElements/jinn-tap/commit/050b921faee002449a8f0b47b8e5da19375616db))
+* **jats:** add figure support ([511d1d4](https://github.com/JinnElements/jinn-tap/commit/511d1d476621ad28877d0a47328152504cb3eb4b))
+
 # [1.29.0](https://github.com/JinnElements/jinn-tap/compare/v1.28.1...v1.29.0) (2026-02-18)
 
 
