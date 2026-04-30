@@ -64,14 +64,16 @@ export function colorCssFromSchema(schema) {
         colorVariables[`--tei-div-color-${i}`] = color;
     }
     let inlineCount = 5;
-    Object.entries(schema.schema).forEach(([name, def]) => {
+    Object.entries(schema.schema).forEach(([name, rawDef]) => {
         const hue = (baseH + inlineCount * 60) % 360;
         const color = hslToHex(hue, baseS, baseL);
         colorVariables[`--tei-${name}-color`] = `${color}`;
 
-        if (def.type === 'inline' || def.type === 'empty') {
+        // rawDef may be an array of conditional definitions; check if any item is inline/empty
+        const defs = Array.isArray(rawDef) ? rawDef : [rawDef];
+        if (defs.some(def => def.type === 'inline' || def.type === 'empty')) {
             cssStyles.push(`
-                .debug tei-${name}::after { 
+                .debug tei-${name}::after {
                     background-color: var(--tei-${name}-color);
                     content: "${name}";
                 }

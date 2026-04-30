@@ -59,8 +59,12 @@ export class Toolbar {
         }
 
         // Add node-specific toolbar items
-        Object.entries(schemaDef.schema).forEach(([name, def]) => {
+        Object.entries(schemaDef.schema).forEach(([baseName, rawDef]) => {
+            const defs = Array.isArray(rawDef) ? rawDef : [rawDef];
+            defs.forEach((def, index) => {
             if (!def.toolbar) return;
+            // Array items: first keeps base name, subsequent get baseName+index (mirrors createFromSchema)
+            const name = index === 0 ? baseName : `${baseName}${index}`;
             Object.entries(def.toolbar).forEach(([label, toolbarDef]) => {
                 if (toolbarDef.select) {
                     if (!selectItems.has(toolbarDef.select)) {
@@ -87,6 +91,7 @@ export class Toolbar {
                     });
                 }
             });
+            }); // end defs.forEach
         });
 
         // Sort all items by order
@@ -282,7 +287,16 @@ export class Toolbar {
         const buttons = this.toolbar.querySelectorAll('a[data-name]');
         buttons.forEach((button) => {
             const buttonName = button.dataset.name;
-            const nodeType = this.schemaDef.schema[buttonName];
+            let nodeType = this.schemaDef.schema[buttonName];
+            if (Array.isArray(nodeType)) {
+                nodeType = nodeType[0];
+            } else if (!nodeType) {
+                const m = buttonName.match(/^(.+?)(\d+)$/);
+                if (m) {
+                    const base = this.schemaDef.schema[m[1]];
+                    if (Array.isArray(base)) nodeType = base[parseInt(m[2])];
+                }
+            }
 
             if (!nodeType) return;
 

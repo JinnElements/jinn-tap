@@ -21,6 +21,29 @@ function compareMarks(mark1, mark2) {
     return mark1.type === mark2.type && JSON.stringify(mark1.attrs) === JSON.stringify(mark2.attrs);
 }
 
+// Resolve the XML element name for a ProseMirror type.
+// Array schema entries generate numbered variants (e.g. "xref1") that still map to the base XML tag.
+function resolveXmlTagName(schemaDef, typeName) {
+    if (schemaDef.schema[typeName] !== undefined) return typeName;
+    const match = typeName.match(/^(.+?)\d+$/);
+    if (match && schemaDef.schema[match[1]] !== undefined) return match[1];
+    return typeName;
+}
+
+// Resolve the schema definition object for a ProseMirror type name, handling array entries.
+function resolveSchemaEntry(schemaDef, typeName) {
+    const entry = schemaDef.schema[typeName];
+    if (entry !== undefined) {
+        return Array.isArray(entry) ? entry[0] : entry;
+    }
+    const match = typeName.match(/^(.+?)(\d+)$/);
+    if (match) {
+        const base = schemaDef.schema[match[1]];
+        if (Array.isArray(base)) return base[parseInt(match[2])];
+    }
+    return undefined;
+}
+
 class Serializer {
     constructor(editor, schemaDef) {
         this.editor = editor;
@@ -47,7 +70,7 @@ class Serializer {
                             if (!compareMarks(lastOpen, prevMark)) {
                                 console.error('Serialization mismatch');
                             }
-                            text += `</${prevMark.type}>`;
+                            text += `</${resolveXmlTagName(this.schemaDef, prevMark.type)}>`;
                         }
                     });
                 }
@@ -65,14 +88,14 @@ class Serializer {
                 });
                 openingMarks.forEach((mark) => {
                     this.openMarks.push(mark);
-                    const nodeDef = this.schemaDef.schema[mark.type];
-                    const tagName = mark.type;
+                    const nodeDef = resolveSchemaEntry(this.schemaDef, mark.type);
+                    const tagName = resolveXmlTagName(this.schemaDef, mark.type);
                     const attrs = mark.attrs
                         ? Object.entries(mark.attrs)
                               .filter(([_, value]) => value !== null)
                               .map(([key, value]) => `${key}="${value}"`)
                         : [];
-                    if (nodeDef.preserveSpace) {
+                    if (nodeDef?.preserveSpace) {
                         attrs.push('xml:space="preserve"');
                     }
                     text += `<${tagName}${attrs.length > 0 ? ' ' + attrs.join(' ') : ''}>`;
@@ -80,13 +103,13 @@ class Serializer {
                 text += cleanNodeText;
                 if (!next) {
                     this.openMarks.reverse().forEach((mark) => {
-                        text += `</${mark.type}>`;
+                        text += `</${resolveXmlTagName(this.schemaDef, mark.type)}>`;
                     });
                     this.openMarks = [];
                 }
             } else {
                 this.openMarks.reverse().forEach((prevMark) => {
-                    text += `</${prevMark.type}>`;
+                    text += `</${resolveXmlTagName(this.schemaDef, prevMark.type)}>`;
                 });
                 this.openMarks = [];
                 text += cleanNodeText;
@@ -94,9 +117,9 @@ class Serializer {
             return text;
         }
 
-        // Get tag name from schema definition (tagName) or fall back to node.type
-        const nodeDef = this.schemaDef.schema[node.type];
-        let tagName = nodeDef?.tagName || node.type;
+        // Get tag name from schema definition (tagName) or fall back to the XML element name
+        const nodeDef = resolveSchemaEntry(this.schemaDef, node.type);
+        let tagName = nodeDef?.tagName || resolveXmlTagName(this.schemaDef, node.type);
         // If tagName is defined (custom tag), use it as-is (no prefix in XML output)
         // The prefix is only for HTML custom elements in the editor, not for XML output
         const attrs = node.attrs
@@ -135,7 +158,7 @@ class Serializer {
             if (next?.isText && next.marks.some((mark) => compareMarks(mark, openMark))) {
                 return '';
             }
-            const tagName = openMark.type;
+            const tagName = resolveXmlTagName(this.schemaDef, openMark.type);
             this.openMarks = this.openMarks.filter((mark) => !compareMarks(mark, openMark));
             text += `</${tagName}>`;
         });
