@@ -23,120 +23,167 @@ import { JinnReference } from './ref.js';
 export function createFromSchema(schemaDef, prefix = 'tei-', notesWrapper = 'listAnnotation', footnoteOptions = {}) {
     const JinnDocument = createDocumentExtension(notesWrapper);
     const extensions = [JinnDocument, Text];
-    Object.entries(schemaDef.schema).forEach(([name, def]) => {
-        let NodeOrMark;
-        switch (def.type) {
-            case 'inline':
-                NodeOrMark = JinnInline.extend({
-                    name: name,
-                });
-                break;
-            case 'anchor':
-                NodeOrMark = JinnAnchor.extend({
-                    name: name,
-                });
-                break;
-            case 'ref':
-                NodeOrMark = JinnReference.extend({
-                    name: name,
-                });
-                break;
-            case 'empty':
-                NodeOrMark = JinnEmptyElement.extend({
-                    name: name,
-                });
-                break;
-            case 'list':
-                NodeOrMark = JinnList.extend({
-                    name: name,
-                    content: def.content || 'item+',
-                });
-                break;
-            case 'listItem':
-                NodeOrMark = JinnItem.extend({
-                    name: name,
-                    content: def.content || 'p block*',
-                    addOptions() {
-                        return {
-                            ...this.parent?.(),
-                            tagName: def.tagName, // Allow custom tag name override
-                        };
+    Object.entries(schemaDef.schema).forEach(([baseName, rawDef]) => {
+        // Support an array of conditional definitions for a single XML element name.
+        // Each item may have a "when" object (attr→value map) to conditionally match.
+        const defs = Array.isArray(rawDef) ? rawDef : [rawDef];
+        const conditions = defs.map(d => d.when || null);
+
+        defs.forEach((def, index) => {
+            // First item keeps the base name so existing anchorName/noteName references work.
+            // Subsequent items get baseName + index (e.g. "xref1").
+            const name = index === 0 ? baseName : `${baseName}${index}`;
+
+            // Build getAttrs for parseHTML when conditional dispatch is needed.
+            let getAttrs = null;
+            if (def.when) {
+                const cond = def.when;
+                getAttrs = (el) => {
+                    const matches = Object.entries(cond).every(([attr, val]) => el.getAttribute(attr) === val);
+                    return matches ? null : false;
+                };
+            } else if (conditions.some(c => c !== null)) {
+                // Default (no "when"): exclude elements matched by sibling conditions.
+                const siblings = conditions.filter(c => c !== null);
+                getAttrs = (el) => {
+                    const excluded = siblings.some(cond =>
+                        Object.entries(cond).every(([attr, val]) => el.getAttribute(attr) === val)
+                    );
+                    return excluded ? false : null;
+                };
+            }
+
+            let NodeOrMark;
+            switch (def.type) {
+                case 'inline':
+                    NodeOrMark = JinnInline.extend({
+                        name: name,
+                    });
+                    break;
+                case 'anchor':
+                    NodeOrMark = JinnAnchor.extend({
+                        name: name,
+                    });
+                    break;
+                case 'ref':
+                    NodeOrMark = JinnReference.extend({
+                        name: name,
+                    });
+                    break;
+                case 'empty':
+                    NodeOrMark = JinnEmptyElement.extend({
+                        name: name,
+                    });
+                    break;
+                case 'list':
+                    NodeOrMark = JinnList.extend({
+                        name: name,
+                        content: def.content || 'item+',
+                    });
+                    break;
+                case 'listItem':
+                    NodeOrMark = JinnItem.extend({
+                        name: name,
+                        content: def.content || 'p block*',
+                        addOptions() {
+                            return {
+                                ...this.parent?.(),
+                                tagName: def.tagName,
+                            };
+                        },
+                        renderHTML({ HTMLAttributes }) {
+                            const prefix = this.options.prefix || 'tei-';
+                            if (this.options.tagName) {
+                                return [`${prefix}${this.options.tagName}`, HTMLAttributes, 0];
+                            }
+                            const tag = `${prefix}${this.name}`;
+                            return [tag, HTMLAttributes, 0];
+                        },
+                        parseHTML() {
+                            const prefix = this.options.prefix || 'tei-';
+                            const customTag = this.options.tagName;
+                            const defaultTag = `${prefix}${this.name}`;
+                            const tags = [];
+                            if (customTag) {
+                                tags.push({ tag: customTag });
+                            }
+                            tags.push({ tag: defaultTag });
+                            return tags;
+                        },
+                    });
+                    break;
+                case 'block':
+                    NodeOrMark = JinnBlock.extend({
+                        name: name,
+                        group: def.group || 'block',
+                        defining: def.defining,
+                        isolating: def.isolating,
+                        priority: def.priority,
+                        inline: def.inline,
+                        content: def.content,
+                        selectable: def.selectable,
+                    });
+                    break;
+                case 'graphic':
+                    NodeOrMark = JinnGraphic.extend({
+                        name: name,
+                    });
+                    break;
+                case 'table':
+                    NodeOrMark = JinnTable.extend({});
+                    break;
+                case 'row':
+                    NodeOrMark = JinnRow.extend({});
+                    break;
+                case 'cell':
+                    NodeOrMark = JinnCell.extend({});
+                    break;
+            }
+
+            // When getAttrs is needed or the node name differs from the XML element name,
+            // override parseHTML/renderHTML so both use the base element name (baseName).
+            if (getAttrs || name !== baseName) {
+                const capturedBaseName = baseName;
+                const capturedGetAttrs = getAttrs;
+                NodeOrMark = NodeOrMark.extend({
+                    parseHTML() {
+                        const p = this.options.prefix || 'tei-';
+                        const rule = { tag: `${p}${capturedBaseName}` };
+                        if (capturedGetAttrs) rule.getAttrs = capturedGetAttrs;
+                        return [rule];
                     },
                     renderHTML({ HTMLAttributes }) {
-                        const prefix = this.options.prefix || 'tei-';
-                        // Use custom tagName if provided, but add prefix for HTML custom elements
-                        // (prefix is only omitted in XML output, not in editor HTML)
-                        if (this.options.tagName) {
-                            return [`${prefix}${this.options.tagName}`, HTMLAttributes, 0];
-                        }
-                        const tag = `${prefix}${this.name}`;
-                        return [tag, HTMLAttributes, 0];
-                    },
-                    parseHTML() {
-                        const prefix = this.options.prefix || 'tei-';
-                        const customTag = this.options.tagName;
-                        const defaultTag = `${prefix}${this.name}`;
-                        
-                        const tags = [];
-                        if (customTag) {
-                            tags.push({ tag: customTag });
-                        }
-                        tags.push({ tag: defaultTag });
-                        return tags;
+                        const p = this.options.prefix || 'tei-';
+                        return [`${p}${capturedBaseName}`, HTMLAttributes, 0];
                     },
                 });
-                break;
-            case 'block':
-                NodeOrMark = JinnBlock.extend({
-                    name: name,
-                    group: def.group || 'block',
-                    defining: def.defining,
-                    isolating: def.isolating,
-                    priority: def.priority,
-                    inline: def.inline,
-                    content: def.content,
-                    selectable: def.selectable,
-                });
-                break;
-            case 'graphic':
-                NodeOrMark = JinnGraphic.extend({
-                    name: name,
-                });
-                break;
-            case 'table':
-                NodeOrMark = JinnTable.extend({});
-                break;
-            case 'row':
-                NodeOrMark = JinnRow.extend({});
-                break;
-            case 'cell':
-                NodeOrMark = JinnCell.extend({});
-                break;
-        }
-        // Merge global attributes with node-specific attributes
-        const attributes = { ...schemaDef.attributes, ...def.attributes };
-        const config = {
-            prefix: prefix, // Pass the format prefix to extensions
-            shortcuts: def.keyboard,
-            attributes: attributes,
-            label: def.label,
-        };
-        if (def.inputRules) {
-            config.inputRules = def.inputRules;
-        }
-        // Pass footnote options to anchor extension
-        if (def.type === 'anchor' && footnoteOptions) {
-            if (footnoteOptions.noteName) {
-                config.noteName = footnoteOptions.noteName;
             }
-            if (footnoteOptions.anchorName) {
-                config.anchorName = footnoteOptions.anchorName;
+
+            // Merge global attributes with node-specific attributes
+            const attributes = { ...schemaDef.attributes, ...def.attributes };
+            const config = {
+                prefix: prefix,
+                shortcuts: def.keyboard,
+                attributes: attributes,
+                label: def.label,
+            };
+            if (def.inputRules) {
+                config.inputRules = def.inputRules;
             }
-            if (footnoteOptions.linkDirection) {
-                config.linkDirection = footnoteOptions.linkDirection;
+            // Pass footnote options to anchor extension
+            if (def.type === 'anchor' && footnoteOptions) {
+                if (footnoteOptions.noteName) {
+                    config.noteName = footnoteOptions.noteName;
+                }
+                if (footnoteOptions.anchorName) {
+                    config.anchorName = footnoteOptions.anchorName;
+                }
+                if (footnoteOptions.linkDirection) {
+                    config.linkDirection = footnoteOptions.linkDirection;
+                }
             }
-        }
-        extensions.push(NodeOrMark.configure(config));
+            extensions.push(NodeOrMark.configure(config));
+        });
     });
     return extensions;
 }

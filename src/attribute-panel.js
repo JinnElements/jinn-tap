@@ -304,7 +304,16 @@ export class AttributePanel {
             return;
         }
 
-        const def = this.schemaDef.schema[nodeOrMark.type.name];
+        let def = this.schemaDef.schema[nodeOrMark.type.name];
+        if (Array.isArray(def)) {
+            def = def[0];
+        } else if (!def) {
+            const m = nodeOrMark.type.name.match(/^(.+?)(\d+)$/);
+            if (m) {
+                const base = this.schemaDef.schema[m[1]];
+                if (Array.isArray(base)) def = base[parseInt(m[2])];
+            }
+        }
 
         if (!def) {
             this.panel.innerHTML = '';

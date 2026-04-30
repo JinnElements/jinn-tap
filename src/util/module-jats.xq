@@ -133,21 +133,23 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
                         jt:export($node/node(), $input, $meta)
                 }
             case element(jats-xref) return
-                (: Convert jats-xref back to xref with ref-type="fn" :)
-                element xref {
-                    $node/@* except ($node/@id, $node/@ref-type),
-                    attribute ref-type { 
-                        if ($node/@ref-type) then $node/@ref-type else 'fn' 
-                    },
-                    (: rid should already be set from the node attributes :)
-                    if ($node/@rid) then
-                        attribute rid { $node/@rid }
-                    else if ($node/@id) then
-                        (: If no rid but has id, this shouldn't happen in proper JATS :)
-                        ()
-                    else (),
-                    jt:export($node/node(), $input, $meta)
-                }
+                if ($node/node()) then
+                    (: Non-fn inline xref (e.g. ref-type="bibr", "aff", "fig") — preserve all attributes and content :)
+                    element xref {
+                        $node/@*,
+                        jt:export($node/node(), $input, $meta)
+                    }
+                else
+                    (: fn anchor — drop editor-internal @id, keep rid and ref-type :)
+                    element xref {
+                        $node/@* except ($node/@id, $node/@ref-type),
+                        attribute ref-type {
+                            if ($node/@ref-type) then $node/@ref-type else 'fn'
+                        },
+                        if ($node/@rid) then
+                            attribute rid { $node/@rid }
+                        else ()
+                    }
             case element(jats-fnGroup) return
                 (: Convert jats-fnGroup back to fn-group :)
                 element fn-group {
