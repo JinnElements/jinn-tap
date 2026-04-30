@@ -1,3 +1,10 @@
+# [1.31.0](https://github.com/JinnElements/jinn-tap/compare/v1.30.0...v1.31.0) (2026-04-30)
+
+
+### Features
+
+* support mapping tags with identical name to different prosemirror node types depending on condition ([be244f2](https://github.com/JinnElements/jinn-tap/commit/be244f2561d96a7bb5b018247bb465949355414f))
+
 # [1.30.0](https://github.com/JinnElements/jinn-tap/compare/v1.29.0...v1.30.0) (2026-04-29)
 
 
