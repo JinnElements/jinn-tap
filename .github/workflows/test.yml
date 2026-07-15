@@ -18,15 +18,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: latest
+          node-version: '20'
           cache: 'npm'
 
-      - name: Clear previous dependencies
-        run: |
-          rm -rf node_modules package-lock.json
-
+      # Install exactly what package-lock.json pins so CI is reproducible.
+      # (Previously this deleted the lockfile and ran `npm i`, which pulled the
+      # latest matching versions on every run — that silently upgraded
+      # @teipublisher/pb-components and broke the authority test.)
       - name: Install dependencies
-        run: npm i
+        run: npm ci
 
       - name: Start dev server
         run: npm run dev &
