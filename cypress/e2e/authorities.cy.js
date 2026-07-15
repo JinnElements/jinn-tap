@@ -1,5 +1,13 @@
 describe('p-authority integration', () => {
     beforeEach(() => {
+        // Stub the GND lookups so the test doesn't depend on the live lobid.org
+        // service (which is unreachable/rate-limited from CI and makes the test
+        // flaky). Fixtures are real captured lobid responses for "Piet Heyn":
+        // the search endpoint feeds the result list, and the per-record .json
+        // endpoint resolves the label shown once a link has been made.
+        cy.intercept('https://lobid.org/gnd/search*', { fixture: 'lobid-piet-heyn.json' }).as('gndSearch');
+        cy.intercept('https://lobid.org/gnd/*.json', { fixture: 'lobid-record-118774352.json' }).as('gndRecord');
+
         cy.visit('/test/test-authority.html');
 
         // Wait for the component to be defined
@@ -67,6 +75,9 @@ describe('p-authority integration', () => {
             const [jinntap] = e.get();
             jinntap.editor.commands.toggleMark('rs', { type: 'gnd' });
         });
+
+        // Wait for the stubbed GND lookup to resolve before querying results
+        cy.wait('@gndSearch');
 
         // Make the link
         cy.get('pb-authority-lookup')
