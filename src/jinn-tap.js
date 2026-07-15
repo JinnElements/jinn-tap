@@ -483,7 +483,21 @@ export class JinnTap extends HTMLElement {
      * Extracted so it can be re-run when content loaded later introduces elements
      * that require new node/mark types not present in the current schema.
      */
-    _buildEditor(initialContent) {
+    _buildEditor(initialContent, parseOptions = {}) {
+        // When re-run to pick up newly-introduced element types, tear down the
+        // previous editor and the UI bound to it first. The panels re-render their
+        // own containers on update, but the editor DOM, toolbar buttons and table
+        // menu are appended, so remove those explicitly to avoid duplicates. The
+        // editor area is replaced with a fresh clone so listeners bound to it (e.g.
+        // empty-element-clicked) don't accumulate across rebuilds.
+        if (this.editor) {
+            this.editor.destroy();
+            const area = this.querySelector('.editor-area');
+            area?.replaceWith(area.cloneNode(false));
+            this.toolbarContainer?.replaceChildren();
+            this.querySelector('.table-menu .toolbar')?.replaceChildren();
+        }
+
         // Initialize the editor
         // Get the format prefix for HTML custom elements
         const format = getFormat(this._format);
@@ -529,6 +543,7 @@ export class JinnTap extends HTMLElement {
         }
         const editorConfig = {
             element: this.querySelector('.editor-area'),
+            parseOptions,
             extensions: [
                 ...extensions,
                 InputRules,
@@ -663,11 +678,21 @@ export class JinnTap extends HTMLElement {
     // Setter for the editor's content, i.e. the fragment edited in the editor,
     // not the full XML content.
     set content(value) {
-        // preserveWhitespace: true keeps significant whitespace (multi-space runs,
-        // leading/trailing spaces in mixed content) that ProseMirror would otherwise
-        // collapse. Not 'full', which would also import insignificant indentation
-        // between block elements as stray text nodes.
-        this.editor.chain().focus().setContent(value, { parseOptions: { preserveWhitespace: true } }).setTextSelection(0).run();
+        // Content may use elements the current schema doesn't describe. Synthesize
+        // generic entries for them; if that introduces new node/mark types, the
+        // editor must be rebuilt so its schema includes them — otherwise setContent's
+        // content check (enableContentCheck) rejects the markup and throws. Known-only
+        // content takes the cheap in-place path.
+        const { prefix } = getFormat(this._format);
+        if (this._applyUnknownElements(value, prefix) > 0) {
+            this._buildEditor(value, { preserveWhitespace: true });
+        } else {
+            // preserveWhitespace: true keeps significant whitespace (multi-space runs,
+            // leading/trailing spaces in mixed content) that ProseMirror would otherwise
+            // collapse. Not 'full', which would also import insignificant indentation
+            // between block elements as stray text nodes.
+            this.editor.chain().focus().setContent(value, { parseOptions: { preserveWhitespace: true } }).setTextSelection(0).run();
+        }
         // Update footnote references after content is set
         setTimeout(() => {
             if (this.editor) {
@@ -689,8 +714,11 @@ export class JinnTap extends HTMLElement {
             throw new Error('Format must be set before setting XML content. Use the format attribute when creating the editor.');
         }
         const { doc, content } = importXml(value, this._format);
-        this.content = content;
+        // Set the document before the content: loading content synthesizes schema
+        // entries for unknown elements and recovers their original-case names from
+        // this.document, so it must already point at the new source document.
         this.document = doc;
+        this.content = content;
     }
 
     // Getter/setter for format
