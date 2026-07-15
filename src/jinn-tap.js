@@ -247,15 +247,15 @@ export class JinnTap extends HTMLElement {
                 throw new Error(`Unsupported content type: ${contentType}`);
             }
 
-        if (setContent && this.editor) {
-            this.content = content;
-            // Update footnote references after content is loaded
-            setTimeout(() => {
-                if (this.editor) {
-                    this.editor.commands.updateNotes();
-                }
-            }, 0);
-        }
+            if (setContent && this.editor) {
+                this.content = content;
+                // Update footnote references after content is loaded
+                setTimeout(() => {
+                    if (this.editor) {
+                        this.editor.commands.updateNotes();
+                    }
+                }, 0);
+            }
             this.metadata = {
                 name: url.split('/').pop(),
             };
@@ -508,7 +508,7 @@ export class JinnTap extends HTMLElement {
                 onSynced: () => {
                     if (!this.doc.getMap('config').get('initialContentLoaded') && this.editor) {
                         this.doc.getMap('config').set('initialContentLoaded', true);
-                        this.editor.chain().setContent(initialContent).setTextSelection(0).focus().run();
+                        this.editor.chain().setContent(initialContent, { parseOptions: { preserveWhitespace: true } }).setTextSelection(0).focus().run();
                         this.dispatchContentChange();
                     }
                 },
