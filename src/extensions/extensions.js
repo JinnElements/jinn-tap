@@ -1,5 +1,6 @@
 import Document from '@tiptap/extension-document';
 import Text from '@tiptap/extension-text';
+import { mergeAttributes } from '@tiptap/core';
 import { JinnInline } from './inline.js';
 import { JinnBlock } from './block.js';
 import { JinnList, JinnItem } from './list.js';
@@ -27,7 +28,7 @@ export function createFromSchema(schemaDef, prefix = 'tei-', notesWrapper = 'lis
         // Support an array of conditional definitions for a single XML element name.
         // Each item may have a "when" object (attr→value map) to conditionally match.
         const defs = Array.isArray(rawDef) ? rawDef : [rawDef];
-        const conditions = defs.map(d => d.when || null);
+        const conditions = defs.map((d) => d.when || null);
 
         defs.forEach((def, index) => {
             // First item keeps the base name so existing anchorName/noteName references work.
@@ -42,12 +43,12 @@ export function createFromSchema(schemaDef, prefix = 'tei-', notesWrapper = 'lis
                     const matches = Object.entries(cond).every(([attr, val]) => el.getAttribute(attr) === val);
                     return matches ? null : false;
                 };
-            } else if (conditions.some(c => c !== null)) {
+            } else if (conditions.some((c) => c !== null)) {
                 // Default (no "when"): exclude elements matched by sibling conditions.
-                const siblings = conditions.filter(c => c !== null);
+                const siblings = conditions.filter((c) => c !== null);
                 getAttrs = (el) => {
-                    const excluded = siblings.some(cond =>
-                        Object.entries(cond).every(([attr, val]) => el.getAttribute(attr) === val)
+                    const excluded = siblings.some((cond) =>
+                        Object.entries(cond).every(([attr, val]) => el.getAttribute(attr) === val),
                     );
                     return excluded ? false : null;
                 };
@@ -159,6 +160,25 @@ export function createFromSchema(schemaDef, prefix = 'tei-', notesWrapper = 'lis
                 });
             }
 
+            // Generic fallback entries synthesized for elements not in the schema:
+            // tag them in the reading pane so it's obvious they aren't modelled.
+            // The class/data-tag are added only at render time (not as node
+            // attributes), so they never leak into the serialized XML.
+            if (def.unknown && (def.type === 'block' || def.type === 'inline')) {
+                const capturedBaseName = baseName;
+                const markerTag = def.tagName || baseName;
+                NodeOrMark = NodeOrMark.extend({
+                    renderHTML({ HTMLAttributes }) {
+                        const p = this.options.prefix || 'tei-';
+                        return [
+                            `${p}${capturedBaseName}`,
+                            mergeAttributes(HTMLAttributes, { class: 'jinn-tap-unknown', 'data-tag': markerTag }),
+                            0,
+                        ];
+                    },
+                });
+            }
+
             // Merge global attributes with node-specific attributes
             const attributes = { ...schemaDef.attributes, ...def.attributes };
             const config = {
@@ -166,6 +186,7 @@ export function createFromSchema(schemaDef, prefix = 'tei-', notesWrapper = 'lis
                 shortcuts: def.keyboard,
                 attributes: attributes,
                 label: def.label,
+                unknown: def.unknown,
             };
             if (def.inputRules) {
                 config.inputRules = def.inputRules;

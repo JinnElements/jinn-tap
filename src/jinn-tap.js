@@ -5,6 +5,7 @@ import * as Y from 'yjs';
 import CollaborationCaret from '@tiptap/extension-collaboration-caret';
 import { HocuspocusProvider } from '@hocuspocus/provider';
 import { serialize } from './util/serialize.js';
+import { synthesizeUnknownEntries } from './util/unknown-elements.js';
 import { createFromSchema } from './extensions/extensions.js';
 import { FootnoteRules } from './extensions/footnote.js';
 import { InputRules } from './extensions/input-rules.js';
@@ -233,7 +234,9 @@ export class JinnTap extends HTMLElement {
                 const xml = await response.text();
                 // Always use the format set at initialization - no autodetection
                 if (!this._format) {
-                    throw new Error('Format must be set before loading XML content. Use the format attribute when creating the editor.');
+                    throw new Error(
+                        'Format must be set before loading XML content. Use the format attribute when creating the editor.',
+                    );
                 }
                 const parsed = importXml(xml, this._format);
                 content = parsed.content;
@@ -446,9 +449,47 @@ export class JinnTap extends HTMLElement {
             },
         );
 
+        this._buildEditor(initialContent);
+    }
+
+    /**
+     * Augment `this._schema` with generic entries for any element in `content`
+     * that the schema does not describe, so unknown markup round-trips (and stays
+     * editable) instead of being dropped with a hard content error.
+     *
+     * @param {string} content - Content about to be loaded, as prefixed HTML.
+     * @param {string} prefix  - Custom-element prefix (e.g. `tei-`).
+     * @returns {number} How many new element types were added to the schema.
+     */
+    _applyUnknownElements(content, prefix) {
+        const { schema: mergedSchema, added } = synthesizeUnknownEntries(content, this._schema, prefix, this.document);
+        this._schema = mergedSchema;
+        if (added.length > 0) {
+            const names = added.map((e) => e.tag).join(', ');
+            document.dispatchEvent(
+                new CustomEvent('jinn-toast', {
+                    detail: {
+                        message: `Preserved ${added.length} element type(s) not defined in the schema: ${names}`,
+                        type: 'info',
+                    },
+                }),
+            );
+        }
+        return added.length;
+    }
+
+    /**
+     * Build (or rebuild) the editor and its toolbar/panels for the given content.
+     * Extracted so it can be re-run when content loaded later introduces elements
+     * that require new node/mark types not present in the current schema.
+     */
+    _buildEditor(initialContent) {
         // Initialize the editor
         // Get the format prefix for HTML custom elements
         const format = getFormat(this._format);
+
+        this._applyUnknownElements(initialContent, format.prefix);
+
         const extensions = createFromSchema(this._schema, format.prefix, format.notesWrapper || 'listAnnotation', {
             noteName: format.noteName || 'note',
             anchorName: format.anchorName || 'anchor',
