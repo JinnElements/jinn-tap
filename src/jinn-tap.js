@@ -663,7 +663,11 @@ export class JinnTap extends HTMLElement {
     // Setter for the editor's content, i.e. the fragment edited in the editor,
     // not the full XML content.
     set content(value) {
-        this.editor.chain().focus().setContent(value).setTextSelection(0).run();
+        // preserveWhitespace: true keeps significant whitespace (multi-space runs,
+        // leading/trailing spaces in mixed content) that ProseMirror would otherwise
+        // collapse. Not 'full', which would also import insignificant indentation
+        // between block elements as stray text nodes.
+        this.editor.chain().focus().setContent(value, { parseOptions: { preserveWhitespace: true } }).setTextSelection(0).run();
         // Update footnote references after content is set
         setTimeout(() => {
             if (this.editor) {
