@@ -125,7 +125,9 @@ export class AttributePanel {
         if (!toggle) return;
         const expanded = this.panel.classList.contains('is-expanded');
         toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-        toggle.textContent = expanded ? 'Collapse' : 'Expand';
+        const count = Number(this.panel.dataset.occurrenceCount || 0);
+        const suffix = !expanded && count > 0 ? ` · ${count} more` : '';
+        toggle.textContent = (expanded ? 'Collapse' : 'Expand') + suffix;
     }
 
     _connectorSummary(elementName, attributes, nodeOrMark) {
@@ -139,13 +141,15 @@ export class AttributePanel {
         return `${elementName} · No reference`;
     }
 
-    _addSheetChrome(elementName, attributes, nodeOrMark, autoExpand) {
-        this.panel.classList.add('has-connector');
-        if (autoExpand) {
-            this.panel.classList.add('is-expanded');
-        } else {
-            this.panel.classList.remove('is-expanded');
+    _setSummaryText(nodeOrMark, displayValue) {
+        const summary = this.panel.querySelector('.attribute-panel__summary');
+        if (summary) {
+            summary.textContent = `${nodeOrMark.type.name} · ${displayValue}`;
         }
+    }
+
+    _addSheetChrome(elementName, attributes, nodeOrMark) {
+        this.panel.classList.add('has-connector');
 
         const chrome = document.createElement('header');
         chrome.className = 'attribute-panel__chrome';
@@ -250,11 +254,7 @@ export class AttributePanel {
                 : event.detail.properties.ref;
             input.value = value;
             details.open = false;
-            const summary = this.panel.querySelector('.attribute-panel__summary');
-            if (summary) {
-                const elementName = this.panel.querySelector('h4')?.textContent || nodeOrMark.type.name;
-                summary.textContent = `${elementName} · ${value}`;
-            }
+            this._setSummaryText(nodeOrMark, event.detail.strings?.[0] || value);
             this.handleAttributeUpdate(nodeOrMark, pos, { [attrName]: value });
             this.collapseSheet();
         });
@@ -268,6 +268,9 @@ export class AttributePanel {
             const ref = currentValue.substring(currentValue.indexOf('-') + 1);
             lookup.lookup(attrDef.connector.type, ref, info).then((occurrences) => {
                 const strings = occurrences.strings;
+                if (strings.length > 0) {
+                    this._setSummaryText(nodeOrMark, strings[0]);
+                }
                 // Sort strings by length in descending order
                 strings.sort((a, b) => b.length - a.length);
                 strings.unshift(text);
@@ -369,6 +372,7 @@ export class AttributePanel {
 
         this.panel.innerHTML = '';
         this.panel.classList.remove('has-connector', 'is-expanded');
+        delete this.panel.dataset.occurrenceCount;
 
         if (!nodeOrMark) {
             return;
@@ -395,6 +399,7 @@ export class AttributePanel {
         this.panel.appendChild(title);
 
         const info = document.createElement('div');
+        info.className = 'attribute-panel__info';
         this.panel.appendChild(info);
 
         const form = document.createElement('form');
@@ -413,10 +418,9 @@ export class AttributePanel {
             ([name, attrDef]) => !name.startsWith('_') && attrDef.connector,
         );
         const hasConnector = connectorEntries.length > 0;
-        const needsLookup = connectorEntries.some(([name]) => !nodeOrMark.attrs[name]);
 
         if (hasConnector) {
-            this._addSheetChrome(nodeOrMark.type.name, attributes, nodeOrMark, needsLookup);
+            this._addSheetChrome(nodeOrMark.type.name, attributes, nodeOrMark);
         }
 
         Object.entries(attributes).forEach(([attrName, attrDef]) => {
@@ -536,7 +540,10 @@ export class AttributePanel {
             <ul></ul>`;
         const ul = div.querySelector('ul');
         this.panel.appendChild(div);
-        this.expandSheet();
+
+        const totalOccurrences = Object.values(result).reduce((sum, positions) => sum + positions.length, 0);
+        this.panel.dataset.occurrenceCount = String(totalOccurrences);
+        this._syncSheetToggle();
 
         // Store all occurrence positions and their checkboxes
         const occurrenceData = [];

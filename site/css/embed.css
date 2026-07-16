@@ -8,7 +8,7 @@
     /* Keep toolbar + breadcrumb + status dock in view; editor scrolls inside */
     --embed-chrome-offset: 10rem;
     --embed-max-height: calc(100dvh - var(--embed-chrome-offset));
-    --jinn-tap-embed-height: min(32rem, var(--embed-max-height));
+    --jinn-tap-embed-height: min(42rem, var(--embed-max-height));
     border: 1px solid var(--line);
     border-radius: var(--radius);
     padding: 0;
@@ -17,12 +17,14 @@
     overflow: hidden;
     height: var(--jinn-tap-embed-height);
     max-height: var(--embed-max-height);
-    min-height: 14rem;
+    min-height: 20rem;
 }
 
-.jinn-tap-embed > pb-page {
+/* pb-page is now a shared ancestor wrapping one or more .jinn-tap-embed
+   widgets (see jinn-tap-embed.njk) rather than living inside each one;
+   custom elements default to inline, so make sure it doesn't split layout. */
+pb-page {
     display: block;
-    height: 100%;
 }
 
 .jinn-tap-embed jinn-tap {
@@ -349,6 +351,12 @@
     display: none;
 }
 
+/* The fetched authority summary (name, dates, place details) — shown once the
+   sheet is expanded; suppressed while collapsed like the rest of the form. */
+.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded > .attribute-panel__info:not(:empty) {
+    display: block;
+}
+
 .jinn-tap-embed jinn-tap .attribute-panel form {
     display: flex;
     flex: 1 1 12rem;
@@ -498,37 +506,62 @@
     background: var(--toolbar-hover);
 }
 
-/* Connector session: expanded bottom sheet over the editor.
-   Span the full jinn-tap grid and pin to the bottom — do not use
+/* Connector session: expanded drawer over the editor.
+   Span the full jinn-tap grid and pin to the right edge — do not use
    position:absolute with grid-area:statusbar (that cell becomes the
    containing block and collapses to ~one line). */
 .jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded {
     position: relative;
     grid-column: 1 / -1;
     grid-row: 1 / -1;
-    align-self: end;
-    justify-self: stretch;
-    width: 100%;
-    height: auto;
+    align-self: stretch;
+    justify-self: end;
+    width: min(80%, 20rem);
+    height: 100%;
     z-index: 16;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
     align-items: stretch;
     gap: 0.65rem;
-    max-height: min(72%, 26rem);
+    max-height: none;
     padding: 0.65rem 0.85rem 0.85rem;
     overflow-x: hidden;
     overflow-y: auto;
     background: #f7f2ea;
-    border-top: 1px solid var(--line);
-    box-shadow: 0 -12px 28px rgba(31, 41, 51, 0.14);
+    border-left: 1px solid var(--line);
+    box-shadow: -12px 0 28px rgba(31, 41, 51, 0.14);
 }
 
 .jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded > .attribute-panel__chrome {
     flex: 0 0 auto;
     padding-bottom: 0.35rem;
     border-bottom: 1px solid var(--toolbar-separator);
+}
+
+.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded > .attribute-panel__info {
+    flex: 0 0 auto;
+}
+
+.jinn-tap-embed jinn-tap .attribute-panel__info .label {
+    margin: 0 0 0.15rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.jinn-tap-embed jinn-tap .attribute-panel__info .label a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.jinn-tap-embed jinn-tap .attribute-panel__info .label a:hover {
+    text-decoration: underline;
+}
+
+.jinn-tap-embed jinn-tap .attribute-panel__info p {
+    margin: 0.1rem 0;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
 }
 
 .jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded form {
@@ -567,6 +600,26 @@
     overflow-y: auto;
 }
 
+/* Authority result badges (register/source/occurrences) — recolor to match
+   the editorial palette instead of the component's generic navy/orange defaults. */
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(register) {
+    background: var(--paper-strong);
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    font-weight: 600;
+}
+
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(source) {
+    background: var(--line);
+    color: var(--ink);
+}
+
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(occurrences) {
+    background: var(--accent);
+    color: var(--paper-strong);
+    font-weight: 600;
+}
+
 .jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded footer {
     margin: 0;
     justify-content: flex-end;
@@ -578,11 +631,14 @@
     min-height: 0;
     margin: 0;
     padding-top: 0.5rem;
+    /* Scrolling happens once, on the sheet itself (see .is-expanded above) —
+       avoid nesting a second scroll region inside it. */
+    overflow: visible;
 }
 
 .jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded .occurrences ul {
-    max-height: 10rem;
-    overflow-y: auto;
+    max-height: none;
+    overflow: visible;
 }
 
 /* Don't let .prose list resets break the toolbar layout on doc pages */

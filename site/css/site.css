@@ -173,7 +173,22 @@ a:hover { color: var(--accent); }
     box-shadow: var(--shadow);
 }
 
-.feature__icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.feature__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: 0.65rem;
+    border-radius: 50%;
+    background: rgba(196, 93, 30, 0.12);
+    color: var(--accent-dark);
+}
+
+.feature__icon svg {
+    width: 1.4rem;
+    height: 1.4rem;
+}
 
 .feature h2 {
     font-size: 1.25rem;

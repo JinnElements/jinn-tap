@@ -7,9 +7,8 @@ permalink: /guide/index.html
 
 # Introduction
 
-JinnTap is a rich-text editor for **TEI** (and **JATS**) XML documents, delivered as a
-web component. Unlike editors that convert TEI to HTML for editing and back again,
-JinnTap keeps the XML structure intact: what you see in the editor maps directly onto
+JinnTap is a rich-text editor for XML documents, delivered as a
+web component. Unlike other editors it keeps the XML structure intact: what you see in the editor maps directly onto
 the underlying XML.
 
 TEI elements are represented in the editor as HTML **custom elements** — `<tei-div>`,
