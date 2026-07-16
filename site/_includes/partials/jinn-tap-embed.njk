@@ -7,9 +7,32 @@
 {% else %}
   {% set docUrl = '/demo/docs.xml' %}
 {% endif %}
+{% set toolbarButtons %}
+    <li slot="toolbar">
+        <a href="#" class="toolbar-button" data-action="new" title="New document">
+            <i class="bi bi-file-earmark-plus"></i>
+        </a>
+    </li>
+    <li slot="toolbar">
+        <label class="toolbar-button" title="Upload XML">
+            <i class="bi bi-upload"></i>
+            <input type="file" data-action="upload" accept=".xml" style="display: none;">
+        </label>
+    </li>
+    <li slot="toolbar">
+        <a href="#" class="toolbar-button" data-action="download" title="Download XML">
+            <i class="bi bi-download"></i>
+        </a>
+    </li>
+    <li slot="toolbar">
+        <a href="#" class="toolbar-button" data-action="copy" title="Copy XML to clipboard">
+            <i class="bi bi-clipboard-plus"></i>
+        </a>
+    </li>
+{% endset %}
 {% if embedContent %}
-    <jinn-tap format="{{ fmt }}">{{ embedContent | safe }}</jinn-tap>
+    <jinn-tap format="{{ fmt }}">{{ toolbarButtons | safe }}{{ embedContent | safe }}</jinn-tap>
 {% else %}
-    <jinn-tap format="{{ fmt }}" url="{{ docUrl | prefixUrl }}"></jinn-tap>
+    <jinn-tap format="{{ fmt }}" url="{{ docUrl | prefixUrl }}">{{ toolbarButtons | safe }}</jinn-tap>
 {% endif %}
 </div>

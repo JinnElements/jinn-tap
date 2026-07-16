@@ -1,2 +1,76 @@
 <script type="module" src="https://cdn.jsdelivr.net/npm/@teipublisher/pb-components@3.3.0/dist/pb-components-bundle.js"></script>
 <script type="module" src="{{ '/assets/jinn-tap.es.js' | prefixUrl }}"></script>
+<script type="module" src="{{ '/assets/jinn-toast.es.js' | prefixUrl }}"></script>
+<script type="module">
+    const toast = (message, type = 'info') =>
+        document.dispatchEvent(new CustomEvent('jinn-toast', { detail: { message, type } }));
+
+    customElements.whenDefined('jinn-tap').then(() => {
+        document.querySelectorAll('.jinn-tap-embed jinn-tap').forEach((editor) => {
+            const newBtn = editor.querySelector('[data-action="new"]');
+            const uploadInput = editor.querySelector('input[data-action="upload"]');
+            const downloadBtn = editor.querySelector('[data-action="download"]');
+            const copyBtn = editor.querySelector('[data-action="copy"]');
+
+            if (newBtn) {
+                newBtn.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    editor.newDocument();
+                });
+            }
+
+            if (uploadInput) {
+                uploadInput.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            editor.xml = e.target.result;
+                            editor.metadata = { name: file.name };
+                        } catch (error) {
+                            toast(error.message || 'Failed to load XML', 'error');
+                        } finally {
+                            uploadInput.value = '';
+                        }
+                    };
+                    reader.readAsText(file);
+                });
+            }
+
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    try {
+                        const blob = new Blob([editor.xml], { type: 'application/xml' });
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = editor.metadata?.name || 'document.xml';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+                    } catch (error) {
+                        toast('Failed to save XML file', 'error');
+                    }
+                });
+            }
+
+            if (copyBtn) {
+                copyBtn.addEventListener('click', async (event) => {
+                    event.preventDefault();
+                    try {
+                        await navigator.clipboard.writeText(editor.xml);
+                        toast('XML content copied to clipboard');
+                        const original = copyBtn.getAttribute('title');
+                        copyBtn.setAttribute('title', 'Copied!');
+                        setTimeout(() => copyBtn.setAttribute('title', original), 2000);
+                    } catch (error) {
+                        toast('Failed to copy to clipboard', 'error');
+                    }
+                });
+            }
+        });
+    });
+</script>
