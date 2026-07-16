@@ -1,7 +1,6 @@
 node_modules
 dist
 .cache
-site/public/demo
 site/public/assets
 cypress/screenshots
 cypress/videos

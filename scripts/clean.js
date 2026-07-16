@@ -6,7 +6,6 @@ const PATHS = [
     '.cache',
     'node_modules/.cache',
     'site/public/assets',
-    'site/public/demo',
 ];
 
 for (const path of PATHS) {
