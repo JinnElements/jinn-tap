@@ -109,6 +109,66 @@ export class AttributePanel {
         this.updatePanel();
     }
 
+    expandSheet() {
+        if (!this.panel?.classList.contains('has-connector')) return;
+        this.panel.classList.add('is-expanded');
+        this._syncSheetToggle();
+    }
+
+    collapseSheet() {
+        this.panel?.classList.remove('is-expanded');
+        this._syncSheetToggle();
+    }
+
+    _syncSheetToggle() {
+        const toggle = this.panel?.querySelector('.attribute-panel__toggle');
+        if (!toggle) return;
+        const expanded = this.panel.classList.contains('is-expanded');
+        toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        toggle.textContent = expanded ? 'Collapse' : 'Expand';
+    }
+
+    _connectorSummary(elementName, attributes, nodeOrMark) {
+        const refs = Object.entries(attributes)
+            .filter(([, def]) => def.connector)
+            .map(([name]) => nodeOrMark.attrs[name])
+            .filter(Boolean);
+        if (refs.length > 0) {
+            return `${elementName} · ${refs.join(', ')}`;
+        }
+        return `${elementName} · No reference`;
+    }
+
+    _addSheetChrome(elementName, attributes, nodeOrMark, autoExpand) {
+        this.panel.classList.add('has-connector');
+        if (autoExpand) {
+            this.panel.classList.add('is-expanded');
+        } else {
+            this.panel.classList.remove('is-expanded');
+        }
+
+        const chrome = document.createElement('header');
+        chrome.className = 'attribute-panel__chrome';
+
+        const summary = document.createElement('p');
+        summary.className = 'attribute-panel__summary';
+        summary.textContent = this._connectorSummary(elementName, attributes, nodeOrMark);
+
+        const toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.className = 'attribute-panel__toggle';
+        toggle.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.panel.classList.toggle('is-expanded');
+            this._syncSheetToggle();
+        });
+
+        chrome.append(summary, toggle);
+        this.panel.prepend(chrome);
+        this._syncSheetToggle();
+    }
+
     createAttributeConnector(fieldset, attrName, attrDef, currentValue, info, nodeOrMark, pos, text) {
         const label = document.createElement('label');
         label.textContent = attrName;
@@ -190,7 +250,16 @@ export class AttributePanel {
                 : event.detail.properties.ref;
             input.value = value;
             details.open = false;
+            const summary = this.panel.querySelector('.attribute-panel__summary');
+            if (summary) {
+                const elementName = this.panel.querySelector('h4')?.textContent || nodeOrMark.type.name;
+                summary.textContent = `${elementName} · ${value}`;
+            }
             this.handleAttributeUpdate(nodeOrMark, pos, { [attrName]: value });
+            this.collapseSheet();
+        });
+        details.addEventListener('toggle', () => {
+            if (details.open) this.expandSheet();
         });
         details.appendChild(lookup);
         fieldset.parentNode.appendChild(details);
@@ -299,6 +368,7 @@ export class AttributePanel {
         if (!this.panel) return;
 
         this.panel.innerHTML = '';
+        this.panel.classList.remove('has-connector', 'is-expanded');
 
         if (!nodeOrMark) {
             return;
@@ -338,6 +408,16 @@ export class AttributePanel {
 
         // Merge global attributes with node-specific attributes
         const attributes = { ...globalAttributes, ...schemaDefAttributes };
+
+        const connectorEntries = Object.entries(attributes).filter(
+            ([name, attrDef]) => !name.startsWith('_') && attrDef.connector,
+        );
+        const hasConnector = connectorEntries.length > 0;
+        const needsLookup = connectorEntries.some(([name]) => !nodeOrMark.attrs[name]);
+
+        if (hasConnector) {
+            this._addSheetChrome(nodeOrMark.type.name, attributes, nodeOrMark, needsLookup);
+        }
 
         Object.entries(attributes).forEach(([attrName, attrDef]) => {
             if (attrName.startsWith('_')) {
@@ -456,6 +536,7 @@ export class AttributePanel {
             <ul></ul>`;
         const ul = div.querySelector('ul');
         this.panel.appendChild(div);
+        this.expandSheet();
 
         // Store all occurrence positions and their checkboxes
         const occurrenceData = [];

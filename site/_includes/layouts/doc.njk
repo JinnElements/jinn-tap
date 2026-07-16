@@ -1,0 +1,32 @@
+{% extends "layouts/base.njk" %}
+
+{% block head %}
+{% if embedEditor %}{% include "partials/jinn-tap-styles.njk" %}{% endif %}
+{% endblock %}
+
+{% block body %}
+<div class="doc-layout">
+  <aside class="doc-sidebar">
+    {% set sectionNav = navigation | navSection(section) %}
+    {% if sectionNav %}
+    <p class="doc-sidebar__title">{{ sectionNav.title }}</p>
+    <nav aria-label="{{ sectionNav.title }}">
+      <ul>
+        {% for item in sectionNav.items %}
+        <li{% if page.url == item.url %} class="is-active"{% endif %}>
+          <a href="{{ item.url | prefixUrl }}">{{ item.title }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+    {% endif %}
+  </aside>
+  <article class="doc-content prose">
+    {{ content | safe }}
+  </article>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if embedEditor %}{% include "partials/jinn-tap-scripts.njk" %}{% endif %}
+{% endblock %}

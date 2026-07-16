@@ -1,0 +1,18 @@
+<div class="jinn-tap-embed"{% if height %} style="--jinn-tap-embed-height: {{ height }}"{% endif %}>
+  <pb-page api-version="1.0.0">
+{% set fmt = format or 'tei' %}
+{% if fmt == 'jats' and not documentUrl %}
+  {% set docUrl = '/demo/musk-trump-tei-publisher.xml' %}
+{% elif documentUrl %}
+  {% set docUrl = documentUrl %}
+{% else %}
+  {% set docUrl = '/demo/docs.xml' %}
+{% endif %}
+{% if embedContent %}
+    <jinn-tap format="{{ fmt }}">{{ embedContent | safe }}</jinn-tap>
+{% else %}
+    <jinn-tap format="{{ fmt }}" url="{{ docUrl | prefixUrl }}"></jinn-tap>
+{% endif %}
+    <jinn-toast></jinn-toast>
+  </pb-page>
+</div>

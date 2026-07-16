@@ -1,0 +1,66 @@
+{% extends "layouts/base.njk" %}
+
+{% block head %}
+{% include "partials/jinn-tap-styles.njk" %}
+{% endblock %}
+
+{% block body %}
+<main class="home">
+  <section class="hero">
+    <div class="hero__copy">
+      <p class="eyebrow">TEI &amp; JATS editing</p>
+      <h1>JinnTap keeps your XML intact</h1>
+      <p class="lede">
+        A rich-text editor web component where the editing surface maps directly onto the
+        XML — no lossy TEI-to-HTML round trips.
+      </p>
+      <div class="hero__actions">
+        <a class="button button--primary" href="{{ '/guide/' | prefixUrl }}">Get started</a>
+        <a class="button" href="{{ '/schema/' | prefixUrl }}">Schema reference</a>
+        <a class="button" href="{{ '/' | prefixUrl }}#try-it">Try it</a>
+      </div>
+    </div>
+    <div class="hero__visual">
+      <img src="{{ '/jinntap-logo.png' | prefixUrl }}" alt="JinnTap" width="280" height="280">
+    </div>
+  </section>
+
+  <section class="features">
+    <article class="feature">
+      <div class="feature__icon" aria-hidden="true">🧬</div>
+      <h2>Structure-preserving</h2>
+      <p>TEI elements become HTML custom elements in the editor, keeping every attribute and structural feature. What you edit is what you save.</p>
+    </article>
+    <article class="feature">
+      <div class="feature__icon" aria-hidden="true">🧩</div>
+      <h2>Schema-driven</h2>
+      <p>A single <code>schema.json</code> declares elements, toolbar buttons, shortcuts and input rules — the main extension point.</p>
+    </article>
+    <article class="feature">
+      <div class="feature__icon" aria-hidden="true">🔌</div>
+      <h2>Embeddable</h2>
+      <p>Drop the jinn-tap web component into any page or TEI Publisher app, with optional authority lookups and collaboration.</p>
+    </article>
+  </section>
+
+  <section class="try-it" id="try-it">
+    <div class="try-it__header">
+      <h2>Try it</h2>
+      <p>Type in the editors below, use the toolbar, and toggle source view (<code>&lt;/&gt;</code>) to inspect the XML.</p>
+    </div>
+    <div class="try-it__demo">
+      <h3 class="try-it__label">TEI</h3>
+      {% include "partials/jinn-tap-embed.njk" %}
+    </div>
+    <div class="try-it__demo">
+      <h3 class="try-it__label">JATS</h3>
+      {% set format = "jats" %}
+      {% include "partials/jinn-tap-embed.njk" %}
+    </div>
+  </section>
+</main>
+{% endblock %}
+
+{% block scripts %}
+{% include "partials/jinn-tap-scripts.njk" %}
+{% endblock %}

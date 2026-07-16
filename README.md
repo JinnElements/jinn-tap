@@ -6,6 +6,17 @@ Edit TEI XML documents using a rich text editor. JinnTap preserves the structure
 
 JinnTap comes as a web component. While it can be used standalone, it is usually meant to be embedded into a larger application context such as TEI Publisher 10, which will include JinnTap and does allow saving and reloading documents. TP 10 has not been released yet.
 
+## Documentation
+
+Full documentation — including a detailed [`schema.json`](src/schema.json) reference and a live editor — is published at **https://jinnelements.github.io/jinn-tap/**.
+
+Work on the docs locally with:
+
+```bash
+npm run docs:dev            # Eleventy dev server with hot reload
+npm run build:site          # build library + docs site into dist/
+```
+
 ## Installation
 
 ```bash
@@ -24,21 +35,18 @@ npm install @jinntec/jinntap
 # Install dependencies
 npm install
 
-# Build the project
+# Build the library
 npm run build
-
-# Build the demo
-npm run build:demo
 ```
 
-### Running the Demo
+### Local development
 
 ```bash
-# Start the development server
-npm run dev
+# Docs site with embedded TEI/JATS editors
+npm run docs:dev
 
-# Preview the built demo
-npm run preview
+# Vite dev server for Cypress tests (serves test/*.html)
+npm run dev
 ```
 
 ### Running Tests

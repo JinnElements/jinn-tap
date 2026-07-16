@@ -1,0 +1,17 @@
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="{{ '/' | prefixUrl }}">
+      <img src="{{ '/jinntap-logo-128.png' | prefixUrl }}" alt="" width="32" height="32">
+      <span>{{ site.title }}</span>
+    </a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="{{ '/guide/' | prefixUrl }}">Guide</a>
+      <a href="{{ '/api/attributes/' | prefixUrl }}">API</a>
+      <a href="{{ '/schema/' | prefixUrl }}">Schema</a>
+      <a href="{{ '/' | prefixUrl }}#try-it">Try it</a>
+      <a class="site-nav__icon" href="{{ site.github }}" aria-label="GitHub repository" target="_blank" rel="noopener noreferrer">
+        <i class="bi bi-github" aria-hidden="true"></i>
+      </a>
+    </nav>
+  </div>
+</header>
