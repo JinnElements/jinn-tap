@@ -362,7 +362,11 @@ tei-quote{
 }
 
 .ProseMirror-selectednode {
-    outline: 2px solid var(--pico-primary);
+    /* --pico-primary only exists where pico is loaded (e.g. the workbench). In
+       the standalone docs it is undefined, which makes the whole `outline`
+       invalid and reverts it to `none` — so a node selected via the breadcrumb
+       shows no highlight. Fall back to the docs accent, then a fixed colour. */
+    outline: 2px solid var(--pico-primary, var(--accent, #047878));
 }
 
 .table-menu {

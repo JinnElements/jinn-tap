@@ -269,6 +269,10 @@ pb-page {
 
 .jinn-tap-embed jinn-tap .navigation-panel {
     grid-area: breadcrumb;
+    /* The embed's editor scrolls internally, so the breadcrumb is a plain static
+       row rather than sticking (as it does in the standalone/sidebar layouts). */
+    position: static;
+    top: auto;
     margin: 0;
     padding: 0.3rem 0.65rem;
     background: var(--paper-strong);

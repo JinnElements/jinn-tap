@@ -33,6 +33,7 @@ export class AttributePanel {
     constructor(editor, schemaDef) {
         this.editor = editor.tiptap;
         this.schemaDef = schemaDef;
+        this.externalSidebar = editor.externalSidebar;
         this.panel = editor.sidebarContainer.querySelector('.attribute-panel');
         this.currentElement = null;
         this.currentMark = null;
@@ -149,6 +150,10 @@ export class AttributePanel {
     }
 
     _addSheetChrome(elementName, attributes, nodeOrMark) {
+        // The chrome provides the collapse/expand affordance for the bottom-sheet UX.
+        // When the panel lives in an external, always-visible sidebar there is nothing
+        // to collapse, so skip it.
+        if (this.externalSidebar) return;
         this.panel.classList.add('has-connector');
 
         const chrome = document.createElement('header');

@@ -376,14 +376,18 @@ export class JinnTap extends HTMLElement {
         const temp = document.createElement('div');
         temp.innerHTML = this.innerHTML;
 
-        // Create the editor container structure
+        // Create the editor container structure. The breadcrumb navigation lives
+        // directly under the toolbar (not in the aside) so it stays there in every
+        // layout, including when the aside is an external sidebar element.
         this.innerHTML = `
+            <nav class="navigation-panel" aria-label="breadcrumb"></nav>
             <div class="editor-area"></div>
 			<div style="display:none"><nav class="table-menu"><ul class="toolbar"/></nav></div>
             <pre class="code-area" style="display: none;"></pre>
         `;
         // if attribute sidebar-container is not present, create one within the jinn-tap component
         const sidebarContainerSelector = this.getAttribute('sidebar');
+        this.externalSidebar = !!sidebarContainerSelector;
         if (sidebarContainerSelector) {
             this.sidebarContainer = document.querySelector(sidebarContainerSelector);
         } else {
@@ -395,7 +399,6 @@ export class JinnTap extends HTMLElement {
         this.sidebarContainer.innerHTML = `
             <div class="user-info"></div>
             <slot name="aside"></slot>
-            <nav class="navigation-panel" aria-label="breadcrumb"></nav>
             <div class="attribute-panel"></div>
         `;
 
@@ -476,6 +479,37 @@ export class JinnTap extends HTMLElement {
             );
         }
         return added.length;
+    }
+
+    /**
+     * Tear down the live editor and rebuild it (with a possibly extended schema)
+     * for `content`. Used when content loaded after the initial build introduces
+     * elements that require new node/mark types not present in the current schema.
+     *
+     * @param {string} content - Content to load, as prefixed HTML.
+     */
+    _rebuildEditor(content) {
+        // Destroy the current ProseMirror editor and clear its mount point so a
+        // fresh instance doesn't stack on top of the old one.
+        if (this.editor) {
+            this.editor.destroy();
+            this.editor = null;
+        }
+        const editorArea = this.querySelector('.editor-area');
+        if (editorArea) editorArea.innerHTML = '';
+
+        // The toolbar appends its generated items into the shared container; drop
+        // them (keeping any author-provided slotted buttons) before Toolbar rebuilds.
+        if (this.toolbarContainer) {
+            Array.from(this.toolbarContainer.children).forEach((child) => {
+                if (!child.hasAttribute('slot')) child.remove();
+            });
+        }
+        // TableMenu also appends into a shared, hidden container.
+        const tableMenu = this.querySelector('.table-menu ul');
+        if (tableMenu) tableMenu.innerHTML = '';
+
+        this._buildEditor(content);
     }
 
     /**
