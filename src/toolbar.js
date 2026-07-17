@@ -101,7 +101,7 @@ export class Toolbar {
         sortedItems.forEach((item) => {
             if (item.type === 'select') {
                 const selectDef = this.schemaDef.selects[item.name];
-                const select = this.createSelect(selectDef?.label || item.name);
+                const select = this.createSelect(selectDef?.label || item.name, selectDef?.tooltip);
                 this.selectElements.set(item.name, select);
                 const li = document.createElement('li');
                 li.appendChild(select);
@@ -315,12 +315,19 @@ export class Toolbar {
         });
     }
 
-    createSelect(name) {
+    createSelect(name, tooltip) {
         const select = document.createElement('details');
         select.className = 'dropdown';
 
         const summary = document.createElement('summary');
         summary.innerHTML = name;
+        // A <details>/<summary> dropdown can carry a tooltip (unlike a native
+        // <select>), so expose the schema's `selects.<name>.tooltip` here. Match
+        // the buttons' bottom placement so it drops below the toolbar.
+        if (tooltip) {
+            summary.dataset.tooltip = tooltip;
+            summary.dataset.placement = 'bottom';
+        }
         select.appendChild(summary);
 
         const menu = document.createElement('ul');

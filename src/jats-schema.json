@@ -41,7 +41,8 @@
     "selects": {
         "Blocks": {
             "label": "<i class='bi bi-text-paragraph'></i>",
-            "order": 0
+            "order": 0,
+            "tooltip": "Block elements"
         }
     },
     "schema": {
