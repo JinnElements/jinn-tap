@@ -43,5 +43,6 @@ collaboration**.
 
 - [Installation](/guide/installation)
 - [Usage](/guide/usage)
+- [Writing with the editor](/editing/) — blocks, footnotes, attributes, shortcodes
 - [Schema reference](/schema/) — the main extension point
 - [Web component API](/api/attributes)

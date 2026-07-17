@@ -32,7 +32,7 @@ Each binding may carry:
 | `command` | An explicit command name (otherwise the element's default create/toggle command is used). |
 
 The defaults shipped with JinnTap are listed in
-[Keyboard shortcuts](/guide/keyboard-shortcuts).
+[Keyboard shortcuts](/editing/keyboard-shortcuts).
 
 <h2 id="input-rules">Input rules</h2>
 

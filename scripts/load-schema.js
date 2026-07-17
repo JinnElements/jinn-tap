@@ -1,8 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-const schemaPath = fileURLToPath(new URL('../src/schema.json', import.meta.url));
-
 function normalizeAttributes(defs) {
     const seen = new Map();
     for (const def of defs) {
@@ -22,8 +20,11 @@ function normalizeAttributes(defs) {
     return [...seen.values()];
 }
 
-/** @returns {import('../site/_data/schema.js').SchemaData} */
-export function loadSchemaData() {
+/**
+ * @param {string} filename Schema JSON under `src/` (e.g. `schema.json`, `jats-schema.json`)
+ */
+export function loadSchemaData(filename = 'schema.json') {
+    const schemaPath = fileURLToPath(new URL(`../src/${filename}`, import.meta.url));
     const schema = JSON.parse(readFileSync(schemaPath, 'utf-8'));
 
     const elements = Object.entries(schema.schema ?? {})
@@ -57,6 +58,7 @@ export function loadSchemaData() {
     }
 
     return {
+        filename,
         elements,
         elementCount: elements.length,
         typeCounts,

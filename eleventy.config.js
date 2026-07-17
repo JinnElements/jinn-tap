@@ -28,7 +28,7 @@ export default async function (eleventyConfig) {
     );
 
     eleventyConfig.addTransform('prefix-internal-links', (content) =>
-        content.replace(/href="\/(guide|api|schema|demo|css|assets)/g, 'href="/jinn-tap/$1'),
+        content.replace(/href="\/(editing|guide|api|schema|demo|css|assets)/g, 'href="/jinn-tap/$1'),
     );
 }
 

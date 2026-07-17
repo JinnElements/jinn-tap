@@ -76,7 +76,10 @@ bundle to enable the lookup panels — see
 [Installation](/guide/installation#authority-lookups).
 </aside>
 
-## Elements with connectors in the default schema
+## Elements with connectors in the TEI schema
+
+The built-in TEI schema (`src/schema.json`) wires authority lookups on these elements.
+The JATS schema does not define connectors out of the box.
 
 <ul>
 {% for el in schema.elements | connectorElements %}

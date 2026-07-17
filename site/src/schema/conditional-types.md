@@ -14,7 +14,7 @@ external link in another. JinnTap supports this by letting a schema entry be an
 
 <aside class="callout callout-info">This is an available capability of the schema (implemented in
 [`src/extensions/extensions.js`](https://github.com/JinnElements/jinn-tap/blob/main/src/extensions/extensions.js));
-the default `src/schema.json` does not currently use it. The example below is
+neither built-in schema currently uses it. The example below is
 illustrative.
 </aside>
 

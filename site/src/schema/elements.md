@@ -8,8 +8,39 @@ permalink: /schema/elements/index.html
 # Element definitions
 
 Each key under `schema` maps an XML element name to an editor node or mark. This page
-documents every property an entry may carry, then lists the full catalog from the
-default schema (generated directly from `src/schema.json`).
+documents every property an entry may carry, then lists the catalogs from both built-in
+schemas.
+
+<aside class="callout callout-info">
+JinnTap ships two schemas, selected by the
+<a href="{{ '/api/attributes/' | prefixUrl }}#format"><code>format</code></a> attribute:
+
+<ul>
+  <li><strong>TEI</strong> (default, <code>format="tei"</code>) —
+    <a href="https://github.com/JinnElements/jinn-tap/blob/main/src/schema.json"><code>src/schema.json</code></a>
+    — {{ schema.elementCount }} elements</li>
+  <li><strong>JATS</strong> (<code>format="jats"</code>) —
+    <a href="https://github.com/JinnElements/jinn-tap/blob/main/src/jats-schema.json"><code>src/jats-schema.json</code></a>
+    — {{ jatsSchema.elementCount }} elements</li>
+</ul>
+
+Switching `format` also switches the editor’s XML handling:
+
+- **TEI** (`format="tei"`, default): uses the TEI XML namespace
+  `http://www.tei-c.org/ns/1.0`, emits/reads editor custom elements prefixed
+  with `tei-` (e.g. `<tei-div>`), and uses TEI defaults for notes/anchors
+  (`note` + `anchor` with `note.target → anchor.id`).
+- **JATS** (`format="jats"`): assumes no default XML namespace, emits/reads
+  editor custom elements prefixed with `jats-` (e.g. `<jats-sec>`), and uses
+  JATS defaults for notes/anchors (`fn` + `xref` with `anchor.rid → note.id`).
+
+Supply a custom file with the
+<a href="{{ '/api/attributes/' | prefixUrl }}#schema"><code>schema</code></a> attribute to
+replace the built-in schema for the active format.
+
+To support another XML dialect, see
+<a href="{{ '/schema/adding-a-format/' | prefixUrl }}">Adding a format</a>.
+</aside>
 
 ## Anatomy of an entry
 
@@ -57,35 +88,20 @@ tables:
 Elements declare which group they join via `group` (blocks default to `block`), and
 inline elements contribute to the implicit `inline` content of text blocks.
 
-## Element catalog
+## Element catalogs
 
-Generated from the default `src/schema.json` — **{{ schema.elementCount }} elements**.
+<h3 id="tei-catalog">TEI — <code>src/schema.json</code></h3>
 
-<table>
-  <thead>
-    <tr>
-      <th>Element</th>
-      <th>Type</th>
-      <th>Content</th>
-      <th>Attributes</th>
-      <th>Flags</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for el in schema.elements %}<tr>
-      <td><code>{{ el.name }}</code></td>
-      <td>
-        {% for t in el.types %}<code>{{ t }}</code>{% if not loop.last %} / {% endif %}{% endfor %}
-      </td>
-      <td>{% if el.content %}<code>{{ el.content }}</code>{% else %}—{% endif %}</td>
-      <td>
-        {% if el.attributes.length %}{% for a in el.attributes %}<code>{{ a.name }}</code>{% if not loop.last %}, {% endif %}{% endfor %}{% else %}—{% endif %}
-      </td>
-      <td>
-        {% if el.defining %}<span title="defining">D </span>{% endif %}{% if el.selectable %}<span title="selectable">S </span>{% endif %}{% if el.conditional %}<span title="conditional (when)">C </span>{% endif %}{% if el.hasConnector %}<span title="authority connector">🔌 </span>{% endif %}{% if el.hasToolbar %}<span title="has toolbar button">T </span>{% endif %}
-      </td>
-    </tr>{% endfor %}
-  </tbody>
-</table>
+Default when `format` is omitted or set to `tei`. **{{ schema.elementCount }} elements**.
 
-<p><small><strong>Flags:</strong> D = defining, S = selectable, C = <a href="/jinn-tap/schema/conditional-types">conditional</a>, T = has a toolbar button, 🔌 = has an authority <a href="/jinn-tap/schema/attributes#connectors">connector</a>.</small></p>
+{% set catalog = schema %}
+{% include "partials/schema-element-table.njk" %}
+
+<h3 id="jats-catalog">JATS — <code>src/jats-schema.json</code></h3>
+
+Used when `format="jats"`. **{{ jatsSchema.elementCount }} elements**.
+
+{% set catalog = jatsSchema %}
+{% include "partials/schema-element-table.njk" %}
+
+<p><small><strong>Flags:</strong> D = defining, S = selectable, C = <a href="{{ '/schema/conditional-types/' | prefixUrl }}">conditional</a>, T = has a toolbar button, 🔌 = has an authority <a href="{{ '/schema/attributes/' | prefixUrl }}#connectors">connector</a>.</small></p>

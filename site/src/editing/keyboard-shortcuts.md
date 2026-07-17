@@ -1,15 +1,16 @@
 ---
 layout: layouts/doc.njk
 title: "Keyboard shortcuts"
-section: guide
-permalink: /guide/keyboard-shortcuts/index.html
+section: editing
+permalink: /editing/keyboard-shortcuts/index.html
 ---
 
 # Keyboard shortcuts
 
 Element shortcuts are **defined in the schema**, so they depend on the active
-[`schema.json`](/schema/keyboard-and-input-rules). The table below lists the defaults
-shipped with JinnTap. `Mod` is <kbd>⌘</kbd> on macOS and <kbd>Ctrl</kbd> elsewhere.
+format (`tei` or `jats`) and any custom [`schema`](/api/attributes#schema). The table
+below lists the defaults from the built-in TEI schema. `Mod` is <kbd>⌘</kbd> on macOS
+and <kbd>Ctrl</kbd> elsewhere.
 
 ## Default element shortcuts
 

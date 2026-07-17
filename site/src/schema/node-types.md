@@ -42,10 +42,25 @@ The most important distinction:
 `group` (default `block`), `content`, `defining`, `selectable`, `isolating`,
 `priority`, `inline`. See [Element definitions](/schema/elements) for what each means.
 
-## Elements per type in the default schema
+## Elements per type
+
+Counts below are from the built-in schemas. The same `type` values apply to any custom
+schema.
+
+### TEI (`src/schema.json`)
 
 <ul>
   {% for row in schema.typeCountsList %}<li><code>{{ row.type }}</code> — {{ row.count }} element(s)</li>{% endfor %}
 </ul>
 
-<p><em>{{ schema.elementCount }} elements total. Generated from <code>src/schema.json</code>.</em></p>
+<p><em>{{ schema.elementCount }} elements total.</em></p>
+
+### JATS (`src/jats-schema.json`)
+
+<ul>
+  {% for row in jatsSchema.typeCountsList %}<li><code>{{ row.type }}</code> — {{ row.count }} element(s)</li>{% endfor %}
+</ul>
+
+<p><em>{{ jatsSchema.elementCount }} elements total. Full catalogs:
+<a href="{{ '/schema/elements/' | prefixUrl }}#tei-catalog">TEI</a> ·
+<a href="{{ '/schema/elements/' | prefixUrl }}#jats-catalog">JATS</a>.</em></p>

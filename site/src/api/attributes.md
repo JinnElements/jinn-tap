@@ -23,8 +23,25 @@ Fetch and load a TEI/JATS document from a URL.
 
 ### `format`
 
-The document format, `tei` (default) or `jats`. Fixed at initialization; it
-determines the custom-element prefix (`tei-` / `jats-`).
+The document format, `tei` (default) or `jats`.
+
+`format` controls the editor end-to-end: it selects the default built-in schema
+(unless you provide a custom [`schema`](#schema)), changes the HTML custom-element
+prefix used in the editor (`tei-` / `jats-`), and switches the XML import/export
+rules.
+
+In particular:
+
+- `tei` assumes TEI XML with namespace `http://www.tei-c.org/ns/1.0` and uses TEI
+  defaults for notes/anchors.
+- `jats` assumes JATS-style markup in no default XML namespace (export/import
+  uses an empty namespace) and uses JATS defaults for notes/anchors.
+
+`format` is *observed*, so changing the attribute will rebuild the editor using
+the other built-in defaults (but if you set `schema`, your custom schema remains).
+
+To wire up a third dialect (config, schema, XQuery import/export, styles), see
+[Adding a format](/schema/adding-a-format).
 
 ```html
 <jinn-tap format="jats"></jinn-tap>
@@ -32,8 +49,9 @@ determines the custom-element prefix (`tei-` / `jats-`).
 
 <h3 id="schema"><code>schema</code></h3>
 
-URL of a custom [`schema.json`](/schema/) to use instead of the built-in default
-schema for the format.
+URL of a custom schema JSON to use instead of the built-in schema for the active
+[`format`](#format) (`src/schema.json` for TEI, `src/jats-schema.json` for JATS).
+See the [Schema reference](/schema/).
 
 ```html
 <jinn-tap schema="./my-schema.json"></jinn-tap>

@@ -84,3 +84,6 @@ Which elements exist, and the toolbar/shortcuts that create them, come from the
 schema. To go beyond the defaults, supply your own via the
 [`schema` attribute](/api/attributes#schema) and read the
 [Schema reference](/schema/).
+
+For day-to-day editing (blocks, footnotes, attributes, shortcodes), see
+[Writing with the editor](/editing/).

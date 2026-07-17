@@ -59,14 +59,18 @@ appears inside that dropdown instead of directly on the toolbar.
 }
 ```
 
-Groups in the default schema:
+Groups in the built-in **TEI** schema:
 
 <ul>
   {% for s in schema.selects %}<li><code>{{ s.name }}</code>{% if s.order != null %} (order {{ s.order }}){% endif %}</li>{% endfor %}
 </ul>
 
-## Global toolbar buttons in the default schema
+JATS defines only <code>Blocks</code>.
+
+## Global toolbar buttons in the TEI schema
 
 <ul>
   {% for name in schema.globalToolbar %}<li><code>{{ name }}</code></li>{% endfor %}
 </ul>
+
+JATS global buttons: {% for name in jatsSchema.globalToolbar %}<code>{{ name }}</code>{% if not loop.last %}, {% endif %}{% endfor %}.

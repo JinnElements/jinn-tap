@@ -1,5 +1,13 @@
 export default [
     {
+        title: 'Editing',
+        slug: 'editing',
+        items: [
+            { title: 'Writing with the editor', url: '/editing/' },
+            { title: 'Keyboard shortcuts', url: '/editing/keyboard-shortcuts/' },
+        ],
+    },
+    {
         title: 'Guide',
         slug: 'guide',
         items: [
@@ -8,7 +16,6 @@ export default [
             { title: 'Usage', url: '/guide/usage/' },
             { title: 'Embedding in an app', url: '/guide/embedding/' },
             { title: 'Events', url: '/guide/events/' },
-            { title: 'Keyboard shortcuts', url: '/guide/keyboard-shortcuts/' },
         ],
     },
     {
@@ -33,6 +40,7 @@ export default [
             { title: 'Keyboard & input rules', url: '/schema/keyboard-and-input-rules/' },
             { title: 'Conditional types', url: '/schema/conditional-types/' },
             { title: 'Unknown elements', url: '/schema/unknown-elements/' },
+            { title: 'Adding a format', url: '/schema/adding-a-format/' },
         ],
     },
 ];

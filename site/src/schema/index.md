@@ -12,11 +12,19 @@ editor understands, how each maps to a ProseMirror node or mark, and the toolbar
 buttons, keyboard shortcuts and input rules that create them. Customising the editor is
 mostly a matter of editing this file.
 
-The default schema lives at [`src/schema.json`](https://github.com/JinnElements/jinn-tap/blob/main/src/schema.json).
-To use your own, point the [`schema` attribute](/api/attributes#schema) at a URL:
+JinnTap ships two built-in schemas, chosen by the
+[`format`](/api/attributes#format) attribute:
+
+| Format | Attribute | Built-in file |
+| --- | --- | --- |
+| **TEI** (default) | `format="tei"` or omitted | [`src/schema.json`](https://github.com/JinnElements/jinn-tap/blob/main/src/schema.json) |
+| **JATS** | `format="jats"` | [`src/jats-schema.json`](https://github.com/JinnElements/jinn-tap/blob/main/src/jats-schema.json) |
+
+To replace the built-in schema for the active format, point the
+[`schema` attribute](/api/attributes#schema) at a URL:
 
 ```html
-<jinn-tap schema="./my-schema.json"></jinn-tap>
+<jinn-tap format="tei" schema="./my-schema.json"></jinn-tap>
 ```
 
 ## Top-level structure
@@ -65,3 +73,4 @@ Each entry under `schema` maps an XML element name to an editor node/mark:
 - [Keyboard & input rules](/schema/keyboard-and-input-rules)
 - [Conditional types](/schema/conditional-types) — one tag, several node types
 - [Unknown elements](/schema/unknown-elements) — what happens to markup not in the schema
+- [Adding a format](/schema/adding-a-format) — support another XML dialect beyond TEI/JATS
