@@ -346,9 +346,18 @@ pb-page {
     overflow-y: auto;
 }
 
-/* Breadcrumb already shows the path; hide redundant heading */
+/* Element name label: shows which element the cursor is in and which the
+   fields below apply to. Sits at the start of the status bar, set off from the
+   fields by a divider. */
 .jinn-tap-embed jinn-tap .attribute-panel:not(:empty) h4 {
-    display: none;
+    flex: 0 0 auto;
+    margin: 0;
+    padding-right: 0.65rem;
+    border-right: 1px solid var(--line);
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--accent-dark, var(--ink));
 }
 
 .jinn-tap-embed jinn-tap .attribute-panel:not(:empty) > div:not(.occurrences) {
