@@ -1,15 +1,27 @@
 :root {
-    --ink: #1f2933;
-    --ink-soft: #52606d;
-    --paper: #f7f1e8;
-    --paper-strong: #fffdf8;
-    --accent: #c45d1e;
-    --accent-dark: #8f3f12;
-    --line: #d9cbb8;
-    --shadow: 0 18px 50px rgba(31, 41, 51, 0.08);
+    /* JinnTap Design System v1.0 */
+    --ink: #16161A;
+    --ink-soft: #4B4B52;
+    --gray-500: #84848C;
+    --gray-300: #D8D8DD;
+    --gray-100: #EFEFF1;
+    --amber: #F0A93B;
+    --amber-deep: #C97F1E;
+    --violet: #6C4CF0;
+    --violet-deep: #5138C4;
+    --paper: #F6F6F7;
+    --paper-strong: #FFFFFF;
+    --line: #E7E7EA;
+    --shadow: 0 1px 3px rgba(22, 22, 26, 0.06);
     --radius: 14px;
-    --font-body: 'Source Sans 3', system-ui, sans-serif;
+
+    /* Semantic: amber = primary actions, violet = links / live-focus accent */
+    --accent: #6C4CF0;
+    --accent-dark: #5138C4;
+
+    --font-body: 'Public Sans', system-ui, sans-serif;
     --font-display: 'Fraunces', Georgia, serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 * { box-sizing: border-box; }
@@ -18,8 +30,8 @@ body {
     margin: 0;
     color: var(--ink);
     background:
-        radial-gradient(circle at top right, rgba(196, 93, 30, 0.08), transparent 28rem),
-        linear-gradient(180deg, #faf4ea 0%, var(--paper) 16rem);
+        radial-gradient(circle at top right, rgba(108, 76, 240, 0.05), transparent 28rem),
+        linear-gradient(180deg, #FCFCFD 0%, var(--paper) 16rem);
     font-family: var(--font-body);
     line-height: 1.6;
 }
@@ -32,8 +44,8 @@ a:hover { color: var(--accent); }
     top: 0;
     z-index: 20;
     backdrop-filter: blur(10px);
-    background: rgba(255, 253, 248, 0.88);
-    border-bottom: 1px solid rgba(217, 203, 184, 0.7);
+    background: rgba(252, 252, 253, 0.85);
+    border-bottom: 1px solid rgba(231, 231, 234, 0.9);
 }
 
 .site-header__inner,
@@ -95,7 +107,7 @@ a:hover { color: var(--accent); }
     letter-spacing: 0.12em;
     font-size: 0.78rem;
     font-weight: 600;
-    color: var(--accent);
+    color: var(--amber-deep);
     margin: 0 0 0.75rem;
 }
 
@@ -141,12 +153,12 @@ a:hover { color: var(--accent); }
 }
 
 .button--primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
+    background: var(--amber);
+    border-color: var(--amber);
+    color: var(--ink);
 }
 
-.button--primary:hover { background: var(--accent-dark); color: white; }
+.button--primary:hover { background: var(--amber-deep); color: var(--ink); }
 
 .hero__visual {
     display: flex;
@@ -155,7 +167,7 @@ a:hover { color: var(--accent); }
 
 .hero__visual img {
     width: min(100%, 280px);
-    filter: drop-shadow(0 24px 40px rgba(31, 41, 51, 0.12));
+    filter: drop-shadow(0 18px 34px rgba(22, 22, 26, 0.14));
 }
 
 .features {
@@ -181,8 +193,8 @@ a:hover { color: var(--accent); }
     height: 2.75rem;
     margin-bottom: 0.65rem;
     border-radius: 50%;
-    background: rgba(196, 93, 30, 0.12);
-    color: var(--accent-dark);
+    background: var(--gray-100);
+    color: var(--ink);
 }
 
 .feature__icon svg {
@@ -265,7 +277,7 @@ a:hover { color: var(--accent); }
 
 .doc-sidebar li.is-active a,
 .doc-sidebar a:hover {
-    background: rgba(196, 93, 30, 0.08);
+    background: rgba(108, 76, 240, 0.10);
     color: var(--accent-dark);
 }
 
@@ -282,17 +294,17 @@ a:hover { color: var(--accent); }
 .prose h2 { margin-top: 2rem; border-top: 1px solid var(--line); padding-top: 1rem; }
 .prose pre,
 .prose code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: var(--font-mono);
 }
 .prose pre {
     overflow-x: auto;
-    background: #201b18;
-    color: #f8f4ed;
+    background: var(--ink);
+    color: #EFEFF1;
     padding: 1rem;
     border-radius: 10px;
 }
 .prose :not(pre) > code {
-    background: rgba(196, 93, 30, 0.08);
+    background: var(--gray-100);
     padding: 0.1rem 0.35rem;
     border-radius: 4px;
 }
@@ -311,14 +323,14 @@ a:hover { color: var(--accent); }
 
 .callout {
     border-left: 4px solid var(--accent);
-    background: rgba(196, 93, 30, 0.07);
+    background: rgba(108, 76, 240, 0.06);
     padding: 0.85rem 1rem;
     border-radius: 0 10px 10px 0;
     margin: 1.25rem 0;
 }
 .callout strong { display: block; margin-bottom: 0.35rem; }
-.callout-warning { border-color: #b45309; background: rgba(180, 83, 9, 0.08); }
-.callout-info { border-color: #0369a1; background: rgba(3, 105, 161, 0.08); }
+.callout-warning { border-color: var(--amber-deep); background: rgba(240, 169, 59, 0.12); }
+.callout-info { border-color: var(--gray-500); background: rgba(132, 132, 140, 0.10); }
 
 .site-footer {
     padding: 2rem 0 3rem;
