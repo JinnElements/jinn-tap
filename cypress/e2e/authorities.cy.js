@@ -64,7 +64,7 @@ describe('p-authority integration', () => {
             .should('have.attr', 'label', '${Name}');
     });
 
-    it.only('can make a new GND entity', () => {
+    it('can make a new GND entity', () => {
         cy.get('jinn-tap').then((e) => {
             const [jinntap] = e.get();
             jinntap.editor.commands.setTextSelection({ from: 47, to: 56 });

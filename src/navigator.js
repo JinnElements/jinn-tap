@@ -73,8 +73,8 @@ export class NavigationPanel {
         let ul = document.createElement('ul');
         nodeHierarchy.reverse().forEach((nodeInfo, index) => {
             const li = document.createElement('li');
-            const link = document.createElement('a');
-            link.setAttribute('href', '#');
+            const link = document.createElement('button');
+            link.type = 'button';
             link.textContent = nodeInfo.type;
             link.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -92,8 +92,8 @@ export class NavigationPanel {
         if (marks && !selection.node) {
             marks.forEach((mark) => {
                 const li = document.createElement('li');
-                const link = document.createElement('a');
-                link.setAttribute('href', '#');
+                const link = document.createElement('button');
+                link.type = 'button';
                 link.textContent = mark.mark.type.name;
                 link.addEventListener('click', (e) => {
                     e.preventDefault();

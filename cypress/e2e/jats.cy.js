@@ -101,7 +101,7 @@ describe('JinnTap Component (JATS format)', () => {
             $component[0].content = testContent;
         });
 
-        cy.get('jinn-tap').type('I <3 the & character');
+        cy.get('jinn-tap .ProseMirror').type('I <3 the & character');
 
         cy.get('jinn-tap').should((e) => {
             const [editor] = e.get();
@@ -121,7 +121,7 @@ describe('JinnTap Component (JATS format)', () => {
             $component[0].editor.commands.togglePreventTyping();
         });
 
-        cy.get('jinn-tap[block-typing]')
+        cy.get('jinn-tap[block-typing] .ProseMirror')
             .type('Hello there!')
             .press(Cypress.Keyboard.Keys.BACKSPACE)
             .press(Cypress.Keyboard.Keys.DELETE);
@@ -137,7 +137,7 @@ describe('JinnTap Component (JATS format)', () => {
             $component[0].editor.commands.setTextSelection({ from: 1, to: 1 });
         });
 
-        cy.get('jinn-tap').type('Hello There! ');
+        cy.get('jinn-tap .ProseMirror').type('Hello There! ');
 
         cy.get('jinn-tap').should((e) => {
             const [editor] = e.get();

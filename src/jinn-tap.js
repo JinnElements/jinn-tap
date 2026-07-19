@@ -387,9 +387,11 @@ export class JinnTap extends HTMLElement {
         // Create the editor container structure. The breadcrumb navigation lives
         // directly under the toolbar (not in the attribute dock) so it stays there
         // in every layout, including when the panel is hosted in an external sidebar.
+        // Editor precedes the breadcrumb in DOM order (visual order is via grid-areas)
+        // so the contenteditable is the first typeable descendant.
         this.innerHTML = `
-            <nav class="navigation-panel" aria-label="breadcrumb"></nav>
             <div class="editor-area"></div>
+            <nav class="navigation-panel" aria-label="breadcrumb"></nav>
 			<div style="display:none"><nav class="table-menu"><ul class="toolbar"/></nav></div>
             <pre class="code-area" style="display: none;"></pre>
         `;

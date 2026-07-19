@@ -369,21 +369,27 @@ jinn-tap > nav.navigation-panel li:not(:last-child) {
     font-weight: 600;
 }
 
-jinn-tap > nav.navigation-panel[aria-label='breadcrumb'] ul li a {
+jinn-tap > nav.navigation-panel[aria-label='breadcrumb'] ul li a,
+jinn-tap > nav.navigation-panel[aria-label='breadcrumb'] ul li button {
     display: inline-block;
     margin: 0;
     margin-inline-start: 0;
     /* No horizontal padding — keep crumb text flush with toolbar button edges. */
     padding: 0.08rem 0;
+    border: none;
     border-radius: 4px;
+    background: none;
     color: inherit;
+    font: inherit;
     opacity: 0.75;
     text-decoration: none;
     font-size: inherit;
     line-height: inherit;
+    cursor: pointer;
 }
 
-jinn-tap > nav.navigation-panel[aria-label='breadcrumb'] ul li a:hover {
+jinn-tap > nav.navigation-panel[aria-label='breadcrumb'] ul li a:hover,
+jinn-tap > nav.navigation-panel[aria-label='breadcrumb'] ul li button:hover {
     background: var(--toolbar-hover, rgba(0, 0, 0, 0.06));
     opacity: 1;
     text-decoration: none;
@@ -406,6 +412,12 @@ jinn-tap > .jinn-tap-aside {
     background: var(--jinn-tap-background-color, white);
     padding: 0;
     z-index: 10;
+}
+
+/* Table bubble menu is appended to document.body (see Table extension) so it
+   isn't trapped under the attribute dock or auto-placed in the jinn-tap grid. */
+.table-menu {
+    z-index: 40;
 }
 
 jinn-tap > .jinn-tap-aside .user-info {
