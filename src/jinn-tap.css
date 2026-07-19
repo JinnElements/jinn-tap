@@ -174,3 +174,29 @@ jinn-tap .ProseMirror {
 .jinn-tap.overlay {
     border: 2px dotted var(--jinn-tap-overlay-color, rgb(255, 123, 0));
 }
+
+/* Elements not described by the schema, preserved generically. The XML tag name
+   is shown around the content via ::before / ::after (data-tag is set at render
+   time only, so it never ends up in the serialized XML). */
+.jinn-tap-unknown {
+    padding: 0 0.15em;
+}
+
+.jinn-tap-unknown::before,
+.jinn-tap-unknown::after,
+.jinn-tap-unknown-empty {
+    font-family: var(--jinn-tap-unknown-font-family, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: var(--jinn-tap-unknown-font-size, 0.7em);
+    color: var(--jinn-tap-unknown-color, #b36b00);
+    opacity: 0.75;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.jinn-tap-unknown::before {
+    content: '<' attr(data-tag) '>';
+}
+
+.jinn-tap-unknown::after {
+    content: '</' attr(data-tag) '>';
+}

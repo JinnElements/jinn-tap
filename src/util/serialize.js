@@ -23,10 +23,20 @@ function compareMarks(mark1, mark2) {
 
 // Resolve the XML element name for a ProseMirror type.
 // Array schema entries generate numbered variants (e.g. "xref1") that still map to the base XML tag.
+// A `tagName` on the entry (e.g. a synthesized unknown element whose PM type is
+// lowercased but whose original XML name is camelCase) overrides the type name.
 function resolveXmlTagName(schemaDef, typeName) {
-    if (schemaDef.schema[typeName] !== undefined) return typeName;
+    const direct = schemaDef.schema[typeName];
+    if (direct !== undefined) {
+        const def = Array.isArray(direct) ? direct[0] : direct;
+        return def.tagName || typeName;
+    }
     const match = typeName.match(/^(.+?)\d+$/);
-    if (match && schemaDef.schema[match[1]] !== undefined) return match[1];
+    if (match && schemaDef.schema[match[1]] !== undefined) {
+        const base = schemaDef.schema[match[1]];
+        const def = Array.isArray(base) ? base[0] : base;
+        return def.tagName || match[1];
+    }
     return typeName;
 }
 
@@ -49,7 +59,7 @@ class Serializer {
         this.editor = editor;
         this.openMarks = [];
         this.schemaDef = schemaDef;
-    }    
+    }
 
     serialize(node, previous, next) {
         if (node.type === 'text') {

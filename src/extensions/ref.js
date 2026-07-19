@@ -6,7 +6,8 @@ export const JinnReference = JinnInline.extend({
     addMarkView() {
         return ({ mark, HTMLAttributes }) => {
             const dom = document.createElement('a');
-            const contentDOM = document.createElement(this.options.tag);
+            const prefix = this.options.prefix || 'tei-';
+            const contentDOM = document.createElement(`${prefix}${this.name}`);
             
             // Set up the anchor element
             const targetUrl = mark.attrs.target || '#';

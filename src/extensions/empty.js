@@ -32,6 +32,7 @@ export const JinnEmptyElement = JinnBlock.extend({
             shortcuts: {},
             attributes: {},
             label: 'Empty Element',
+            unknown: false,
         };
     },
 
@@ -48,6 +49,9 @@ export const JinnEmptyElement = JinnBlock.extend({
         return ({ node }) => {
             const dom = document.createElement(`tei-${this.name}`);
             dom.classList.add('empty-element');
+            if (this.options.unknown) {
+                dom.classList.add('jinn-tap-unknown-empty');
+            }
             dom.innerHTML = this.options.label;
             // Set all attributes on the DOM element
             Object.entries(node.attrs).forEach(([key, value]) => {

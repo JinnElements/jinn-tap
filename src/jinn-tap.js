@@ -5,6 +5,7 @@ import * as Y from 'yjs';
 import CollaborationCaret from '@tiptap/extension-collaboration-caret';
 import { HocuspocusProvider } from '@hocuspocus/provider';
 import { serialize } from './util/serialize.js';
+import { synthesizeUnknownEntries } from './util/unknown-elements.js';
 import { createFromSchema } from './extensions/extensions.js';
 import { FootnoteRules } from './extensions/footnote.js';
 import { InputRules } from './extensions/input-rules.js';
@@ -233,7 +234,9 @@ export class JinnTap extends HTMLElement {
                 const xml = await response.text();
                 // Always use the format set at initialization - no autodetection
                 if (!this._format) {
-                    throw new Error('Format must be set before loading XML content. Use the format attribute when creating the editor.');
+                    throw new Error(
+                        'Format must be set before loading XML content. Use the format attribute when creating the editor.',
+                    );
                 }
                 const parsed = importXml(xml, this._format);
                 content = parsed.content;
@@ -244,15 +247,15 @@ export class JinnTap extends HTMLElement {
                 throw new Error(`Unsupported content type: ${contentType}`);
             }
 
-        if (setContent && this.editor) {
-            this.content = content;
-            // Update footnote references after content is loaded
-            setTimeout(() => {
-                if (this.editor) {
-                    this.editor.commands.updateNotes();
-                }
-            }, 0);
-        }
+            if (setContent && this.editor) {
+                this.content = content;
+                // Update footnote references after content is loaded
+                setTimeout(() => {
+                    if (this.editor) {
+                        this.editor.commands.updateNotes();
+                    }
+                }, 0);
+            }
             this.metadata = {
                 name: url.split('/').pop(),
             };
@@ -446,9 +449,61 @@ export class JinnTap extends HTMLElement {
             },
         );
 
+        this._buildEditor(initialContent);
+    }
+
+    /**
+     * Augment `this._schema` with generic entries for any element in `content`
+     * that the schema does not describe, so unknown markup round-trips (and stays
+     * editable) instead of being dropped with a hard content error.
+     *
+     * @param {string} content - Content about to be loaded, as prefixed HTML.
+     * @param {string} prefix  - Custom-element prefix (e.g. `tei-`).
+     * @returns {number} How many new element types were added to the schema.
+     */
+    _applyUnknownElements(content, prefix) {
+        const { schema: mergedSchema, added } = synthesizeUnknownEntries(content, this._schema, prefix, this.document);
+        this._schema = mergedSchema;
+        if (added.length > 0) {
+            const names = added.map((e) => e.tag).join(', ');
+            document.dispatchEvent(
+                new CustomEvent('jinn-toast', {
+                    detail: {
+                        message: `Preserved ${added.length} element type(s) not defined in the schema: ${names}`,
+                        type: 'info',
+                    },
+                }),
+            );
+        }
+        return added.length;
+    }
+
+    /**
+     * Build (or rebuild) the editor and its toolbar/panels for the given content.
+     * Extracted so it can be re-run when content loaded later introduces elements
+     * that require new node/mark types not present in the current schema.
+     */
+    _buildEditor(initialContent, parseOptions = {}) {
+        // When re-run to pick up newly-introduced element types, tear down the
+        // previous editor and the UI bound to it first. The panels re-render their
+        // own containers on update, but the editor DOM, toolbar buttons and table
+        // menu are appended, so remove those explicitly to avoid duplicates. The
+        // editor area is replaced with a fresh clone so listeners bound to it (e.g.
+        // empty-element-clicked) don't accumulate across rebuilds.
+        if (this.editor) {
+            this.editor.destroy();
+            const area = this.querySelector('.editor-area');
+            area?.replaceWith(area.cloneNode(false));
+            this.toolbarContainer?.replaceChildren();
+            this.querySelector('.table-menu .toolbar')?.replaceChildren();
+        }
+
         // Initialize the editor
         // Get the format prefix for HTML custom elements
         const format = getFormat(this._format);
+
+        this._applyUnknownElements(initialContent, format.prefix);
+
         const extensions = createFromSchema(this._schema, format.prefix, format.notesWrapper || 'listAnnotation', {
             noteName: format.noteName || 'note',
             anchorName: format.anchorName || 'anchor',
@@ -467,7 +522,7 @@ export class JinnTap extends HTMLElement {
                 onSynced: () => {
                     if (!this.doc.getMap('config').get('initialContentLoaded') && this.editor) {
                         this.doc.getMap('config').set('initialContentLoaded', true);
-                        this.editor.chain().setContent(initialContent).setTextSelection(0).focus().run();
+                        this.editor.chain().setContent(initialContent, { parseOptions: { preserveWhitespace: true } }).setTextSelection(0).focus().run();
                         this.dispatchContentChange();
                     }
                 },
@@ -488,6 +543,7 @@ export class JinnTap extends HTMLElement {
         }
         const editorConfig = {
             element: this.querySelector('.editor-area'),
+            parseOptions,
             extensions: [
                 ...extensions,
                 InputRules,
@@ -622,7 +678,21 @@ export class JinnTap extends HTMLElement {
     // Setter for the editor's content, i.e. the fragment edited in the editor,
     // not the full XML content.
     set content(value) {
-        this.editor.chain().focus().setContent(value).setTextSelection(0).run();
+        // Content may use elements the current schema doesn't describe. Synthesize
+        // generic entries for them; if that introduces new node/mark types, the
+        // editor must be rebuilt so its schema includes them — otherwise setContent's
+        // content check (enableContentCheck) rejects the markup and throws. Known-only
+        // content takes the cheap in-place path.
+        const { prefix } = getFormat(this._format);
+        if (this._applyUnknownElements(value, prefix) > 0) {
+            this._buildEditor(value, { preserveWhitespace: true });
+        } else {
+            // preserveWhitespace: true keeps significant whitespace (multi-space runs,
+            // leading/trailing spaces in mixed content) that ProseMirror would otherwise
+            // collapse. Not 'full', which would also import insignificant indentation
+            // between block elements as stray text nodes.
+            this.editor.chain().focus().setContent(value, { parseOptions: { preserveWhitespace: true } }).setTextSelection(0).run();
+        }
         // Update footnote references after content is set
         setTimeout(() => {
             if (this.editor) {
@@ -644,8 +714,11 @@ export class JinnTap extends HTMLElement {
             throw new Error('Format must be set before setting XML content. Use the format attribute when creating the editor.');
         }
         const { doc, content } = importXml(value, this._format);
-        this.content = content;
+        // Set the document before the content: loading content synthesizes schema
+        // entries for unknown elements and recovers their original-case names from
+        // this.document, so it must already point at the new source document.
         this.document = doc;
+        this.content = content;
     }
 
     // Getter/setter for format
