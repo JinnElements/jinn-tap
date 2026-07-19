@@ -21,9 +21,9 @@ function normalizeAttributes(defs) {
 }
 
 /**
- * @param {string} filename Schema JSON under `src/` (e.g. `schema.json`, `jats-schema.json`)
+ * @param {string} filename Schema JSON under `src/` (e.g. `tei-schema.json`, `jats-schema.json`)
  */
-export function loadSchemaData(filename = 'schema.json') {
+export function loadSchemaData(filename = 'tei-schema.json') {
     const schemaPath = fileURLToPath(new URL(`../src/${filename}`, import.meta.url));
     const schema = JSON.parse(readFileSync(schemaPath, 'utf-8'));
 

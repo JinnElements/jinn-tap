@@ -19,7 +19,7 @@ import { importXml, exportXml, createDocument } from './util/xml.js';
 import { getFormat } from './util/xml-formats.js';
 import { generateUsername } from 'unique-username-generator';
 import xmlFormat from 'xml-formatter';
-import schema from './schema.json';
+import schema from './tei-schema.json';
 import jatsSchema from './jats-schema.json';
 import './jinn-tap.css';
 import { TableMenu } from './extensions/tables/TableMenu.js';

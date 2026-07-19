@@ -50,7 +50,7 @@ To wire up a third dialect (config, schema, XQuery import/export, styles), see
 <h3 id="schema"><code>schema</code></h3>
 
 URL of a custom schema JSON to use instead of the built-in schema for the active
-[`format`](#format) (`src/schema.json` for TEI, `src/jats-schema.json` for JATS).
+[`format`](#format) (`src/tei-schema.json` for TEI, `src/jats-schema.json` for JATS).
 See the [Schema reference](/schema/).
 
 ```html

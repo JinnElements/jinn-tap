@@ -10,10 +10,10 @@ permalink: /schema/adding-a-format/index.html
 JinnTap ships with two dialects — TEI and JATS — selected by the
 [`format`](/api/attributes#format) attribute. Supporting another XML dialect means
 teaching the editor three things: how to wrap and prefix the document, which
-[`schema.json`](/schema/) to load by default, and how to convert between that dialect’s
+[schema JSON](/schema/) to load by default, and how to convert between that dialect’s
 XML and the editor’s HTML custom elements.
 
-Use TEI (`src/util/module-tei.xq`, `src/schema.json`) and JATS
+Use TEI (`src/util/module-tei.xq`, `src/tei-schema.json`) and JATS
 (`src/util/module-jats.xq`, `src/jats-schema.json`) as templates. The checklist below
 walks through adding **DocBook** as a third format (`format="docbook"`). DocBook is
 not built in today — the snippets are illustrative only.
@@ -66,7 +66,7 @@ Exact note/xref wiring depends on how your dialect links footnotes — tune
 ## 2. Add a built-in schema
 
 1. Create `src/docbook-schema.json` — same top-level shape as
-   [`src/schema.json`](https://github.com/JinnElements/jinn-tap/blob/main/src/schema.json)
+   [`src/tei-schema.json`](https://github.com/JinnElements/jinn-tap/blob/main/src/tei-schema.json)
    (`attributes`, `toolbar`, `selects`, `schema`). Element keys are DocBook **local
    names** (`section`, `para`, `emphasis`, `footnote`, …).
 2. Import it in

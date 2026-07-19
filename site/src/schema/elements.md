@@ -17,7 +17,7 @@ JinnTap ships two schemas, selected by the
 
 <ul>
   <li><strong>TEI</strong> (default, <code>format="tei"</code>) —
-    <a href="https://github.com/JinnElements/jinn-tap/blob/main/src/schema.json"><code>src/schema.json</code></a>
+    <a href="https://github.com/JinnElements/jinn-tap/blob/main/src/tei-schema.json"><code>src/tei-schema.json</code></a>
     — {{ schema.elementCount }} elements</li>
   <li><strong>JATS</strong> (<code>format="jats"</code>) —
     <a href="https://github.com/JinnElements/jinn-tap/blob/main/src/jats-schema.json"><code>src/jats-schema.json</code></a>
@@ -90,7 +90,7 @@ inline elements contribute to the implicit `inline` content of text blocks.
 
 ## Element catalogs
 
-<h3 id="tei-catalog">TEI — <code>src/schema.json</code></h3>
+<h3 id="tei-catalog">TEI — <code>src/tei-schema.json</code></h3>
 
 Default when `format` is omitted or set to `tei`. **{{ schema.elementCount }} elements**.
 

@@ -47,7 +47,7 @@ The most important distinction:
 Counts below are from the built-in schemas. The same `type` values apply to any custom
 schema.
 
-### TEI (`src/schema.json`)
+### TEI (`src/tei-schema.json`)
 
 <ul>
   {% for row in schema.typeCountsList %}<li><code>{{ row.type }}</code> — {{ row.count }} element(s)</li>{% endfor %}
