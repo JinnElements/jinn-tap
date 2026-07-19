@@ -54,6 +54,23 @@ function resolveSchemaEntry(schemaDef, typeName) {
     return undefined;
 }
 
+/** Format attribute entries for a start tag, including `_xmlns` → `xmlns="…"`. */
+function formatXmlAttributes(attrs, { mapIdToXmlId = false } = {}) {
+    if (!attrs) return '';
+    return Object.entries(attrs)
+        .filter(([key, value]) => value !== null && (key === '_xmlns' || !key.startsWith('_')))
+        .map(([key, value]) => {
+            if (key === '_xmlns') {
+                return `xmlns="${value}"`;
+            }
+            if (mapIdToXmlId && key === 'id') {
+                return `xml:id="${value}"`;
+            }
+            return `${key}="${value}"`;
+        })
+        .join(' ');
+}
+
 class Serializer {
     constructor(editor, schemaDef) {
         this.editor = editor;
@@ -100,11 +117,8 @@ class Serializer {
                     this.openMarks.push(mark);
                     const nodeDef = resolveSchemaEntry(this.schemaDef, mark.type);
                     const tagName = resolveXmlTagName(this.schemaDef, mark.type);
-                    const attrs = mark.attrs
-                        ? Object.entries(mark.attrs)
-                              .filter(([_, value]) => value !== null)
-                              .map(([key, value]) => `${key}="${value}"`)
-                        : [];
+                    const attrStr = formatXmlAttributes(mark.attrs);
+                    const attrs = attrStr ? [attrStr] : [];
                     if (nodeDef?.preserveSpace) {
                         attrs.push('xml:space="preserve"');
                     }
@@ -132,17 +146,7 @@ class Serializer {
         let tagName = nodeDef?.tagName || resolveXmlTagName(this.schemaDef, node.type);
         // If tagName is defined (custom tag), use it as-is (no prefix in XML output)
         // The prefix is only for HTML custom elements in the editor, not for XML output
-        const attrs = node.attrs
-            ? Object.entries(node.attrs)
-                  .filter(([key, value]) => value !== null && !key.startsWith('_'))
-                  .map(([key, value]) => {
-                      if (key === 'id') {
-                          return `xml:id="${value}"`;
-                      }
-                      return `${key}="${value}"`;
-                  })
-                  .join(' ')
-            : '';
+        const attrs = formatXmlAttributes(node.attrs, { mapIdToXmlId: true });
 
         let content = '';
         if (node.content) {

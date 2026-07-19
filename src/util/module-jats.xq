@@ -37,6 +37,12 @@ declare function jt:import ($doc as node()) {
 declare %private function jt:transform-to-same-node ($node as node(), $importNotes as xs:boolean) as node()* {
     element {'jats-' || local-name($node)} {
         $node/@*,
+        (: Namespace declarations are not in @*; stash foreign URIs so serialize can
+           re-emit xmlns= on export. JATS default is no namespace. :)
+        if (namespace-uri($node) != '') then
+            attribute {'_xmlns'} { namespace-uri($node) }
+        else (
+        ),
         jt:import($node/node(), $importNotes)
     }
 };
