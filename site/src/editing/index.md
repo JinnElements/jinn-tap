@@ -120,7 +120,9 @@ This is a feature provided by [TEI Publisher](https://tei-publisher.org) and use
 For people, places, organisations, and terms, select the span and use the matching
 toolbar button (e.g. **Person**). The attribute panel can show a **connector** search
 (GND, GeoNames, …) when
-[`@teipublisher/pb-components`](/guide/installation) is loaded.
+[`@teipublisher/pb-components`](/guide/installation) is loaded. Below 1025px width
+the connector panel expands as a slide-over; on wider viewports it stays open as a
+fixed column on the right.
 
 Pick an entry with the link control to fill the `key` (or similar) attribute. Selecting
 from the registry applies that attribute automatically — you usually do not need
@@ -130,7 +132,7 @@ from the registry applies that attribute automatically — you usually do not ne
 *Select a span of text first, then choose the matching entity type.*
 
 ![The Lookup control and Apply button in the attribute panel]({{ '/screenshots/semantic-connector-panel.png' | prefixUrl }})
-*Expand Lookup to search the connected authority database.*
+*Use Lookup to search the connected authority database.*
 
 ## Shortcodes
 

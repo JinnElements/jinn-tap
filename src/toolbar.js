@@ -33,6 +33,11 @@ export class Toolbar {
         // Add global toolbar items
         if (schemaDef.toolbar) {
             Object.entries(schemaDef.toolbar).forEach(([name, def]) => {
+                // Optional buttons gated by a boolean attribute on <jinn-tap>
+                // (e.g. Fullscreen requires the `fullscreen` attribute).
+                if (def.requiresAttribute && !editor.hasAttribute(def.requiresAttribute)) {
+                    return;
+                }
                 if (def.select) {
                     if (!selectItems.has(def.select)) {
                         selectItems.set(def.select, []);
@@ -145,6 +150,12 @@ export class Toolbar {
 
         // Update active state based on current selection
         this.editor.on('selectionUpdate', this.updateButtonStates.bind(this));
+
+        if (editor.hasAttribute('fullscreen')) {
+            this._syncFullscreenButton = () => this.syncFullscreenButton();
+            document.addEventListener('fullscreenchange', this._syncFullscreenButton);
+            this.syncFullscreenButton();
+        }
     }
 
     /**
@@ -224,6 +235,8 @@ export class Toolbar {
                     return checkOnly ? true : this.toggleSource();
                 case 'toggleDebug':
                     return checkOnly ? true : this.toggleDebug();
+                case 'toggleFullscreen':
+                    return checkOnly ? true : this.toggleFullscreen();
             }
             if (toolbarDef.args) {
                 chain = chain[toolbarDef.command](...toolbarDef.args);
@@ -379,5 +392,32 @@ export class Toolbar {
             component.setAttribute('debug', '');
         }
         return true;
+    }
+
+    /**
+     * Toggle browser fullscreen on the nearest embed wrapper (if any), else on
+     * the <jinn-tap> element itself.
+     */
+    toggleFullscreen() {
+        const component = this.toolbar.closest('jinn-tap');
+        const target = component?.closest('.jinn-tap-embed') || component;
+        if (!target) return false;
+        if (document.fullscreenElement) {
+            document.exitFullscreen?.();
+        } else {
+            target.requestFullscreen?.();
+        }
+        return true;
+    }
+
+    syncFullscreenButton() {
+        const button = this.toolbar.querySelector('[data-name="Fullscreen"]');
+        if (!button) return;
+        const active = Boolean(document.fullscreenElement);
+        button.classList.toggle('active', active);
+        button.innerHTML = active
+            ? "<i class='bi bi-fullscreen-exit'></i>"
+            : "<i class='bi bi-fullscreen'></i>";
+        button.dataset.tooltip = active ? 'Exit fullscreen' : 'Fullscreen';
     }
 }

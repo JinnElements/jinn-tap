@@ -32,6 +32,7 @@ under.
 | `order` | Sort position within the toolbar or its dropdown. |
 | `select` | Name of a [`selects`](#selects) group to nest the button in. |
 | `args` | Arguments for the command — e.g. the snippet for `insertSnippet`. |
+| `requiresAttribute` | If set, the button is only rendered when `<jinn-tap>` has that boolean attribute (e.g. `fullscreen`). |
 
 ## Snippets
 

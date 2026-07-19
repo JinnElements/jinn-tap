@@ -30,6 +30,9 @@ import { Mark } from '@tiptap/pm/model';
  * @param {Object} schemaDef - The schema definition.
  */
 export class AttributePanel {
+    /** Viewport width at which connector panels stay open as a fixed right column. */
+    static WIDE_LAYOUT_MQ = '(min-width: 1025px)';
+
     constructor(editor, schemaDef) {
         this.editor = editor.tiptap;
         this.schemaDef = schemaDef;
@@ -46,6 +49,10 @@ export class AttributePanel {
         this.overlay.style.pointerEvents = 'none';
         this.overlay.style.zIndex = '1000';
         this.overlay.style.display = 'none';
+    }
+
+    _isWideLayout() {
+        return typeof window !== 'undefined' && window.matchMedia(AttributePanel.WIDE_LAYOUT_MQ).matches;
     }
 
     setupEventListeners(component) {
@@ -69,6 +76,17 @@ export class AttributePanel {
             this.editor.chain().focus().setNodeSelection(pos).run();
             this.updatePanel(node, pos);
         });
+
+        // Above 1024px, connector panels stay expanded as a fixed right column.
+        if (!this.externalSidebar && typeof window !== 'undefined') {
+            this._wideMq = window.matchMedia(AttributePanel.WIDE_LAYOUT_MQ);
+            this._onWideMqChange = () => {
+                if (this._wideMq.matches && this.panel?.classList.contains('has-connector')) {
+                    this.expandSheet();
+                }
+            };
+            this._wideMq.addEventListener('change', this._onWideMqChange);
+        }
     }
 
     updatePanelForCurrentPosition(editor) {
@@ -139,6 +157,8 @@ export class AttributePanel {
     }
 
     collapseSheet() {
+        // Wide layout keeps the connector panel open as a fixed right column.
+        if (this._isWideLayout()) return;
         this.panel?.classList.remove('is-expanded');
         this._syncSheetToggle();
     }
@@ -197,7 +217,11 @@ export class AttributePanel {
 
         chrome.append(summary, toggle);
         this.panel.prepend(chrome);
-        this._syncSheetToggle();
+        if (this._isWideLayout()) {
+            this.expandSheet();
+        } else {
+            this._syncSheetToggle();
+        }
     }
 
     createAttributeConnector(fieldset, attrName, attrDef, currentValue, info, nodeOrMark, pos, text) {

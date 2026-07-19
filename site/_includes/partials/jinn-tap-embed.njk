@@ -30,8 +30,8 @@
     </li>
 {%- endset -%}
 {%- if embedContent -%}
-<jinn-tap format="{{ fmt }}">{{ toolbarButtons | safe }}{{ embedContent | safe }}</jinn-tap>
+<jinn-tap format="{{ fmt }}" fullscreen>{{ toolbarButtons | safe }}{{ embedContent | safe }}</jinn-tap>
 {%- else -%}
-<jinn-tap format="{{ fmt }}" url="{{ docUrl | prefixUrl }}">{{ toolbarButtons | safe }}</jinn-tap>
+<jinn-tap format="{{ fmt }}" fullscreen url="{{ docUrl | prefixUrl }}">{{ toolbarButtons | safe }}</jinn-tap>
 {%- endif -%}
 </div>

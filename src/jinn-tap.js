@@ -50,7 +50,10 @@ import { TableMenu } from './extensions/tables/TableMenu.js';
  * present, the toolbar will be created inside the jinn-tap element.
  * @attr {string} sidebar - A selector pointing to an HTML element which should be used to host the
  * attribute panel. If not present, the panel is rendered as a bottom dock (with a slide-over
- * drawer for authority connectors) inside the jinn-tap element.
+ * drawer for authority connectors below 1025px, or a fixed right column at wider viewports)
+ * inside the jinn-tap element.
+ * @attr {boolean} fullscreen - When present, adds a toolbar button that toggles browser
+ * fullscreen on the editor (or its nearest `.jinn-tap-embed` wrapper).
  * @attr {boolean} block-typing - A boolean attribute determining whether the editor should respond to typing. If set,
  * the editor will not respond to typing. This is useful when an author is only expected to apply mark-up, and not edit
  * the document. The toolbar still works.

@@ -253,6 +253,35 @@ pb-page {
     box-shadow: -12px 0 28px rgba(26, 24, 22, 0.14);
 }
 
+@media (min-width: 1025px) {
+    .jinn-tap-embed jinn-tap:has(> .jinn-tap-aside .attribute-panel.has-connector.is-expanded) {
+        grid-template-rows: auto auto minmax(0, 1fr);
+    }
+
+    .jinn-tap-embed jinn-tap:has(> .jinn-tap-aside .attribute-panel.has-connector.is-expanded) > .jinn-tap-aside {
+        border-left-color: var(--line);
+        background: var(--paper-strong);
+    }
+
+    .jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded {
+        box-shadow: none;
+    }
+}
+
+.jinn-tap-embed:fullscreen {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+}
+
+.jinn-tap-embed:fullscreen jinn-tap {
+    height: 100%;
+    max-height: none;
+}
+
 .jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded > .attribute-panel__chrome {
     border-bottom-color: var(--toolbar-separator);
 }

@@ -20,8 +20,10 @@ embedEditor: true
 ## Toolbar and sidebar slots
 
 The component renders its own toolbar and attribute panel (as a bottom dock by
-default), but you can inject extra controls with named slots (`toolbar`, `aside`),
-and place the attribute panel or toolbar in your own containers with the
+default; authority connectors open as a slide-over below 1025px, or a fixed right
+column at wider viewports), but you can inject extra controls with named slots
+(`toolbar`, `aside`), and place the attribute panel or toolbar in your own
+containers with the
 [`toolbar`](/api/attributes#toolbar) / [`sidebar`](/api/attributes#sidebar)
 attributes:
 

@@ -62,8 +62,9 @@ See the [Schema reference](/schema/).
 <h3 id="sidebar"><code>sidebar</code></h3>
 
 CSS selector of an element to host the attribute panel. If omitted, the panel is
-rendered as a bottom dock inside the component (authority connectors expand into a
-slide-over drawer). Use this when you want a permanent side panel in your own layout.
+rendered as a bottom dock inside the component. Authority connectors expand into a
+slide-over drawer below 1025px width, or stay open as a fixed right column at wider
+viewports. Use `sidebar` when you want a permanent side panel in your own layout.
 
 <h3 id="toolbar"><code>toolbar</code></h3>
 
@@ -72,6 +73,15 @@ inside the component.
 
 Extra toolbar items and attribute-panel content can also be provided with the
 `toolbar` and `aside` [slots](/guide/embedding#toolbar-and-sidebar-slots).
+
+### `fullscreen`
+
+When present, adds a toolbar button that toggles browser fullscreen on the editor
+(or its nearest `.jinn-tap-embed` wrapper, when used in an embed).
+
+```html
+<jinn-tap fullscreen url="document.xml"></jinn-tap>
+```
 
 ## Editing behaviour
 
