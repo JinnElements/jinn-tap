@@ -296,17 +296,89 @@ a:hover { color: var(--accent); }
 .prose code {
     font-family: var(--font-mono);
 }
-.prose pre {
+.prose pre,
+.prose pre[class*='language-'] {
     overflow-x: auto;
     background: var(--ink);
     color: #F2EEE6;
-    padding: 1rem;
+    padding: 1rem 1.1rem;
     border-radius: 10px;
+    margin: 1.25rem 0;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    tab-size: 2;
+}
+.prose pre code,
+.prose pre[class*='language-'] code {
+    background: none;
+    color: inherit;
+    font-size: inherit;
+    padding: 0;
+    border-radius: 0;
 }
 .prose :not(pre) > code {
     background: var(--gray-100);
     padding: 0.1rem 0.35rem;
     border-radius: 4px;
+}
+
+/* Prism tokens (build-time via @11ty/eleventy-plugin-syntaxhighlight) */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: #9A9286;
+    font-style: italic;
+}
+.token.punctuation {
+    color: #C8BFB0;
+}
+.token.property,
+.token.tag,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #E8A0A0;
+}
+.token.boolean,
+.token.number {
+    color: #F0A93B;
+}
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #B8D4A8;
+}
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #D4C4A8;
+}
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #B8A8F0;
+}
+.token.function,
+.token.class-name {
+    color: #7EC8E8;
+}
+.token.regex,
+.token.important,
+.token.variable {
+    color: #F0A93B;
+}
+.token.important,
+.token.bold {
+    font-weight: 600;
+}
+.token.italic {
+    font-style: italic;
 }
 .prose img {
     max-width: 100%;

@@ -1,5 +1,21 @@
+import syntaxHighlight from '@11ty/eleventy-plugin-syntaxhighlight';
+
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default async function (eleventyConfig) {
+    eleventyConfig.addPlugin(syntaxHighlight, {
+        // Preload so ```jsonc can extend it in init
+        languages: ['json'],
+        preAttributes: { tabindex: 0 },
+        init: function ({ Prism }) {
+            Prism.languages.jsonc = Prism.languages.extend('json', {
+                comment: {
+                    pattern: /\/\/.*|\/\*[\s\S]*?(?:\*\/|$)/,
+                    greedy: true,
+                },
+            });
+        },
+    });
+
     eleventyConfig.addPassthroughCopy({ 'site/public': '/' });
     eleventyConfig.addPassthroughCopy({ 'site/css': 'css' });
 

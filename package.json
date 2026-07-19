@@ -69,6 +69,7 @@
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.6",
+    "@11ty/eleventy-plugin-syntaxhighlight": "^5.0.2",
     "@hocuspocus/extension-logger": "^4.0.0",
     "@hocuspocus/server": "^4.0.0",
     "@semantic-release/changelog": "^6.0.3",
