@@ -97,8 +97,17 @@ export const JinnItem = JinnBlock.extend({
                 return this.editor.commands.splitListItem(this.name);
                 // }
             },
-            Tab: () => this.editor.commands.sinkListItem(this.name),
-            'Shift-Tab': () => this.editor.commands.liftListItem(this.name),
+            // Always consume Tab/Shift-Tab while in a list item so the browser
+            // does not move focus into chrome (attribute panel inputs, etc.)
+            // when sink/lift is a no-op (e.g. first item cannot be nested).
+            Tab: () => {
+                this.editor.commands.sinkListItem(this.name);
+                return true;
+            },
+            'Shift-Tab': () => {
+                this.editor.commands.liftListItem(this.name);
+                return true;
+            },
             'Mod-Alt-1': () => this.editor.commands.transformToHead(),
         };
     },

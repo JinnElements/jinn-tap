@@ -20,10 +20,11 @@
                     <hi rend="i">italic</hi>, or a <ref target="https://www.tei-c.org/">link</ref>.</p>
                 <list rend="unordered">
                     <item>
-                        <p>Press <hi rend="b">Tab</hi> here to nest this item …</p>
+                        <p>A top-level list item</p>
                     </item>
                     <item>
-                        <p>… and <hi rend="b">Shift-Tab</hi> to move it back out</p>
+                        <p>Press <hi rend="b">Tab</hi> here to nest this item — and
+                            <hi rend="b">Shift-Tab</hi> to move it back out</p>
                         <list rend="ordered">
                             <item>
                                 <p>A nested ordered list<anchor xml:id="fn-mrqsohrz-7l5ax1"

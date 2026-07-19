@@ -13,10 +13,11 @@
                 <italic>italic</italic>, or a <ext-link xlink:href="https://jats.nlm.nih.gov/">link</ext-link>.</p>
             <list list-type="bullet">
                 <list-item>
-                    <p>Press <bold>Tab</bold> here to nest this item …</p>
+                    <p>A top-level list item</p>
                 </list-item>
                 <list-item>
-                    <p>… and <bold>Shift-Tab</bold> to move it back out</p>
+                    <p>Press <bold>Tab</bold> here to nest this item — and
+                        <bold>Shift-Tab</bold> to move it back out</p>
                     <list list-type="order">
                         <list-item>
                             <p>A nested ordered list<xref rid="fn-mrqsohrz-7l5ax1" ref-type="fn" /></p>
