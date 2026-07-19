@@ -19,7 +19,7 @@ does not silently drop markup it doesn't recognise (see [Unknown elements](/sche
 JinnTap is meant to be customized to match your encoding needs and practice. It does not attempt to have a representation for
 every element or attribute in an XML schema. For TEI this would not even be possible: many elements are ambiguous and could be used as inline as well as block elements, while the editor requires a clear distinction.
 
-In practice, you want to restrict the choices, collaborators can make in a project to keep consistency. Therefore we only include the most common elements and very few global attributes in the default schemata. It's up to you to extend those.
+In practice, you want to restrict the choices collaborators can make in a project to keep consistency. Therefore we only include the most common elements and very few global attributes in the default schemata. It's up to you to extend those — see [Customizing the editor](/guide/customizing) for a walkthrough.
 
 ## How it works
 
@@ -43,6 +43,7 @@ The embedded demo instances included in this documentation are browser-only: the
 
 - [Installation](/guide/installation)
 - [Usage](/guide/usage)
+- [Customizing the editor](/guide/customizing) — schema, CSS, toolbar, connectors
 - [Writing with the editor](/editing/) — blocks, footnotes, attributes, shortcodes
 - [Schema reference](/schema/) — the main extension point
 - [Web component API](/api/attributes)

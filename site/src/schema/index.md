@@ -10,7 +10,8 @@ permalink: /schema/index.html
 The schema is the heart of JinnTap. A single JSON file declares which XML elements the
 editor understands, how each maps to a ProseMirror node or mark, and the toolbar
 buttons, keyboard shortcuts and input rules that create them. Customising the editor is
-mostly a matter of editing this file.
+mostly a matter of editing this file — for a step-by-step recipe (element → CSS →
+toolbar → connector), see [Customizing the editor](/guide/customizing).
 
 <aside class="callout"><strong>Note:</strong> you may wonder why JinnTap is not directly using an XML schema but is configured via JSON? The main reason is that the underlying editor component needs a strict document model, which is not the same as the schema defining the XML. In the editor, an element can either be inline or a block, but not both. It may contain content or is always empty. XML languages tend to be much more flexible, but also ambiguous, providing a vast amount of choices.</aside>
 

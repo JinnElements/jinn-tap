@@ -60,5 +60,6 @@ npm run docs:dev     # work on the docs site locally
 npm run build:site   # build the docs site into dist/
 ```
 
-See the [Usage](/guide/usage) page for a first document, or the
-[Schema reference](/schema/) to customise which elements the editor supports.
+See the [Usage](/guide/usage) page for a first document, or
+[Customizing the editor](/guide/customizing) / the
+[Schema reference](/schema/) to tailor which elements the editor supports.

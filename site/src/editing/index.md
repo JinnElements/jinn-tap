@@ -169,5 +169,6 @@ pane.
 
 - [Keyboard shortcuts](/editing/keyboard-shortcuts)
 - [Usage](/guide/usage) — seeding and reading content from an app
-- [Schema reference](/schema/) — customise elements, toolbar, and shortcuts
+- [Customizing the editor](/guide/customizing) — schema, CSS, toolbar, connectors
+- [Schema reference](/schema/) — element catalogs and property reference
 - [Embedding](/guide/embedding) — drop `<jinn-tap>` into your application

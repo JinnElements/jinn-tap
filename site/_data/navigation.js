@@ -14,6 +14,7 @@ export default [
             { title: 'Introduction', url: '/guide/' },
             { title: 'Installation', url: '/guide/installation/' },
             { title: 'Usage', url: '/guide/usage/' },
+            { title: 'Customizing the editor', url: '/guide/customizing/' },
             { title: 'Embedding in an app', url: '/guide/embedding/' },
             { title: 'Events', url: '/guide/events/' },
         ],
