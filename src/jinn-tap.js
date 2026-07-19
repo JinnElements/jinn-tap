@@ -48,8 +48,9 @@ import { TableMenu } from './extensions/tables/TableMenu.js';
  * @attr {string} user - The user name to use for collaboration.
  * @attr {string} toolbar - A selector pointing to an HTML element which should be used to host the toolbar. If not
  * present, the toolbar will be created inside the jinn-tap element.
- * @attr {string} sidebar - A selector pointing to an HTML element which should be used to host the sidebar. If not
- * present, the sidebar will be created inside the jinn-tap element.
+ * @attr {string} sidebar - A selector pointing to an HTML element which should be used to host the
+ * attribute panel. If not present, the panel is rendered as a bottom dock (with a slide-over
+ * drawer for authority connectors) inside the jinn-tap element.
  * @attr {boolean} block-typing - A boolean attribute determining whether the editor should respond to typing. If set,
  * the editor will not respond to typing. This is useful when an author is only expected to apply mark-up, and not edit
  * the document. The toolbar still works.
@@ -63,7 +64,8 @@ import { TableMenu } from './extensions/tables/TableMenu.js';
  *
  * @slot toolbar - Content to be placed in the toolbar area at the top of the editor.
  *                This slot is intended for custom toolbar buttons or controls.
- * @slot aside - Content to be placed in the sidebar area on the right side of the editor.
+ * @slot aside - Content to be placed alongside the attribute panel (bottom dock by default,
+ *              or in the host element when using the sidebar attribute).
  *              This slot is intended for additional panels or controls.
  *
  * @fires {CustomEvent} content-change - Fired when the editor content changes.
@@ -377,8 +379,8 @@ export class JinnTap extends HTMLElement {
         temp.innerHTML = this.innerHTML;
 
         // Create the editor container structure. The breadcrumb navigation lives
-        // directly under the toolbar (not in the aside) so it stays there in every
-        // layout, including when the aside is an external sidebar element.
+        // directly under the toolbar (not in the attribute dock) so it stays there
+        // in every layout, including when the panel is hosted in an external sidebar.
         this.innerHTML = `
             <nav class="navigation-panel" aria-label="breadcrumb"></nav>
             <div class="editor-area"></div>

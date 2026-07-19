@@ -19,10 +19,11 @@ embedEditor: true
 
 ## Toolbar and sidebar slots
 
-The component renders its own toolbar and attribute sidebar, but you can inject extra
-controls with named slots (`toolbar`, `aside`), and place the sidebar/toolbar in your
-own containers with the [`toolbar`](/api/attributes#toolbar) /
-[`sidebar`](/api/attributes#sidebar) attributes:
+The component renders its own toolbar and attribute panel (as a bottom dock by
+default), but you can inject extra controls with named slots (`toolbar`, `aside`),
+and place the attribute panel or toolbar in your own containers with the
+[`toolbar`](/api/attributes#toolbar) / [`sidebar`](/api/attributes#sidebar)
+attributes:
 
 ```html
 <jinn-tap url="document.xml">

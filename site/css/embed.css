@@ -58,36 +58,24 @@ pb-page {
 
 .jinn-tap-embed jinn-tap {
     --jinn-tap-background-color: var(--paper-strong);
+    --toolbar-fg: var(--ink);
+    --toolbar-mark-fg: var(--accent-dark);
+    --toolbar-dropdown-bg: var(--paper-strong);
+    --toolbar-dropdown-border: var(--line);
+    --toolbar-dropdown-shadow: var(--shadow);
+    --toolbar-focus-ring: rgba(108, 76, 240, 0.45);
     position: relative;
     width: 100%;
     height: 100%;
     min-height: 0;
     max-height: 100%;
     margin-bottom: 0;
-    row-gap: 0;
-    column-gap: 0;
     overflow: hidden;
-    /* toolbar → breadcrumb → editor (scroll) → status dock */
-    grid-template-columns: 1fr;
+    /* Editor row must be able to shrink so overflow scrolls inside .editor-area */
     grid-template-rows: auto auto minmax(0, 1fr) auto;
-    grid-template-areas:
-        "toolbar"
-        "breadcrumb"
-        "editor"
-        "statusbar";
-}
-
-/* Pull aside children onto the main grid instead of a permanent side column */
-.jinn-tap-embed jinn-tap .jinn-tap-aside {
-    display: contents;
-}
-
-.jinn-tap-embed jinn-tap .user-info:empty {
-    display: none;
 }
 
 .jinn-tap-embed jinn-tap .user-info:not(:empty) {
-    grid-area: statusbar;
     padding: 0.25rem 0.65rem 0;
     font-size: 0.75rem;
     color: var(--ink-soft);
@@ -95,190 +83,14 @@ pb-page {
     border-top: 1px solid var(--line);
 }
 
-/* Toolbar nav only — not the breadcrumb nav (also a direct child once aside uses display:contents) */
 .jinn-tap-embed jinn-tap > nav:has(.toolbar) {
-    grid-area: toolbar;
-    grid-column: 1 / -1;
-    margin: 0;
     padding: 0.5rem 0.65rem;
     background: var(--toolbar-bg);
     border-bottom: 1px solid var(--line);
 }
 
-.jinn-tap-embed jinn-tap .jinn-tap-toolbar,
-.jinn-tap-embed jinn-tap .toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.3rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.jinn-tap-embed jinn-tap .toolbar > li {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-}
-
-/* Visual separators before dropdown groups */
-.jinn-tap-embed jinn-tap .toolbar > li:has(> details.dropdown):not(:first-child) {
-    margin-left: 0.45rem;
-    padding-left: 0.55rem;
-    border-left: 1px solid var(--toolbar-separator);
-}
-
-.jinn-tap-embed jinn-tap .toolbar a.outline,
-.jinn-tap-embed jinn-tap .toolbar li a,
-.jinn-tap-embed jinn-tap label[data-tooltip].toolbar-button {
-    color: var(--ink);
-    text-decoration: none;
-    outline: none;
-    box-shadow: none;
-}
-
-.jinn-tap-embed jinn-tap label[data-tooltip].toolbar-button {
-    margin: 0;
-    cursor: pointer;
-}
-
-.jinn-tap-embed jinn-tap .toolbar-button,
-.jinn-tap-embed jinn-tap .toolbar a.outline.toolbar-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--toolbar-btn-size);
-    height: var(--toolbar-btn-size);
-    min-width: var(--toolbar-btn-size);
-    min-height: var(--toolbar-btn-size);
-    padding: 0;
-    border: none;
-    border-radius: 5px;
-    background: transparent;
-    color: var(--ink);
-    font-size: inherit;
-    line-height: 1;
-    cursor: pointer;
-    -webkit-appearance: none;
-    appearance: none;
-    transition: background-color 0.1s ease, color 0.1s ease;
-}
-
-.jinn-tap-embed jinn-tap .toolbar-button:hover,
-.jinn-tap-embed jinn-tap .toolbar a.outline.toolbar-button:hover {
-    background: var(--toolbar-hover);
-    color: var(--ink);
-    border: none;
-}
-
-.jinn-tap-embed jinn-tap .toolbar-button:active,
-.jinn-tap-embed jinn-tap .toolbar a.outline.toolbar-button:active {
-    background: var(--toolbar-active);
-}
-
-.jinn-tap-embed jinn-tap .toolbar-button.active,
-.jinn-tap-embed jinn-tap .toolbar a.outline.toolbar-button.active {
-    background: var(--toolbar-mark);
-    color: var(--accent-dark);
-}
-
-.jinn-tap-embed jinn-tap .toolbar-button.disabled,
-.jinn-tap-embed jinn-tap .toolbar .disabled,
-.jinn-tap-embed jinn-tap .toolbar a.outline.toolbar-button.disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-.jinn-tap-embed jinn-tap .toolbar-button:focus-visible,
-.jinn-tap-embed jinn-tap .toolbar a.outline.toolbar-button:focus-visible,
-.jinn-tap-embed jinn-tap .toolbar details.dropdown > summary:focus-visible {
-    outline: 2px solid rgba(108, 76, 240, 0.45);
-    outline-offset: 1px;
-}
-
-.jinn-tap-embed jinn-tap .toolbar-button i {
-    font-size: 1rem;
-    line-height: 1;
-    pointer-events: none;
-}
-
-/* Dropdown groups */
-.jinn-tap-embed jinn-tap .toolbar details.dropdown {
-    position: relative;
-    margin: 0;
-}
-
-.jinn-tap-embed jinn-tap .toolbar details.dropdown > summary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: var(--toolbar-btn-size);
-    height: var(--toolbar-btn-size);
-    padding: 0 0.35rem;
-    border: none;
-    border-radius: 5px;
-    background: transparent;
-    color: var(--ink);
-    list-style: none;
-    cursor: pointer;
-    transition: background-color 0.1s ease;
-}
-
-.jinn-tap-embed jinn-tap .toolbar details.dropdown > summary::-webkit-details-marker,
-.jinn-tap-embed jinn-tap .toolbar details.dropdown > summary::marker {
-    display: none;
-    content: '';
-}
-
-.jinn-tap-embed jinn-tap .toolbar details.dropdown > summary:hover {
-    background: var(--toolbar-hover);
-}
-
-.jinn-tap-embed jinn-tap .toolbar details.dropdown[open] > summary {
-    background: var(--toolbar-active);
-}
-
-.jinn-tap-embed jinn-tap .toolbar details.dropdown > ul {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    z-index: 30;
-    min-width: 11rem;
-    margin: 0;
-    padding: 0.35rem;
-    list-style: none;
-    background: var(--paper-strong);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    box-shadow: var(--shadow);
-}
-
-.jinn-tap-embed jinn-tap .toolbar details.dropdown > ul a {
-    display: block;
-    padding: 0.4rem 0.55rem;
-    border: none;
-    border-radius: 5px;
-    color: var(--ink);
-    text-decoration: none;
-    white-space: nowrap;
-}
-
-.jinn-tap-embed jinn-tap .toolbar details.dropdown > ul a:hover {
-    background: var(--toolbar-hover);
-    color: var(--ink);
-}
-
-.jinn-tap-embed jinn-tap .toolbar details.dropdown > ul li + li {
-    margin-top: 0.125rem;
-}
-
 .jinn-tap-embed jinn-tap .editor-area,
 .jinn-tap-embed jinn-tap .code-area {
-    grid-area: editor;
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -305,7 +117,6 @@ pb-page {
 /* ── Breadcrumb row (above editor) ───────────────────────────────── */
 
 .jinn-tap-embed jinn-tap .navigation-panel {
-    grid-area: breadcrumb;
     /* The embed's editor scrolls internally, so the breadcrumb is a plain static
        row rather than sticking (as it does in the standalone/sidebar layouts). */
     position: static;
@@ -362,137 +173,36 @@ pb-page {
     color: var(--ink);
 }
 
-/* ── Attribute status dock (below editor) ──────────────────────── */
-.jinn-tap-embed jinn-tap .attribute-panel {
-    grid-area: statusbar;
-}
-
-.jinn-tap-embed jinn-tap .attribute-panel:empty {
-    display: none;
-}
+/* ── Attribute dock / connector drawer (theme on top of library defaults) ─ */
 
 .jinn-tap-embed jinn-tap .attribute-panel:not(:empty) {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.35rem 0.65rem;
-    padding: 0.35rem 0.65rem 0.45rem;
     background: var(--paper);
-    border-top: 1px solid var(--line);
-    max-height: 9.5rem;
-    overflow-y: auto;
+    border-top-color: var(--line);
 }
 
-/* Element name label: shows which element the cursor is in and which the
-   fields below apply to. Sits at the start of the status bar, set off from the
-   fields by a divider. */
 .jinn-tap-embed jinn-tap .attribute-panel:not(:empty) h4 {
-    flex: 0 0 auto;
-    margin: 0;
-    padding-right: 0.65rem;
-    border-right: 1px solid var(--line);
-    font-size: 0.85rem;
-    font-weight: 700;
-    line-height: 1.3;
+    border-right-color: var(--line);
     color: var(--accent-dark, var(--ink));
 }
 
-.jinn-tap-embed jinn-tap .attribute-panel:not(:empty) > div:not(.occurrences) {
-    display: none;
-}
-
-/* The fetched authority summary (name, dates, place details) — shown once the
-   sheet is expanded; suppressed while collapsed like the rest of the form. */
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded > .attribute-panel__info:not(:empty) {
-    display: block;
-}
-
-.jinn-tap-embed jinn-tap .attribute-panel form {
-    display: flex;
-    flex: 1 1 12rem;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.35rem 0.75rem;
-    min-width: 0;
-    margin: 0;
-}
-
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel fieldset {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.35rem 0.75rem;
-    flex: 1 1 auto;
-    border: none;
-    padding: 0;
-    margin: 0;
-    min-width: 0;
-}
-
-/* .attribute-panel__field groups a label with its input (added by a docs-site-only
-   script in jinn-tap-scripts.njk, not by the jinn-tap package) so the pair wraps as
-   one unit — otherwise flex-wrap on the fieldset can split a label onto one line
-   and its input onto the next. */
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel fieldset .attribute-panel__field {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    flex: 0 0 auto;
-}
-
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel fieldset label {
-    display: inline;
-    padding: 0;
-    font-size: 0.72rem;
-    font-weight: 600;
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel fieldset label {
     color: var(--ink-soft);
-    white-space: nowrap;
 }
 
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel fieldset label::after {
-    content: ':';
-    margin-right: 0.2rem;
-    font-weight: 400;
-}
-
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel fieldset input,
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel fieldset select {
-    display: inline-block;
-    width: auto;
-    min-width: 4.5rem;
-    max-width: 9rem;
-    margin: 0;
-    padding: 0.18rem 0.4rem;
-    font: inherit;
-    font-size: 0.8rem;
-    line-height: 1.3;
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel fieldset input,
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel fieldset select {
     border: 1px solid var(--line);
     border-radius: 4px;
     background: var(--paper-strong);
 }
 
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel fieldset input:focus,
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel fieldset select:focus {
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel fieldset input:focus,
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel fieldset select:focus {
     outline: 2px solid rgba(108, 76, 240, 0.35);
     outline-offset: 1px;
 }
 
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel fieldset details,
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel form > details {
-    flex: 1 1 100%;
-    margin: 0.15rem 0 0;
-    font-size: 0.8rem;
-}
-
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel footer {
-    display: flex;
-    flex: 0 0 auto;
-    align-items: center;
-    margin: 0 0 0 auto;
-    padding: 0;
-}
-
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel footer button {
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel footer button {
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
@@ -505,56 +215,26 @@ pb-page {
     cursor: pointer;
 }
 
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel footer button:hover {
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel footer button:hover {
     background: var(--toolbar-hover);
 }
 
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel footer button svg {
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel footer button svg {
     width: 0.95rem;
     height: 0.95rem;
 }
 
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel .occurrences {
-    flex: 1 1 100%;
-    margin: 0.25rem 0 0;
-    padding-top: 0.35rem;
-    border-top: 1px solid var(--toolbar-separator);
-    font-size: 0.78rem;
-    max-height: 5.5rem;
-    overflow-y: auto;
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel .occurrences {
+    border-top-color: var(--toolbar-separator);
 }
 
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel .occurrences h5 {
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel .occurrences h5 {
     margin: 0 0 0.25rem;
     font-size: 0.72rem;
     font-weight: 600;
     color: var(--ink-soft);
     text-transform: uppercase;
     letter-spacing: 0.04em;
-}
-
-.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel .occurrences ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-/* Connector session: compact dock summary when collapsed */
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector:not(:empty) {
-    max-height: none;
-    overflow: visible;
-}
-
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector > .attribute-panel__chrome {
-    flex: 1 1 auto;
-    min-width: 0;
-}
-
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector:not(.is-expanded) form,
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector:not(.is-expanded) footer,
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector:not(.is-expanded) .occurrences,
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector:not(.is-expanded) form > details {
-    display: none;
 }
 
 .jinn-tap-embed jinn-tap .attribute-panel.has-connector .attribute-panel__toggle {
@@ -567,104 +247,38 @@ pb-page {
     background: var(--toolbar-hover);
 }
 
-/* Connector session: expanded drawer over the editor.
-   Span the full jinn-tap grid and pin to the right edge — do not use
-   position:absolute with grid-area:statusbar (that cell becomes the
-   containing block and collapses to ~one line). */
 .jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded {
-    position: relative;
-    grid-column: 1 / -1;
-    grid-row: 1 / -1;
-    align-self: stretch;
-    justify-self: end;
-    width: min(80%, 20rem);
-    height: 100%;
-    z-index: 16;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    align-items: stretch;
-    gap: 0.65rem;
-    max-height: none;
-    padding: 0.65rem 0.85rem 0.85rem;
-    overflow-x: hidden;
-    overflow-y: auto;
     background: var(--paper-strong);
-    border-left: 1px solid var(--line);
+    border-left-color: var(--line);
     box-shadow: -12px 0 28px rgba(26, 24, 22, 0.14);
 }
 
 .jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded > .attribute-panel__chrome {
-    flex: 0 0 auto;
-    padding-bottom: 0.35rem;
-    border-bottom: 1px solid var(--toolbar-separator);
-}
-
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded > .attribute-panel__info {
-    flex: 0 0 auto;
-}
-
-.jinn-tap-embed jinn-tap .attribute-panel__info .label {
-    margin: 0 0 0.15rem;
-    font-size: 0.85rem;
-    font-weight: 600;
+    border-bottom-color: var(--toolbar-separator);
 }
 
 .jinn-tap-embed jinn-tap .attribute-panel__info .label a {
     color: inherit;
-    text-decoration: none;
-}
-
-.jinn-tap-embed jinn-tap .attribute-panel__info .label a:hover {
-    text-decoration: underline;
 }
 
 .jinn-tap-embed jinn-tap .attribute-panel__info p {
-    margin: 0.1rem 0;
-    font-size: 0.78rem;
     color: var(--ink-soft);
 }
 
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded form {
-    display: flex;
-    flex: 0 0 auto;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.55rem;
-}
-
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded fieldset {
-    display: grid;
-    grid-template-columns: minmax(4.5rem, max-content) minmax(0, 1fr);
+/* .attribute-panel__field groups a label with its input (added by a docs-site-only
+   script in jinn-tap-scripts.njk, not by the jinn-tap package) so the pair wraps as
+   one unit — otherwise flex-wrap on the fieldset can split a label onto one line
+   and its input onto the next. */
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel fieldset .attribute-panel__field {
+    display: inline-flex;
     align-items: center;
-    column-gap: 0.75rem;
-    row-gap: 0.45rem;
+    gap: 0.35rem;
+    flex: 0 0 auto;
 }
 
-/* Here the label/input pair should populate the fieldset's own two-column
-   grid directly, so .attribute-panel__field must not form a box of its own. */
+/* Expanded drawer: label/input pair should populate the fieldset grid directly. */
 .jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded fieldset .attribute-panel__field {
     display: contents;
-}
-
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded fieldset input,
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded fieldset select {
-    max-width: none;
-    width: 100%;
-}
-
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded form > details {
-    display: block;
-    flex: 1 1 auto;
-    margin: 0;
-    min-height: 0;
-}
-
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded pb-authority-lookup {
-    display: block;
-    height: auto;
-    max-height: 14rem;
-    overflow-y: auto;
 }
 
 /* Authority result badges (register/source/occurrences) — recolor to match
@@ -685,27 +299,6 @@ pb-page {
     background: var(--accent);
     color: var(--paper-strong);
     font-weight: 600;
-}
-
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded footer {
-    margin: 0;
-    justify-content: flex-end;
-}
-
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded .occurrences {
-    flex: 1 1 auto;
-    max-height: none;
-    min-height: 0;
-    margin: 0;
-    padding-top: 0.5rem;
-    /* Scrolling happens once, on the sheet itself (see .is-expanded above) —
-       avoid nesting a second scroll region inside it. */
-    overflow: visible;
-}
-
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded .occurrences ul {
-    max-height: none;
-    overflow: visible;
 }
 
 /* Don't let .prose list resets break the toolbar layout on doc pages */

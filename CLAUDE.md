@@ -105,7 +105,8 @@ constructs `Toolbar` (`src/toolbar.js`), `AttributePanel` (`src/attribute-panel.
 (`src/navigator.js`), and owns the `content`/`xml`/`format` getters/setters and the `content-change`/`ready`
 events. Toolbar and attribute-panel content can be hosted in external containers via the `toolbar="…"` /
 `sidebar="…"` selector attributes instead of the built-in slots — this is how host apps place them elsewhere in
-their own layout.
+their own layout. By default the attribute panel is a bottom dock inside `<jinn-tap>` (authority connectors
+expand into a slide-over drawer); `sidebar` opts into an external host with a traditional side-panel layout.
 
 Notes/footnotes have two independent axes: **connected vs. disconnected** mode (`notes` attribute — whether
 deleting an anchor deletes its note) and **note-to-anchor vs. anchor-to-note** linking direction (which side of

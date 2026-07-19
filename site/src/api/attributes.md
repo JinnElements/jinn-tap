@@ -61,16 +61,17 @@ See the [Schema reference](/schema/).
 
 <h3 id="sidebar"><code>sidebar</code></h3>
 
-CSS selector of an element to host the attribute/navigation sidebar. If omitted, a
-sidebar container is created inside the component.
+CSS selector of an element to host the attribute panel. If omitted, the panel is
+rendered as a bottom dock inside the component (authority connectors expand into a
+slide-over drawer). Use this when you want a permanent side panel in your own layout.
 
 <h3 id="toolbar"><code>toolbar</code></h3>
 
 CSS selector of an element to host the toolbar. If omitted, a toolbar is created
 inside the component.
 
-Extra toolbar items and sidebar content can also be provided with the `toolbar` and
-`aside` [slots](/guide/embedding#toolbar-and-sidebar-slots).
+Extra toolbar items and attribute-panel content can also be provided with the
+`toolbar` and `aside` [slots](/guide/embedding#toolbar-and-sidebar-slots).
 
 ## Editing behaviour
 
