@@ -134,5 +134,6 @@ A few things that aren't obvious from the templates alone:
   or just write plain HTML (no Markdown syntax) inside those blocks.
 - `site/public/assets/` is pure build output (copied from `dist/`/root files by `scripts/copy-site-assets.js`)
   and gets overwritten on every rebuild — don't hand-edit or add unrelated files there.
-- The demo document embedded by default is `site/public/demo/starter.xml`, intentionally short (a "getting
+- The demo document embedded by default is `site/public/demo/starter.xml` (TEI) /
+  `site/public/demo/starter-jats.xml` (JATS), intentionally short (a "getting
   started" sample), not a full feature showcase.

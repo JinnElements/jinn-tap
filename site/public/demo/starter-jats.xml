@@ -1,0 +1,50 @@
+<article article-type="research-article" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <front>
+        <article-meta>
+            <title-group>
+                <article-title>Untitled</article-title>
+            </title-group>
+        </article-meta>
+    </front>
+    <body>
+        <sec>
+            <title>Getting started</title>
+            <p>This is a paragraph. Select a word and try a toolbar button — <bold>bold</bold>,
+                <italic>italic</italic>, or a <ext-link xlink:href="https://jats.nlm.nih.gov/">link</ext-link>.</p>
+            <list list-type="bullet">
+                <list-item>
+                    <p>Press <bold>Tab</bold> here to nest this item …</p>
+                </list-item>
+                <list-item>
+                    <p>… and <bold>Shift-Tab</bold> to move it back out</p>
+                    <list list-type="order">
+                        <list-item>
+                            <p>A nested ordered list<xref rid="fn-mrqsohrz-7l5ax1" ref-type="fn" /></p>
+                        </list-item>
+                        <list-item>
+                            <p>To make this a bullet list, select the list in the breadcrumbs
+                                above, then change the <italic>list-type</italic> attribute</p>
+                        </list-item>
+                    </list>
+                </list-item>
+            </list>
+            <p><named-content content-type="person" specific-use="gnd-119232022">Ada Lovelace</named-content>
+                once worked in <named-content content-type="place" specific-use="geo-2643743">London</named-content>
+                — entity names can be linked to external authority databases.</p>
+            <sec>
+                <title>A nested section</title>
+                <p>A new section always becomes a child of the section you're currently in. To
+                    move it up, use the breadcrumbs below the toolbar to select the entire
+                    section, then click the <italic>Move Up</italic> toolbar button.</p>
+            </sec>
+            <ab xmlns="http://foo.org" content-type="center">Elements not defined in the editor's schema appear with markers to draw your attention.</ab>
+        </sec>
+    </body>
+    <back>
+        <fn-group>
+            <fn id="fn-mrqsohrz-7l5ax1">
+                <p>This is a footnote.</p>
+            </fn>
+        </fn-group>
+    </back>
+</article>
