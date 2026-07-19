@@ -54,6 +54,9 @@ import { TableMenu } from './extensions/tables/TableMenu.js';
  * inside the jinn-tap element.
  * @attr {boolean} fullscreen - When present, adds a toolbar button that toggles browser
  * fullscreen on the editor (or its nearest `.jinn-tap-embed` wrapper).
+ * @attr {boolean} fill - When present, the editor fills its parent height and scrolls
+ * only the editor area (for embeds and workbench hosts). Without it, the component
+ * grows with content and the toolbar sticks while the page scrolls.
  * @attr {boolean} block-typing - A boolean attribute determining whether the editor should respond to typing. If set,
  * the editor will not respond to typing. This is useful when an author is only expected to apply mark-up, and not edit
  * the document. The toolbar still works.

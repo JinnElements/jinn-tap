@@ -11,7 +11,7 @@ embedEditor: true
 The editor below is a real `<jinn-tap>` instance. Type into it, apply formatting
 from the toolbar, and use the source toggle (`</>`) to see the TEI XML.
 
-<pb-page api-version="1.0.0">
+{% include "partials/pb-page-open.njk" %}
 {% include "partials/jinn-tap-embed.njk" %}
 <jinn-toast></jinn-toast>
 </pb-page>

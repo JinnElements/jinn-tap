@@ -42,7 +42,7 @@ those features:</p>
 
 ```html
 <script type="module"
-  src="https://cdn.jsdelivr.net/npm/@teipublisher/pb-components/dist/pb-components-bundle.js"></script>
+  src="https://cdn.jsdelivr.net/npm/@teipublisher/pb-components@3.6.6/dist/pb-components-bundle.js"></script>
 ```
 </aside>
 

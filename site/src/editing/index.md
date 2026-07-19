@@ -10,7 +10,7 @@ embedEditor: true
 
 Try the behaviours below in the live editor (TEI XML mode).
 
-<pb-page api-version="1.0.0">
+{% include "partials/pb-page-open.njk" %}
 {% include "partials/jinn-tap-embed.njk" %}
 <jinn-toast></jinn-toast>
 </pb-page>

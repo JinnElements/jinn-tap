@@ -25,7 +25,8 @@ column at wider viewports), but you can inject extra controls with named slots
 (`toolbar`, `aside`), and place the attribute panel or toolbar in your own
 containers with the
 [`toolbar`](/api/attributes#toolbar) / [`sidebar`](/api/attributes#sidebar)
-attributes:
+attributes. For fixed-height hosts (embeds, workbenches), add
+[`fill`](/api/attributes#fill) so only the editor area scrolls:
 
 ```html
 <jinn-tap url="document.xml">
@@ -83,5 +84,5 @@ are powered by `@teipublisher/pb-components`; load its bundle to enable them:
 
 ```html
 <script type="module"
-  src="https://cdn.jsdelivr.net/npm/@teipublisher/pb-components/dist/pb-components-bundle.js"></script>
+  src="https://cdn.jsdelivr.net/npm/@teipublisher/pb-components@3.6.6/dist/pb-components-bundle.js"></script>
 ```

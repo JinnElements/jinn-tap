@@ -83,6 +83,18 @@ When present, adds a toolbar button that toggles browser fullscreen on the edito
 <jinn-tap fullscreen url="document.xml"></jinn-tap>
 ```
 
+### `fill`
+
+When present, the editor fills its parent’s height and scrolls only the editor
+area. Use this in embeds and workbench hosts with a fixed pane. Without `fill`,
+the component grows with content and the toolbar sticks while the page scrolls.
+
+```html
+<div style="height: 40rem">
+  <jinn-tap fill url="document.xml"></jinn-tap>
+</div>
+```
+
 ## Editing behaviour
 
 ### `block-typing`

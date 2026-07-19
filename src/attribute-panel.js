@@ -225,6 +225,9 @@ export class AttributePanel {
     }
 
     createAttributeConnector(fieldset, attrName, attrDef, currentValue, info, nodeOrMark, pos, text) {
+        const field = document.createElement('span');
+        field.className = 'attribute-panel__field';
+
         const label = document.createElement('label');
         label.textContent = attrName;
         const input = document.createElement('input');
@@ -233,8 +236,9 @@ export class AttributePanel {
         input.readOnly = true;
         input.name = attrName;
         input.placeholder = 'No reference assigned';
-        fieldset.appendChild(label);
-        fieldset.appendChild(input);
+        field.appendChild(label);
+        field.appendChild(input);
+        fieldset.appendChild(field);
 
         const details = document.createElement('details');
         details.open = !currentValue;
@@ -331,9 +335,12 @@ export class AttributePanel {
     }
 
     createAttributeInput(form, attrName, attrDef, currentValue, placeholder = '') {
+        const field = document.createElement('span');
+        field.className = 'attribute-panel__field';
+
         const label = document.createElement('label');
         label.textContent = attrName;
-        form.appendChild(label);
+        field.appendChild(label);
 
         let input;
         if (attrDef.enum) {
@@ -348,7 +355,7 @@ export class AttributePanel {
                     option.value = value;
                     datalist.appendChild(option);
                 });
-                form.appendChild(datalist);
+                field.appendChild(datalist);
             } else {
                 input = document.createElement('select');
                 attrDef.enum.forEach((value) => {
@@ -366,7 +373,8 @@ export class AttributePanel {
         input.value = currentValue || attrDef.default || '';
         input.name = attrName;
 
-        form.appendChild(input);
+        field.appendChild(input);
+        form.appendChild(field);
         return input;
     }
 

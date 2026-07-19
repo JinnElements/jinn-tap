@@ -1,7 +1,8 @@
 .jinn-tap-embed {
     /* JinnTap design system v1.0 — scoped to the docs embed. Overriding these
-       design tokens re-skins the embed subtree; the layout tokens further down
-       (sizes, offsets) are unchanged. */
+       design tokens re-skins the embed subtree. Structural chrome (toolbar,
+       breadcrumbs, attribute dock, `fill` layout) lives in the library
+       `jinn-tap.css`; this file only supplies the docs palette and frame. */
 
     /* Palette (warm neutrals) */
     --ink: #1A1816;
@@ -64,36 +65,21 @@ pb-page {
     --toolbar-dropdown-border: var(--line);
     --toolbar-dropdown-shadow: var(--shadow);
     --toolbar-focus-ring: rgba(108, 76, 240, 0.45);
-    position: relative;
     width: 100%;
-    height: 100%;
-    min-height: 0;
-    max-height: 100%;
-    margin-bottom: 0;
-    overflow: hidden;
-    /* Editor row must be able to shrink so overflow scrolls inside .editor-area */
-    grid-template-rows: auto auto minmax(0, 1fr) auto;
 }
 
 .jinn-tap-embed jinn-tap .user-info:not(:empty) {
-    padding: 0.25rem 0.65rem 0;
-    font-size: 0.75rem;
     color: var(--ink-soft);
     background: var(--paper);
-    border-top: 1px solid var(--line);
+    border-top-color: var(--line);
 }
 
 .jinn-tap-embed jinn-tap > nav:has(.toolbar) {
-    padding: 0.5rem 0.65rem;
-    background: var(--toolbar-bg);
-    border-bottom: 1px solid var(--line);
+    border-bottom-color: var(--line);
 }
 
 .jinn-tap-embed jinn-tap .editor-area,
 .jinn-tap-embed jinn-tap .code-area {
-    min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
     padding: 0.85rem 1rem 1rem;
     /* Editor content inherits the page's resolved font otherwise; set the DS
        body type explicitly so the embed uses Public Sans. */
@@ -114,66 +100,25 @@ pb-page {
     --embed-chrome-offset: 12rem;
 }
 
-/* ── Breadcrumb row (above editor) ───────────────────────────────── */
+/* ── Breadcrumb / attribute dock: palette only ───────────────────── */
 
-.jinn-tap-embed jinn-tap .navigation-panel {
-    /* The embed's editor scrolls internally, so the breadcrumb is a plain static
-       row rather than sticking (as it does in the standalone/sidebar layouts). */
-    position: static;
-    top: auto;
-    margin: 0;
-    padding: 0.3rem 0.65rem;
-    background: var(--paper-strong);
-    border-bottom: 1px solid var(--line);
+.jinn-tap-embed jinn-tap > nav.navigation-panel {
+    border-bottom-color: var(--line);
 }
 
-/* Panel always contains a <ul> (even when empty) — hide when no crumbs */
-.jinn-tap-embed jinn-tap .navigation-panel:not(:has(li)) {
-    display: none;
-}
-
-.jinn-tap-embed jinn-tap .navigation-panel ul {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.1rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.jinn-tap-embed jinn-tap .navigation-panel li {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-}
-
-.jinn-tap-embed jinn-tap .navigation-panel li + li::before {
-    content: '›';
-    margin: 0 0.12rem;
+.jinn-tap-embed jinn-tap > nav.navigation-panel li + li::before {
     color: var(--ink-soft);
-    font-size: 0.72rem;
-    pointer-events: none;
+    opacity: 1;
 }
 
-.jinn-tap-embed jinn-tap .navigation-panel a {
-    display: inline-block;
-    padding: 0.08rem 0.3rem;
-    border-radius: 4px;
+.jinn-tap-embed jinn-tap > nav.navigation-panel a {
     color: var(--ink-soft);
-    text-decoration: none;
-    font-size: 0.78rem;
-    line-height: 1.3;
+    opacity: 1;
 }
 
-.jinn-tap-embed jinn-tap .navigation-panel a:hover {
-    background: var(--toolbar-hover);
+.jinn-tap-embed jinn-tap > nav.navigation-panel a:hover {
     color: var(--ink);
 }
-
-/* ── Attribute dock / connector drawer (theme on top of library defaults) ─ */
 
 .jinn-tap-embed jinn-tap .attribute-panel:not(:empty) {
     background: var(--paper);
@@ -203,25 +148,8 @@ pb-page {
 }
 
 .jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel footer button {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.22rem 0.45rem;
-    border: 1px solid var(--line);
-    border-radius: 4px;
+    border-color: var(--line);
     background: var(--paper-strong);
-    font-size: 0.78rem;
-    line-height: 1;
-    cursor: pointer;
-}
-
-.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel footer button:hover {
-    background: var(--toolbar-hover);
-}
-
-.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel footer button svg {
-    width: 0.95rem;
-    height: 0.95rem;
 }
 
 .jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel .occurrences {
@@ -229,22 +157,14 @@ pb-page {
 }
 
 .jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel .occurrences h5 {
-    margin: 0 0 0.25rem;
-    font-size: 0.72rem;
-    font-weight: 600;
     color: var(--ink-soft);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    opacity: 1;
 }
 
 .jinn-tap-embed jinn-tap .attribute-panel.has-connector .attribute-panel__toggle {
     border-color: var(--line);
     background: var(--paper-strong);
     color: var(--ink);
-}
-
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector .attribute-panel__toggle:hover {
-    background: var(--toolbar-hover);
 }
 
 .jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded {
@@ -254,10 +174,6 @@ pb-page {
 }
 
 @media (min-width: 1025px) {
-    .jinn-tap-embed jinn-tap:has(> .jinn-tap-aside .attribute-panel.has-connector.is-expanded) {
-        grid-template-rows: auto auto minmax(0, 1fr);
-    }
-
     .jinn-tap-embed jinn-tap:has(> .jinn-tap-aside .attribute-panel.has-connector.is-expanded) > .jinn-tap-aside {
         border-left-color: var(--line);
         background: var(--paper-strong);
@@ -294,22 +210,6 @@ pb-page {
     color: var(--ink-soft);
 }
 
-/* .attribute-panel__field groups a label with its input (added by a docs-site-only
-   script in jinn-tap-scripts.njk, not by the jinn-tap package) so the pair wraps as
-   one unit — otherwise flex-wrap on the fieldset can split a label onto one line
-   and its input onto the next. */
-.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel fieldset .attribute-panel__field {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    flex: 0 0 auto;
-}
-
-/* Expanded drawer: label/input pair should populate the fieldset grid directly. */
-.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded fieldset .attribute-panel__field {
-    display: contents;
-}
-
 /* Authority result badges (register/source/occurrences) — recolor to match
    the editorial palette instead of the component's generic navy/orange defaults. */
 .jinn-tap-embed jinn-tap pb-authority-lookup::part(register) {
@@ -328,6 +228,35 @@ pb-page {
     background: var(--accent);
     color: var(--paper-strong);
     font-weight: 600;
+}
+
+/* Select control: dark chip so stroke icons read clearly (parts since 3.6.6). */
+.jinn-tap-embed jinn-tap {
+    --jinn-tap-authority-select-bg: var(--ink);
+    --jinn-tap-authority-select-fg: var(--paper-strong);
+    --jinn-tap-authority-select-bg-hover: var(--ink-soft);
+}
+
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(select) {
+    background: var(--ink);
+    color: var(--paper-strong);
+}
+
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(select):hover {
+    background: var(--ink-soft);
+    color: var(--paper-strong);
+}
+
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(edit-entity),
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(add-entity) {
+    color: var(--ink);
+    background: var(--gray-100);
+    border: 1px solid var(--line);
+}
+
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(edit-entity):hover,
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(add-entity):hover {
+    background: var(--toolbar-hover);
 }
 
 /* Don't let .prose list resets break the toolbar layout on doc pages */
