@@ -137,10 +137,19 @@ export const JinnAnchor = JinnEmptyElement.extend({
                                     const noteElement = view.domAtPos(pos).node;
                                     if (noteElement) {
                                         noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                        // Set selection at the start of the note
-                                        commands.setNodeSelection(pos + 1);
+                                        // `pos` here is resolved against `view.state`, which - since
+                                        // this command runs inside a chain - still predates the anchor
+                                        // insertion earlier in this same function; the note has since
+                                        // shifted by the anchor's size (1). Every other dispatcher of
+                                        // 'empty-element-clicked' (empty.js, graphic.js, the plain
+                                        // anchor click handler below) sends the ready-to-use
+                                        // before-the-node position, so do the same here - otherwise
+                                        // the attribute panel's Apply button ends up calling
+                                        // setNodeMarkup one position too early and silently no-ops.
+                                        const notePos = pos + 1;
+                                        commands.setNodeSelection(notePos);
                                         this.editor.options.element.dispatchEvent(
-                                            new CustomEvent('empty-element-clicked', { detail: { node, pos } }),
+                                            new CustomEvent('empty-element-clicked', { detail: { node, pos: notePos } }),
                                         );
                                         foundNote = true;
                                     }

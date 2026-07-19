@@ -72,7 +72,29 @@ export class AttributePanel {
     }
 
     updatePanelForCurrentPosition(editor) {
-        const { from, to } = editor.state.selection;
+        const { from, to, node: selectedNode } = editor.state.selection;
+
+        // Whole-node selection (NodeSelection - e.g. from a breadcrumb click or an
+        // empty-element click): `from` sits at the node's own boundary, so
+        // resolving it below with $pos.node() would give its *parent*, not the
+        // selected node. Use the selection's node directly instead.
+        if (selectedNode) {
+            this.currentMark = null;
+            if (Object.keys(this.schemaDef.schema).includes(selectedNode.type.name)) {
+                if (this.currentElement === selectedNode) {
+                    return;
+                }
+                this.currentElement = selectedNode;
+                this.currentAttributes = { ...selectedNode.attrs };
+                this.updatePanel(selectedNode, from);
+            } else {
+                this.currentElement = null;
+                this.currentAttributes = {};
+                this.hidePanel();
+            }
+            return;
+        }
+
         const matchingMarks = marksInRange(editor, from, to);
 
         if (matchingMarks && matchingMarks.length > 0) {
