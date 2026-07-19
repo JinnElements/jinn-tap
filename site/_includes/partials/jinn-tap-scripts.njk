@@ -5,8 +5,43 @@
     const toast = (message, type = 'info') =>
         document.dispatchEvent(new CustomEvent('jinn-toast', { detail: { message, type } }));
 
+    // Groups each attribute-panel <label> with the <input>/<select> that follows it
+    // into a <span class="attribute-panel__field">, purely so the pair wraps as one
+    // unit at narrow widths (see embed.css). This is docs-site-only presentation:
+    // the attribute panel's actual DOM (shipped in the jinn-tap package and used by
+    // host apps like TEI Publisher) is left untouched.
+    const wrapAttributeFields = (fieldset) => {
+        let node = fieldset.firstElementChild;
+        while (node) {
+            if (node.tagName !== 'LABEL') {
+                node = node.nextElementSibling;
+                continue;
+            }
+            const group = [node];
+            let sibling = node.nextElementSibling;
+            while (sibling && sibling.tagName !== 'LABEL') {
+                group.push(sibling);
+                sibling = sibling.nextElementSibling;
+            }
+            const field = document.createElement('span');
+            field.className = 'attribute-panel__field';
+            fieldset.insertBefore(field, node);
+            group.forEach((el) => field.appendChild(el));
+            node = sibling;
+        }
+    };
+
     customElements.whenDefined('jinn-tap').then(() => {
         document.querySelectorAll('.jinn-tap-embed jinn-tap').forEach((editor) => {
+            const attributePanel = editor.querySelector('.attribute-panel');
+            if (attributePanel) {
+                const observer = new MutationObserver(() => {
+                    const fieldset = attributePanel.querySelector('fieldset');
+                    if (fieldset) wrapAttributeFields(fieldset);
+                });
+                observer.observe(attributePanel, { childList: true, subtree: true });
+            }
+
             const newBtn = editor.querySelector('[data-action="new"]');
             const uploadInput = editor.querySelector('input[data-action="upload"]');
             const downloadBtn = editor.querySelector('[data-action="download"]');

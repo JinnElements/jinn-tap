@@ -8,7 +8,7 @@ JinnTap comes as a web component. While it can be used standalone, it is usually
 
 ## Documentation
 
-Full documentation — including a detailed [`schema.json`](src/schema.json) reference and a live editor — is published at **https://jinnelements.github.io/jinn-tap/**.
+Full documentation — including a detailed [`tei-schema.json`](src/tei-schema.json) reference and a live editor — is published at **https://jinnelements.github.io/jinn-tap/**.
 
 Work on the docs locally with:
 

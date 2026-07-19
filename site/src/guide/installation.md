@@ -35,10 +35,10 @@ The package ships as an ES module with the web component and its styles under `d
 Once the module has loaded, the `<jinn-tap>` custom element is registered and any
 `<jinn-tap>` in the page becomes an editor.
 
-<aside class="callout"><strong>Authority lookups</strong>
-The GND/GeoNames/Airtable [connectors](/schema/attributes#connectors) are provided by
-`@teipublisher/pb-components` (a peer dependency). Load its bundle only if you use
-those features:
+<aside class="callout" id="authority-lookups"><strong>Authority lookups</strong>
+<p>The GND/GeoNames/Airtable <a href="{{ '/schema/attributes/' | prefixUrl }}#connectors">connectors</a> are provided by
+<code>@teipublisher/pb-components</code> (a peer dependency). Load its bundle only if you use
+those features:</p>
 
 ```html
 <script type="module"

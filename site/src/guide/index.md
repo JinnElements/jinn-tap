@@ -11,15 +11,20 @@ JinnTap is a rich-text editor for XML documents, delivered as a
 web component. Unlike other editors it keeps the XML structure intact: what you see in the editor maps directly onto
 the underlying XML.
 
-TEI elements are represented in the editor as HTML **custom elements** — `<tei-div>`,
+XML elements are represented in the editor as HTML **custom elements** — for TEI XML this would be: `<tei-div>`,
 `<tei-p>`, `<tei-hi>`, and so on — preserving every attribute and structural feature.
 There is no lossy transformation step, so round-tripping a document through the editor
 does not silently drop markup it doesn't recognise (see [Unknown elements](/schema/unknown-elements)).
 
+JinnTap is meant to be customized to match your encoding needs and practice. It does not attempt to have a representation for
+every element or attribute in an XML schema. For TEI this would not even be possible: many elements are ambiguous and could be used as inline as well as block elements, while the editor requires a clear distinction.
+
+In practice, you want to restrict the choices, collaborators can make in a project to keep consistency. Therefore we only include the most common elements and very few global attributes in the default schemata. It's up to you to extend those.
+
 ## How it works
 
 Internally JinnTap builds on [ProseMirror](https://prosemirror.net/) (via
-[Tiptap](https://tiptap.dev/)). A single [`schema.json`](/schema/) declares:
+[Tiptap](https://tiptap.dev/)). A single JSON configuration or schema declares:
 
 - which XML elements exist and how each maps to an editor node or mark,
 - the attributes each element carries,
@@ -31,13 +36,8 @@ see the [Schema reference](/schema/).
 ## Where it runs
 
 JinnTap is usually embedded into a larger application such as **TEI Publisher 10**,
-which handles loading and saving documents. The [documentation site](https://jinnelements.github.io/jinn-tap/)
-includes live TEI and JATS editors — and it can
-be dropped into any app as a [web component](/guide/embedding).
-
-Optional features include **authority lookups** (GND, GeoNames, Airtable …) via
-attribute [connectors](/schema/attributes#connectors), and **real-time
-collaboration**.
+which handles loading and saving documents. The editor itself is purely client-side and doesn't need any server.
+The embedded demo instances included in this documentation are browser-only: they won't save your edits, but are still fully functional.
 
 ## Next steps
 

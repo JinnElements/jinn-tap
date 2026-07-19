@@ -7,7 +7,7 @@ permalink: /api/events/index.html
 
 # Events
 
-## `content-change`
+<h2 id="content-change"><code>content-change</code></h2>
 
 Fired whenever the document changes, and once after content is loaded.
 

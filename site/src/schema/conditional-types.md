@@ -12,10 +12,11 @@ on its attributes — for example a `<ref>` that is a cross-reference in one cas
 external link in another. JinnTap supports this by letting a schema entry be an
 **array** of definitions instead of a single object.
 
-<aside class="callout callout-info">This is an available capability of the schema (implemented in
-[`src/extensions/extensions.js`](https://github.com/JinnElements/jinn-tap/blob/main/src/extensions/extensions.js));
+<aside class="callout callout-info">
+<p>This is an available capability of the schema (implemented in
+<a href="https://github.com/JinnElements/jinn-tap/blob/main/src/extensions/extensions.js"><code>src/extensions/extensions.js</code></a>);
 neither built-in schema currently uses it. The example below is
-illustrative.
+illustrative.</p>
 </aside>
 
 ## Array form with `when`

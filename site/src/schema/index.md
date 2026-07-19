@@ -12,12 +12,14 @@ editor understands, how each maps to a ProseMirror node or mark, and the toolbar
 buttons, keyboard shortcuts and input rules that create them. Customising the editor is
 mostly a matter of editing this file.
 
+<aside class="callout"><strong>Note:</strong> you may wonder why JinnTap is not directly using an XML schema but is configured via JSON? The main reason is that the underlying editor component needs a strict document model, which is not the same as the schema defining the XML. In the editor, an element can either be inline or a block, but not both. It may contain content or is always empty. XML languages tend to be much more flexible, but also ambiguous, providing a vast amount of choices.</aside>
+
 JinnTap ships two built-in schemas, chosen by the
 [`format`](/api/attributes#format) attribute:
 
 | Format | Attribute | Built-in file |
 | --- | --- | --- |
-| **TEI** (default) | `format="tei"` or omitted | [`src/schema.json`](https://github.com/JinnElements/jinn-tap/blob/main/src/schema.json) |
+| **TEI** (default) | `format="tei"` or omitted | [`src/tei-schema.json`](https://github.com/JinnElements/jinn-tap/blob/main/src/tei-schema.json) |
 | **JATS** | `format="jats"` | [`src/jats-schema.json`](https://github.com/JinnElements/jinn-tap/blob/main/src/jats-schema.json) |
 
 To replace the built-in schema for the active format, point the

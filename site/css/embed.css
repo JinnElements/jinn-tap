@@ -3,20 +3,20 @@
        design tokens re-skins the embed subtree; the layout tokens further down
        (sizes, offsets) are unchanged. */
 
-    /* Palette */
-    --ink: #16161A;
-    --ink-soft: #4B4B52;
-    --gray-500: #84848C;
-    --gray-300: #D8D8DD;
-    --gray-100: #EFEFF1;
+    /* Palette (warm neutrals) */
+    --ink: #1A1816;
+    --ink-soft: #55504A;
+    --gray-500: #8C8579;
+    --gray-300: #DDD5C9;
+    --gray-100: #F2EEE6;
     --amber: #F0A93B;
     --amber-deep: #C97F1E;
     --violet: #6C4CF0;
     --violet-deep: #5138C4;
-    --paper: #EFEFF1;
-    --paper-strong: #FFFFFF;
-    --line: #E7E7EA;
-    --shadow: 0 1px 3px rgba(22, 22, 26, 0.06);
+    --paper: #F2EEE6;
+    --paper-strong: #FFFEFC;
+    --line: #E9E1D3;
+    --shadow: 0 1px 3px rgba(26, 24, 22, 0.06);
 
     /* Semantic accent: violet is the DS's single "live / focus" accent — used
        for the reference colour, selection outline and focus rings. */
@@ -27,11 +27,11 @@
     --font-body: 'Public Sans', system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-    /* Toolbar surfaces: cool neutrals, with violet for the active-mark state. */
-    --toolbar-bg: #EFEFF1;
-    --toolbar-separator: rgba(22, 22, 26, 0.12);
-    --toolbar-hover: rgba(22, 22, 26, 0.06);
-    --toolbar-active: rgba(22, 22, 26, 0.10);
+    /* Toolbar surfaces: warm neutrals, with violet for the active-mark state. */
+    --toolbar-bg: #F2EEE6;
+    --toolbar-separator: rgba(26, 24, 22, 0.12);
+    --toolbar-hover: rgba(26, 24, 22, 0.06);
+    --toolbar-active: rgba(26, 24, 22, 0.10);
     --toolbar-mark: rgba(108, 76, 240, 0.16);
     --toolbar-btn-size: 2rem;
     /* Keep toolbar + breadcrumb + status dock in view; editor scrolls inside */
@@ -429,6 +429,17 @@ pb-page {
     min-width: 0;
 }
 
+/* .attribute-panel__field groups a label with its input (added by a docs-site-only
+   script in jinn-tap-scripts.njk, not by the jinn-tap package) so the pair wraps as
+   one unit — otherwise flex-wrap on the fieldset can split a label onto one line
+   and its input onto the next. */
+.jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel fieldset .attribute-panel__field {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex: 0 0 auto;
+}
+
 .jinn-tap-embed jinn-tap .jinn-tap-aside .attribute-panel fieldset label {
     display: inline;
     padding: 0;
@@ -580,7 +591,7 @@ pb-page {
     overflow-y: auto;
     background: var(--paper-strong);
     border-left: 1px solid var(--line);
-    box-shadow: -12px 0 28px rgba(22, 22, 26, 0.14);
+    box-shadow: -12px 0 28px rgba(26, 24, 22, 0.14);
 }
 
 .jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded > .attribute-panel__chrome {
@@ -628,6 +639,12 @@ pb-page {
     align-items: center;
     column-gap: 0.75rem;
     row-gap: 0.45rem;
+}
+
+/* Here the label/input pair should populate the fieldset's own two-column
+   grid directly, so .attribute-panel__field must not form a box of its own. */
+.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded fieldset .attribute-panel__field {
+    display: contents;
 }
 
 .jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded fieldset input,

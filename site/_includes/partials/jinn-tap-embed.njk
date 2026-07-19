@@ -1,38 +1,37 @@
-<div class="jinn-tap-embed"{% if height %} style="--jinn-tap-embed-height: {{ height }}"{% endif %}>
-{% set fmt = format or 'tei' %}
-{% if fmt == 'jats' and not documentUrl %}
-  {% set docUrl = '/demo/musk-trump-tei-publisher.xml' %}
-{% elif documentUrl %}
-  {% set docUrl = documentUrl %}
-{% else %}
-  {% set docUrl = '/demo/docs.xml' %}
-{% endif %}
-{% set toolbarButtons %}
+<div class="jinn-tap-embed"{% if height %} style="--jinn-tap-embed-height: {{ height }}"{% endif %}>{%- set fmt = format or 'tei' -%}
+{%- if fmt == 'jats' and not documentUrl -%}
+  {%- set docUrl = '/demo/musk-trump-tei-publisher.xml' -%}
+{%- elif documentUrl -%}
+  {%- set docUrl = documentUrl -%}
+{%- else -%}
+  {%- set docUrl = '/demo/starter.xml' -%}
+{%- endif -%}
+{%- set toolbarButtons %}
     <li slot="toolbar">
-        <a href="#" class="toolbar-button" data-action="new" title="New document">
+        <a href="#" class="toolbar-button" data-action="new" title="New document" data-tooltip="New" data-placement="bottom">
             <i class="bi bi-file-earmark-plus"></i>
         </a>
     </li>
     <li slot="toolbar">
-        <label class="toolbar-button" title="Upload XML">
+        <label class="toolbar-button" title="Upload XML" data-tooltip="Upload XML" data-placement="bottom">
             <i class="bi bi-upload"></i>
             <input type="file" data-action="upload" accept=".xml" style="display: none;">
         </label>
     </li>
     <li slot="toolbar">
-        <a href="#" class="toolbar-button" data-action="download" title="Download XML">
+        <a href="#" class="toolbar-button" data-action="download" title="Download XML" data-tooltip="Download XML" data-placement="bottom">
             <i class="bi bi-download"></i>
         </a>
     </li>
     <li slot="toolbar">
-        <a href="#" class="toolbar-button" data-action="copy" title="Copy XML to clipboard">
+        <a href="#" class="toolbar-button" data-action="copy" title="Copy XML to clipboard" data-tooltip="Copy XML to clipboard" data-placement="bottom">
             <i class="bi bi-clipboard-plus"></i>
         </a>
     </li>
-{% endset %}
-{% if embedContent %}
-    <jinn-tap format="{{ fmt }}">{{ toolbarButtons | safe }}{{ embedContent | safe }}</jinn-tap>
-{% else %}
-    <jinn-tap format="{{ fmt }}" url="{{ docUrl | prefixUrl }}">{{ toolbarButtons | safe }}</jinn-tap>
-{% endif %}
+{%- endset -%}
+{%- if embedContent -%}
+<jinn-tap format="{{ fmt }}">{{ toolbarButtons | safe }}{{ embedContent | safe }}</jinn-tap>
+{%- else -%}
+<jinn-tap format="{{ fmt }}" url="{{ docUrl | prefixUrl }}">{{ toolbarButtons | safe }}</jinn-tap>
+{%- endif -%}
 </div>

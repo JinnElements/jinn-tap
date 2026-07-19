@@ -71,14 +71,14 @@ Providers such as **Airtable** take additional configuration (`base`, `api-key`,
 `table`, `fields`, `filter`, …) forwarded to the underlying `pb-authority` element.
 
 <aside class="callout callout-warning"><strong>Runtime dependency</strong>
-Connectors are rendered by `@teipublisher/pb-components` (a peer dependency). Load its
+<p>Connectors are rendered by <code>@teipublisher/pb-components</code> (a peer dependency). Load its
 bundle to enable the lookup panels — see
-[Installation](/guide/installation#authority-lookups).
+<a href="{{ '/guide/installation/' | prefixUrl }}#authority-lookups">Installation</a>.</p>
 </aside>
 
 ## Elements with connectors in the TEI schema
 
-The built-in TEI schema (`src/schema.json`) wires authority lookups on these elements.
+The built-in TEI schema (`src/tei-schema.json`) wires authority lookups on these elements.
 The JATS schema does not define connectors out of the box.
 
 <ul>

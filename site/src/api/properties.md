@@ -26,9 +26,9 @@ Setting `content` also synthesizes schema entries for any
 [unknown elements](/schema/unknown-elements) in the fragment.
 
 <aside class="callout"><strong>Getting XML back</strong>
-To read the document *as XML*, use the [`xml`](#xml) getter or the
-[`content-change`](/api/events#content-change) event's `body`/`xml` — the `content`
-getter returns text, not serialized markup.
+<p>To read the document <em>as XML</em>, use the <a href="#xml"><code>xml</code></a> getter or the
+<a href="{{ '/api/events/' | prefixUrl }}#content-change"><code>content-change</code></a> event's <code>body</code>/<code>xml</code> — the <code>content</code>
+getter returns text, not serialized markup.</p>
 </aside>
 
 <h2 id="xml"><code>xml</code></h2>

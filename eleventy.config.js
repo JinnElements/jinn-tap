@@ -21,7 +21,7 @@ export default async function (eleventyConfig) {
     eleventyConfig.addShortcode('jinnTapEmbed', () =>
         `<div class="jinn-tap-embed" style="--jinn-tap-embed-height: 480px">
   <pb-page api-version="1.0.0">
-    <jinn-tap format="tei" url="/jinn-tap/demo/docs.xml"></jinn-tap>
+    <jinn-tap format="tei" url="/jinn-tap/demo/starter.xml"></jinn-tap>
     <jinn-toast></jinn-toast>
   </pb-page>
 </div>`,
