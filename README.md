@@ -72,7 +72,7 @@ npm run cypress:run
 	<!-- Import the general editor styles-->
     <link rel="stylesheet" href="node_modules/@jinntec/jinntap/dist/jinn-tap.css" />
 	<!-- Import the styles for displaying TEI documents -->
-    <link rel="stylesheet" href="node_modules/@jinntec/jinntap/dist/editor-styles.css" />
+    <link rel="stylesheet" href="node_modules/@jinntec/jinntap/dist/tei-editor-styles.css" />
     <script type="module" src="node_modules/@jinntec/jinntap/dist/jinn-tap.es.js"></script>
 </head>
 <body>

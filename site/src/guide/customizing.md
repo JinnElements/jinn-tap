@@ -65,7 +65,7 @@ Full property list: [Element definitions](/schema/elements).
 
 Schema awareness alone does not make the element visible to authors. Load a
 stylesheet beside the editor chrome (the package ships
-[`editor-styles.css`](https://github.com/JinnElements/jinn-tap/blob/main/editor-styles.css)
+[`tei-editor-styles.css`](https://github.com/JinnElements/jinn-tap/blob/main/tei-editor-styles.css)
 for TEI and `jats-editor-styles.css` for JATS — override or extend them).
 
 In the editor, XML elements become HTML custom elements with a format prefix:
@@ -85,6 +85,66 @@ tei-rs[type="person"] {
 <p>Watch contrast against the page background, and prefer clear iconography on
 toolbar buttons when a colour alone is not enough.</p>
 </aside>
+
+## Styling the component chrome
+
+The editor shell (toolbar, breadcrumbs, attribute panel, connector sidebar) is
+themed with CSS custom properties on `<jinn-tap>`. All component tokens use the
+`--jinn-tap-` prefix. Set them in your host stylesheet or on the element:
+
+```css
+jinn-tap {
+  --jinn-tap-toolbar-bg: #f2eee6;
+  --jinn-tap-content-max-width: 48rem;
+}
+```
+
+### Layout and connector panels
+
+These control where the attribute panel appears and whether authority connector
+lookups dock beside the editor or open as a slide-over overlay.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `--jinn-tap-content-max-width` | `none` | Maximum width of the editor/content area. When set, a connector panel **docks** in a right column only if the component is wide enough to fit this width **plus** the connector panel without shrinking the content. Otherwise the panel opens as an overlay; a collapsed summary stays in the bottom status bar until the author clicks **Expand**. |
+| `--jinn-tap-connector-panel-width` | `20rem` | Width reserved for a docked connector panel (and for the empty column that prevents the editor from shifting when the panel opens). |
+
+Normal (non-connector) attributes always use the **bottom status bar**, even when
+a content max-width is set.
+
+### Toolbar and navigation
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `--jinn-tap-toolbar-bg` | `#f4f4f4` | Toolbar and breadcrumb background |
+| `--jinn-tap-toolbar-fg` | `#1a1a1a` | Toolbar icon and label colour |
+| `--jinn-tap-toolbar-separator` | `rgba(0,0,0,0.14)` | Dividers between toolbar groups and panel borders |
+| `--jinn-tap-toolbar-hover` | `rgba(0,0,0,0.06)` | Hover background on toolbar controls |
+| `--jinn-tap-toolbar-active` | `rgba(0,0,0,0.1)` | Active/pressed toolbar state |
+| `--jinn-tap-toolbar-mark` | `rgba(0,0,0,0.12)` | Background for active mark buttons |
+| `--jinn-tap-toolbar-mark-fg` | `#1a1a1a` | Text/icon on active mark buttons |
+| `--jinn-tap-toolbar-btn-size` | `2rem` | Toolbar button height and width |
+| `--jinn-tap-toolbar-dropdown-bg` | `#fff` | Dropdown menu background |
+| `--jinn-tap-toolbar-dropdown-border` | `rgba(0,0,0,0.16)` | Dropdown menu border |
+| `--jinn-tap-toolbar-dropdown-shadow` | `0 2px 8px rgba(0,0,0,0.12)` | Dropdown menu shadow |
+| `--jinn-tap-toolbar-focus-ring` | `rgba(0,90,180,0.45)` | Focus outline on toolbar controls |
+| `--jinn-tap-chrome-inline` | `1rem` | Horizontal padding for toolbar and breadcrumb (unset in the library stylesheet so hosts can set it without specificity fights) |
+
+When the toolbar is hosted outside the component (`toolbar="…"`), the same tokens
+apply on the `.jinn-tap-toolbar` wrapper.
+
+### Surfaces and miscellany
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `--jinn-tap-background-color` | `white` | Editor shell background (toolbar fallback, attribute panel, aside) |
+| `--jinn-tap-authority-select-bg` | `#1a1816` | “Select” button background in authority lookup results |
+| `--jinn-tap-authority-select-fg` | `#fffefc` | “Select” button text colour |
+| `--jinn-tap-authority-select-bg-hover` | `#55504a` | “Select” button hover background |
+| `--jinn-tap-overlay-color` | `rgb(255,123,0)` | Outline on inline overlay elements (e.g. pending links) |
+| `--jinn-tap-unknown-font-family` | `ui-monospace, …` | Font for synthesized unknown elements |
+| `--jinn-tap-unknown-font-size` | `0.7em` | Font size for unknown elements |
+| `--jinn-tap-unknown-color` | `#b36b00` | Colour for unknown elements |
 
 ## 3. Put it on the toolbar
 

@@ -68,7 +68,7 @@ The **breadcrumb panel** at the top below the toolbar shows you the path to the 
 
 To create a new division, use the corresponding toolbar button (or type `>>` at the start of a block — see
 [Shortcodes](#shortcodes)). The new division always becomes a
-**child** of the division you are positioned in.
+**child** of the division you are positioned in. The vertical color bars to the right of the editor content show you the nesting of divisions.
 
 ![The Division button inside the Block elements dropdown]({{ '/screenshots/divisions.png' | prefixUrl }})
 *Block-level elements like Division, Figure, and Table live in this dropdown.*
@@ -120,9 +120,11 @@ This is a feature provided by [TEI Publisher](https://tei-publisher.org) and use
 For people, places, organisations, and terms, select the span and use the matching
 toolbar button (e.g. **Person**). The attribute panel can show a **connector** search
 (GND, GeoNames, …) when
-[`@teipublisher/pb-components`](/guide/installation) is loaded. Below 1025px width
-the connector panel expands as a slide-over; on wider viewports it stays open as a
-fixed column on the right.
+[`@teipublisher/pb-components`](/guide/installation) is loaded. When there is not
+enough room to dock the panel beside the editor content (see
+[CSS variables → layout](/guide/customizing#layout-and-connector-panels)), it opens
+as a slide-over with a summary in the bottom bar; wider layouts dock it in a fixed
+column on the right without shifting the text.
 
 Pick an entry with the link control to fill the `key` (or similar) attribute. Selecting
 from the registry applies that attribute automatically — you usually do not need

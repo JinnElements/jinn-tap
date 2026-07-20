@@ -50,7 +50,8 @@ import { TableMenu } from './extensions/tables/TableMenu.js';
  * present, the toolbar will be created inside the jinn-tap element.
  * @attr {string} sidebar - A selector pointing to an HTML element which should be used to host the
  * attribute panel. If not present, the panel is rendered as a bottom dock (with a slide-over
- * drawer for authority connectors below 1025px, or a fixed right column at wider viewports)
+ * drawer for authority connectors when there is not enough room to dock the
+ * panel beside `--jinn-tap-content-max-width` without resizing the content)
  * inside the jinn-tap element.
  * @attr {boolean} fullscreen - When present, adds a toolbar button that toggles browser
  * fullscreen on the editor (or its nearest `.jinn-tap-embed` wrapper).

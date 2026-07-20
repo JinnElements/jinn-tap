@@ -20,8 +20,11 @@ embedEditor: true
 ## Toolbar and sidebar slots
 
 The component renders its own toolbar and attribute panel (as a bottom dock by
-default; authority connectors open as a slide-over below 1025px, or a fixed right
-column at wider viewports), but you can inject extra controls with named slots
+default). Authority connector panels dock in a right column when the component is
+wide enough to fit
+[`--jinn-tap-content-max-width`](/guide/customizing#layout-and-connector-panels)
+plus the connector panel without shrinking the content; otherwise they open as a
+slide-over overlay. You can inject extra controls with named slots
 (`toolbar`, `aside`), and place the attribute panel or toolbar in your own
 containers with the
 [`toolbar`](/api/attributes#toolbar) / [`sidebar`](/api/attributes#sidebar)

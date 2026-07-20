@@ -30,10 +30,12 @@ import { Mark } from '@tiptap/pm/model';
  * @param {Object} schemaDef - The schema definition.
  */
 export class AttributePanel {
-    /** Viewport width at which connector panels stay open as a fixed right column. */
-    static WIDE_LAYOUT_MQ = '(min-width: 1025px)';
+    static CONTENT_MAX_WIDTH_VAR = '--jinn-tap-content-max-width';
+    static CONNECTOR_PANEL_WIDTH_VAR = '--jinn-tap-connector-panel-width';
+    static DEFAULT_CONNECTOR_PANEL_WIDTH = '20rem';
 
     constructor(editor, schemaDef) {
+        this.host = editor;
         this.editor = editor.tiptap;
         this.schemaDef = schemaDef;
         this.externalSidebar = editor.externalSidebar;
@@ -51,8 +53,61 @@ export class AttributePanel {
         this.overlay.style.display = 'none';
     }
 
+    static lengthPx(host, varName, fallback = null) {
+        if (!host || typeof getComputedStyle === 'undefined') {
+            return fallback != null ? AttributePanel._probeLengthPx(host, fallback) : null;
+        }
+        const raw = getComputedStyle(host).getPropertyValue(varName).trim();
+        if (!raw || raw === 'none' || raw === 'initial' || raw === 'unset') {
+            return fallback != null ? AttributePanel._probeLengthPx(host, fallback) : null;
+        }
+        if (!/^[\d.]+\s*(px|rem|em|vw|vh|%|ch|ex)$/.test(raw)) {
+            return fallback != null ? AttributePanel._probeLengthPx(host, fallback) : null;
+        }
+        return AttributePanel._probeLengthPx(host, raw);
+    }
+
+    static _probeLengthPx(host, length) {
+        const probe = document.createElement('div');
+        probe.style.cssText = 'position:absolute;visibility:hidden;height:0;width:0';
+        probe.style.width = length;
+        (host || document.documentElement).appendChild(probe);
+        const px = probe.getBoundingClientRect().width;
+        probe.remove();
+        return px;
+    }
+
+    _hasRoomForDockedPanel() {
+        if (!this.host) return false;
+        const hostWidth = this.host.getBoundingClientRect().width;
+        const contentMax = AttributePanel.lengthPx(this.host, AttributePanel.CONTENT_MAX_WIDTH_VAR);
+        if (contentMax == null) {
+            return false;
+        }
+        const panelWidth = AttributePanel.lengthPx(
+            this.host,
+            AttributePanel.CONNECTOR_PANEL_WIDTH_VAR,
+            AttributePanel.DEFAULT_CONNECTOR_PANEL_WIDTH,
+        );
+        return hostWidth >= contentMax + panelWidth;
+    }
+
     _isWideLayout() {
-        return typeof window !== 'undefined' && window.matchMedia(AttributePanel.WIDE_LAYOUT_MQ).matches;
+        return this.host?.classList.contains('is-wide-layout') ?? false;
+    }
+
+    _syncWideLayoutClass() {
+        if (this.externalSidebar || !this.host) return;
+        const wide = this._hasRoomForDockedPanel();
+        const wasWide = this.host.classList.contains('is-wide-layout');
+        this.host.classList.toggle('is-wide-layout', wide);
+        if (!this.panel?.classList.contains('has-connector')) return;
+        if (wide && !wasWide) {
+            this.expandSheet();
+        } else if (!wide && wasWide && this.panel.classList.contains('is-expanded')) {
+            this.panel.classList.remove('is-expanded');
+            this._syncSheetToggle();
+        }
     }
 
     setupEventListeners(component) {
@@ -77,15 +132,10 @@ export class AttributePanel {
             this.updatePanel(node, pos);
         });
 
-        // Above 1024px, connector panels stay expanded as a fixed right column.
-        if (!this.externalSidebar && typeof window !== 'undefined') {
-            this._wideMq = window.matchMedia(AttributePanel.WIDE_LAYOUT_MQ);
-            this._onWideMqChange = () => {
-                if (this._wideMq.matches && this.panel?.classList.contains('has-connector')) {
-                    this.expandSheet();
-                }
-            };
-            this._wideMq.addEventListener('change', this._onWideMqChange);
+        if (!this.externalSidebar && typeof window !== 'undefined' && typeof ResizeObserver !== 'undefined') {
+            this._wideLayoutObserver = new ResizeObserver(() => this._syncWideLayoutClass());
+            this._wideLayoutObserver.observe(this.host);
+            this._syncWideLayoutClass();
         }
     }
 
@@ -154,6 +204,7 @@ export class AttributePanel {
         if (!this.panel?.classList.contains('has-connector')) return;
         this.panel.classList.add('is-expanded');
         this._syncSheetToggle();
+        this._syncWideLayoutClass();
     }
 
     collapseSheet() {
@@ -213,13 +264,15 @@ export class AttributePanel {
             ev.stopPropagation();
             this.panel.classList.toggle('is-expanded');
             this._syncSheetToggle();
+            this._syncWideLayoutClass();
         });
 
         chrome.append(summary, toggle);
         this.panel.prepend(chrome);
-        if (this._isWideLayout()) {
+        if (this._hasRoomForDockedPanel()) {
             this.expandSheet();
         } else {
+            this._syncWideLayoutClass();
             this._syncSheetToggle();
         }
     }

@@ -23,7 +23,7 @@ The package ships as an ES module with the web component and its styles under `d
 
   <!-- JinnTap: the editor chrome and the styles for displaying TEI documents -->
   <link rel="stylesheet" href="node_modules/@jinntec/jinntap/dist/jinn-tap.css" />
-  <link rel="stylesheet" href="node_modules/@jinntec/jinntap/dist/editor-styles.css" />
+  <link rel="stylesheet" href="node_modules/@jinntec/jinntap/dist/tei-editor-styles.css" />
 
   <script type="module" src="node_modules/@jinntec/jinntap/dist/jinn-tap.es.js"></script>
 </head>

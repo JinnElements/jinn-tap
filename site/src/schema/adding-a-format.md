@@ -115,7 +115,7 @@ namespace / wrappers.
 
 Editor look-and-feel is prefix-specific:
 
-- [`editor-styles.css`](https://github.com/JinnElements/jinn-tap/blob/main/editor-styles.css) — `tei-*`
+- [`tei-editor-styles.css`](https://github.com/JinnElements/jinn-tap/blob/main/tei-editor-styles.css) — `tei-*`
 - [`jats-editor-styles.css`](https://github.com/JinnElements/jinn-tap/blob/main/jats-editor-styles.css) — `jats-*`
 
 Add e.g. `docbook-editor-styles.css` targeting `db-*` and load it beside the

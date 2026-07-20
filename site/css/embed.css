@@ -1,8 +1,8 @@
 .jinn-tap-embed {
-    /* JinnTap design system v1.0 — scoped to the docs embed. Overriding these
-       design tokens re-skins the embed subtree. Structural chrome (toolbar,
-       breadcrumbs, attribute dock, `fill` layout) lives in the library
-       `jinn-tap.css`; this file only supplies the docs palette and frame. */
+    /* JinnTap design system v1.0 — scoped to the docs embed. Overriding
+       `--jinn-tap-*` tokens on `jinn-tap` re-skins the embed subtree. Structural
+       chrome (toolbar, breadcrumbs, attribute dock, `fill` layout) lives in the
+       library `jinn-tap.css`; this file supplies the docs palette and frame. */
 
     /* Palette (warm neutrals) */
     --ink: #1A1816;
@@ -29,16 +29,17 @@
     --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
     /* Toolbar surfaces: warm neutrals, with violet for the active-mark state. */
-    --toolbar-bg: #F2EEE6;
-    --toolbar-separator: rgba(26, 24, 22, 0.12);
-    --toolbar-hover: rgba(26, 24, 22, 0.06);
-    --toolbar-active: rgba(26, 24, 22, 0.10);
-    --toolbar-mark: rgba(108, 76, 240, 0.16);
-    --toolbar-btn-size: 2rem;
+    --jinn-tap-toolbar-bg: #F2EEE6;
+    --jinn-tap-toolbar-separator: rgba(26, 24, 22, 0.12);
+    --jinn-tap-toolbar-hover: rgba(26, 24, 22, 0.06);
+    --jinn-tap-toolbar-active: rgba(26, 24, 22, 0.10);
+    --jinn-tap-toolbar-mark: rgba(108, 76, 240, 0.16);
+    --jinn-tap-toolbar-btn-size: 2rem;
     /* Keep toolbar + breadcrumb + status dock in view; editor scrolls inside */
     --embed-chrome-offset: 10rem;
     --embed-max-height: calc(100dvh - var(--embed-chrome-offset));
     --jinn-tap-embed-height: min(42rem, var(--embed-max-height));
+    --jinn-tap-content-max-width: 1280px;
     border: 1px solid var(--line);
     border-radius: var(--radius);
     padding: 0;
@@ -59,12 +60,12 @@ pb-page {
 
 .jinn-tap-embed jinn-tap {
     --jinn-tap-background-color: var(--paper-strong);
-    --toolbar-fg: var(--ink);
-    --toolbar-mark-fg: var(--accent-dark);
-    --toolbar-dropdown-bg: var(--paper-strong);
-    --toolbar-dropdown-border: var(--line);
-    --toolbar-dropdown-shadow: var(--shadow);
-    --toolbar-focus-ring: rgba(108, 76, 240, 0.45);
+    --jinn-tap-toolbar-fg: var(--ink);
+    --jinn-tap-toolbar-mark-fg: var(--accent-dark);
+    --jinn-tap-toolbar-dropdown-bg: var(--paper-strong);
+    --jinn-tap-toolbar-dropdown-border: var(--line);
+    --jinn-tap-toolbar-dropdown-shadow: var(--shadow);
+    --jinn-tap-toolbar-focus-ring: rgba(108, 76, 240, 0.45);
     width: 100%;
 }
 
@@ -153,7 +154,7 @@ pb-page {
 }
 
 .jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel .occurrences {
-    border-top-color: var(--toolbar-separator);
+    border-top-color: var(--jinn-tap-toolbar-separator);
 }
 
 .jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel .occurrences h5 {
@@ -173,15 +174,13 @@ pb-page {
     box-shadow: -12px 0 28px rgba(26, 24, 22, 0.14);
 }
 
-@media (min-width: 1025px) {
-    .jinn-tap-embed jinn-tap:has(> .jinn-tap-aside .attribute-panel.has-connector.is-expanded) > .jinn-tap-aside {
-        border-left-color: var(--line);
-        background: var(--paper-strong);
-    }
+.jinn-tap-embed jinn-tap.is-wide-layout:has(> .jinn-tap-aside .attribute-panel.has-connector.is-expanded) > .jinn-tap-aside {
+    border-left-color: var(--line);
+    background: var(--paper-strong);
+}
 
-    .jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded {
-        box-shadow: none;
-    }
+.jinn-tap-embed jinn-tap.is-wide-layout .attribute-panel.has-connector.is-expanded {
+    box-shadow: none;
 }
 
 .jinn-tap-embed:fullscreen {
@@ -199,7 +198,7 @@ pb-page {
 }
 
 .jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded > .attribute-panel__chrome {
-    border-bottom-color: var(--toolbar-separator);
+    border-bottom-color: var(--jinn-tap-toolbar-separator);
 }
 
 .jinn-tap-embed jinn-tap .attribute-panel__info .label a {
@@ -256,7 +255,7 @@ pb-page {
 
 .jinn-tap-embed jinn-tap pb-authority-lookup::part(edit-entity):hover,
 .jinn-tap-embed jinn-tap pb-authority-lookup::part(add-entity):hover {
-    background: var(--toolbar-hover);
+    background: var(--jinn-tap-toolbar-hover);
 }
 
 /* Don't let .prose list resets break the toolbar layout on doc pages */

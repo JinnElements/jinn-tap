@@ -1,20 +1,29 @@
 jinn-tap {
     /* Toolbar design tokens — hosts/themes may override these. */
-    --toolbar-bg: #f4f4f4;
-    --toolbar-fg: #1a1a1a;
-    --toolbar-separator: rgba(0, 0, 0, 0.14);
-    --toolbar-hover: rgba(0, 0, 0, 0.06);
-    --toolbar-active: rgba(0, 0, 0, 0.1);
-    --toolbar-mark: rgba(0, 0, 0, 0.12);
-    --toolbar-mark-fg: #1a1a1a;
-    --toolbar-btn-size: 2rem;
-    --toolbar-dropdown-bg: #fff;
-    --toolbar-dropdown-border: rgba(0, 0, 0, 0.16);
-    --toolbar-dropdown-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    --toolbar-focus-ring: rgba(0, 90, 180, 0.45);
-    /* --jinn-tap-chrome-inline is intentionally unset here so hosts can set it
+    --jinn-tap-toolbar-bg: #f4f4f4;
+    --jinn-tap-toolbar-fg: #1a1a1a;
+    --jinn-tap-toolbar-separator: rgba(0, 0, 0, 0.14);
+    --jinn-tap-toolbar-hover: rgba(0, 0, 0, 0.06);
+    --jinn-tap-toolbar-active: rgba(0, 0, 0, 0.1);
+    --jinn-tap-toolbar-mark: rgba(0, 0, 0, 0.12);
+    --jinn-tap-toolbar-mark-fg: #1a1a1a;
+    --jinn-tap-toolbar-btn-size: 2rem;
+    --jinn-tap-toolbar-dropdown-bg: #fff;
+    --jinn-tap-toolbar-dropdown-border: rgba(0, 0, 0, 0.16);
+    --jinn-tap-toolbar-dropdown-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    --jinn-tap-toolbar-focus-ring: rgba(0, 90, 180, 0.45);
+    /* --jinn-tap-content-max-width, --jinn-tap-connector-panel-width and
+       --jinn-tap-chrome-inline are intentionally unset here so hosts can set them
        without losing to this stylesheet when it loads/injects after theirs.
-       Consumers fall back via var(--jinn-tap-chrome-inline, 1rem). */
+       Consumers fall back via var(--name, default):
+       - --jinn-tap-content-max-width: caps editor content width; when a connector
+         panel opens, it docks beside the content only if host width fits content +
+         panel without shrinking content. Unset/`none` = content fills the editor
+         and the panel always overlays. Falls back to `none`.
+       - --jinn-tap-connector-panel-width: width of the docked connector panel.
+         Falls back to `20rem`.
+       - --jinn-tap-chrome-inline: horizontal inset for toolbar/breadcrumb. Falls
+         back to `1rem`. */
 
     display: grid;
     position: relative;
@@ -42,8 +51,8 @@ jinn-tap > nav:has(.toolbar) {
        themes like Pico apply negative margins to `nav li a` that would otherwise
        pull the first button past the nav padding. */
     padding: 0.5rem 0;
-    background-color: var(--toolbar-bg, var(--jinn-tap-background-color, white));
-    border-bottom: 1px solid var(--toolbar-separator);
+    background-color: var(--jinn-tap-toolbar-bg, var(--jinn-tap-background-color, white));
+    border-bottom: 1px solid var(--jinn-tap-toolbar-separator);
 }
 
 /*
@@ -84,18 +93,18 @@ jinn-tap .toolbar.jinn-tap-toolbar {
 
 .jinn-tap-toolbar {
     /* Same defaults as on jinn-tap, for when the toolbar is hosted externally. */
-    --toolbar-bg: #f4f4f4;
-    --toolbar-fg: #1a1a1a;
-    --toolbar-separator: rgba(0, 0, 0, 0.14);
-    --toolbar-hover: rgba(0, 0, 0, 0.06);
-    --toolbar-active: rgba(0, 0, 0, 0.1);
-    --toolbar-mark: rgba(0, 0, 0, 0.12);
-    --toolbar-mark-fg: #1a1a1a;
-    --toolbar-btn-size: 2rem;
-    --toolbar-dropdown-bg: #fff;
-    --toolbar-dropdown-border: rgba(0, 0, 0, 0.16);
-    --toolbar-dropdown-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    --toolbar-focus-ring: rgba(0, 90, 180, 0.45);
+    --jinn-tap-toolbar-bg: #f4f4f4;
+    --jinn-tap-toolbar-fg: #1a1a1a;
+    --jinn-tap-toolbar-separator: rgba(0, 0, 0, 0.14);
+    --jinn-tap-toolbar-hover: rgba(0, 0, 0, 0.06);
+    --jinn-tap-toolbar-active: rgba(0, 0, 0, 0.1);
+    --jinn-tap-toolbar-mark: rgba(0, 0, 0, 0.12);
+    --jinn-tap-toolbar-mark-fg: #1a1a1a;
+    --jinn-tap-toolbar-btn-size: 2rem;
+    --jinn-tap-toolbar-dropdown-bg: #fff;
+    --jinn-tap-toolbar-dropdown-border: rgba(0, 0, 0, 0.16);
+    --jinn-tap-toolbar-dropdown-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    --jinn-tap-toolbar-focus-ring: rgba(0, 90, 180, 0.45);
 }
 
 .jinn-tap-toolbar,
@@ -123,14 +132,14 @@ jinn-tap .toolbar > li {
 jinn-tap .toolbar > li:has(> details.dropdown):not(:first-child) {
     margin-left: 0.45rem;
     padding-left: 0.55rem;
-    border-left: 1px solid var(--toolbar-separator);
+    border-left: 1px solid var(--jinn-tap-toolbar-separator);
 }
 
 .jinn-tap-toolbar a,
 jinn-tap .toolbar a,
 .jinn-tap-toolbar label[data-tooltip].toolbar-button,
 jinn-tap label[data-tooltip].toolbar-button {
-    color: var(--toolbar-fg);
+    color: var(--jinn-tap-toolbar-fg);
     text-decoration: none;
     outline: none;
     box-shadow: none;
@@ -152,15 +161,15 @@ jinn-tap .toolbar a.outline.toolbar-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: var(--toolbar-btn-size);
-    height: var(--toolbar-btn-size);
-    min-width: var(--toolbar-btn-size);
-    min-height: var(--toolbar-btn-size);
+    width: var(--jinn-tap-toolbar-btn-size);
+    height: var(--jinn-tap-toolbar-btn-size);
+    min-width: var(--jinn-tap-toolbar-btn-size);
+    min-height: var(--jinn-tap-toolbar-btn-size);
     padding: 0;
     border: none;
     border-radius: 5px;
     background: transparent;
-    color: var(--toolbar-fg);
+    color: var(--jinn-tap-toolbar-fg);
     font-size: inherit;
     line-height: 1;
     cursor: pointer;
@@ -173,8 +182,8 @@ jinn-tap .toolbar a.outline.toolbar-button {
 jinn-tap .toolbar-button:hover,
 .jinn-tap-toolbar a.outline.toolbar-button:hover,
 jinn-tap .toolbar a.outline.toolbar-button:hover {
-    background: var(--toolbar-hover);
-    color: var(--toolbar-fg);
+    background: var(--jinn-tap-toolbar-hover);
+    color: var(--jinn-tap-toolbar-fg);
     border: none;
 }
 
@@ -182,15 +191,15 @@ jinn-tap .toolbar a.outline.toolbar-button:hover {
 jinn-tap .toolbar-button:active,
 .jinn-tap-toolbar a.outline.toolbar-button:active,
 jinn-tap .toolbar a.outline.toolbar-button:active {
-    background: var(--toolbar-active);
+    background: var(--jinn-tap-toolbar-active);
 }
 
 .jinn-tap-toolbar .toolbar-button.active,
 jinn-tap .toolbar-button.active,
 .jinn-tap-toolbar a.outline.toolbar-button.active,
 jinn-tap .toolbar a.outline.toolbar-button.active {
-    background: var(--toolbar-mark);
-    color: var(--toolbar-mark-fg);
+    background: var(--jinn-tap-toolbar-mark);
+    color: var(--jinn-tap-toolbar-mark-fg);
 }
 
 .jinn-tap-toolbar .toolbar-button.disabled,
@@ -210,7 +219,7 @@ jinn-tap .toolbar-button:focus-visible,
 jinn-tap .toolbar a.outline.toolbar-button:focus-visible,
 .jinn-tap-toolbar details.dropdown > summary:focus-visible,
 jinn-tap .toolbar details.dropdown > summary:focus-visible {
-    outline: 2px solid var(--toolbar-focus-ring);
+    outline: 2px solid var(--jinn-tap-toolbar-focus-ring);
     outline-offset: 1px;
 }
 
@@ -233,13 +242,13 @@ jinn-tap .toolbar details.dropdown > summary {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: var(--toolbar-btn-size);
-    height: var(--toolbar-btn-size);
+    min-width: var(--jinn-tap-toolbar-btn-size);
+    height: var(--jinn-tap-toolbar-btn-size);
     padding: 0 0.35rem;
     border: none;
     border-radius: 5px;
     background: transparent;
-    color: var(--toolbar-fg);
+    color: var(--jinn-tap-toolbar-fg);
     list-style: none;
     cursor: pointer;
     transition: background-color 0.1s ease;
@@ -255,12 +264,12 @@ jinn-tap .toolbar details.dropdown > summary::marker {
 
 .jinn-tap-toolbar details.dropdown > summary:hover,
 jinn-tap .toolbar details.dropdown > summary:hover {
-    background: var(--toolbar-hover);
+    background: var(--jinn-tap-toolbar-hover);
 }
 
 .jinn-tap-toolbar details.dropdown[open] > summary,
 jinn-tap .toolbar details.dropdown[open] > summary {
-    background: var(--toolbar-active);
+    background: var(--jinn-tap-toolbar-active);
 }
 
 .jinn-tap-toolbar details.dropdown > ul,
@@ -273,10 +282,10 @@ jinn-tap .toolbar details.dropdown > ul {
     margin: 0;
     padding: 0.35rem;
     list-style: none;
-    background: var(--toolbar-dropdown-bg);
-    border: 1px solid var(--toolbar-dropdown-border);
+    background: var(--jinn-tap-toolbar-dropdown-bg);
+    border: 1px solid var(--jinn-tap-toolbar-dropdown-border);
     border-radius: 8px;
-    box-shadow: var(--toolbar-dropdown-shadow);
+    box-shadow: var(--jinn-tap-toolbar-dropdown-shadow);
 }
 
 .jinn-tap-toolbar details.dropdown > ul a,
@@ -285,15 +294,15 @@ jinn-tap .toolbar details.dropdown > ul a {
     padding: 0.4rem 0.55rem;
     border: none;
     border-radius: 5px;
-    color: var(--toolbar-fg);
+    color: var(--jinn-tap-toolbar-fg);
     text-decoration: none;
     white-space: nowrap;
 }
 
 .jinn-tap-toolbar details.dropdown > ul a:hover,
 jinn-tap .toolbar details.dropdown > ul a:hover {
-    background: var(--toolbar-hover);
-    color: var(--toolbar-fg);
+    background: var(--jinn-tap-toolbar-hover);
+    color: var(--jinn-tap-toolbar-fg);
 }
 
 .jinn-tap-toolbar details.dropdown > ul li + li,
@@ -314,7 +323,7 @@ jinn-tap > nav.navigation-panel {
     padding: 0.3rem var(--jinn-tap-chrome-inline, 1rem);
     background-color: var(--jinn-tap-background-color, white);
     border: none;
-    border-bottom: 1px solid var(--toolbar-separator, rgba(0, 0, 0, 0.14));
+    border-bottom: 1px solid var(--jinn-tap-toolbar-separator, rgba(0, 0, 0, 0.14));
     /* Host themes (e.g. Pico) set nowrap/ellipsis on [aria-label=breadcrumb]. */
     white-space: normal;
     font-size: 0.78rem;
@@ -390,7 +399,7 @@ jinn-tap > nav.navigation-panel[aria-label='breadcrumb'] ul li button {
 
 jinn-tap > nav.navigation-panel[aria-label='breadcrumb'] ul li a:hover,
 jinn-tap > nav.navigation-panel[aria-label='breadcrumb'] ul li button:hover {
-    background: var(--toolbar-hover, rgba(0, 0, 0, 0.06));
+    background: var(--jinn-tap-toolbar-hover, rgba(0, 0, 0, 0.06));
     opacity: 1;
     text-decoration: none;
 }
@@ -399,6 +408,8 @@ jinn-tap .editor-area,
 jinn-tap .code-area {
     grid-area: editor;
     min-height: 1rem;
+    width: 100%;
+    max-width: var(--jinn-tap-content-max-width, none);
 }
 
 jinn-tap .code-area {
@@ -430,7 +441,7 @@ jinn-tap > .jinn-tap-aside .user-info:empty {
 
 jinn-tap > .jinn-tap-aside .user-info:not(:empty) {
     padding: 0.25rem 0.65rem 0;
-    border-top: 1px solid var(--toolbar-separator, rgba(0, 0, 0, 0.14));
+    border-top: 1px solid var(--jinn-tap-toolbar-separator, rgba(0, 0, 0, 0.14));
 }
 
 /* ── Attribute panel: bottom dock (internal) ─────────────────────── */
@@ -445,7 +456,7 @@ jinn-tap .attribute-panel:not(:empty) {
     align-items: center;
     gap: 0.35rem 0.65rem;
     padding: 0.35rem 0.65rem 0.45rem;
-    border-top: 1px solid var(--toolbar-separator, rgba(0, 0, 0, 0.14));
+    border-top: 1px solid var(--jinn-tap-toolbar-separator, rgba(0, 0, 0, 0.14));
     max-height: 9.5rem;
     overflow-y: auto;
 }
@@ -454,7 +465,7 @@ jinn-tap .attribute-panel:not(:empty) h4 {
     flex: 0 0 auto;
     margin: 0;
     padding-right: 0.65rem;
-    border-right: 1px solid var(--toolbar-separator, rgba(0, 0, 0, 0.14));
+    border-right: 1px solid var(--jinn-tap-toolbar-separator, rgba(0, 0, 0, 0.14));
     font-size: 0.85rem;
     font-weight: 700;
     line-height: 1.3;
@@ -550,7 +561,7 @@ jinn-tap > .jinn-tap-aside .attribute-panel footer button {
     min-height: 0;
     margin: 0;
     padding: 0.22rem 0.45rem;
-    border: 1px solid var(--toolbar-separator, rgba(0, 0, 0, 0.14));
+    border: 1px solid var(--jinn-tap-toolbar-separator, rgba(0, 0, 0, 0.14));
     border-radius: 4px;
     background: var(--jinn-tap-background-color, white);
     color: inherit;
@@ -562,7 +573,7 @@ jinn-tap > .jinn-tap-aside .attribute-panel footer button {
 }
 
 jinn-tap > .jinn-tap-aside .attribute-panel footer button:hover {
-    background: var(--toolbar-hover, rgba(0, 0, 0, 0.06));
+    background: var(--jinn-tap-toolbar-hover, rgba(0, 0, 0, 0.06));
 }
 
 jinn-tap > .jinn-tap-aside .attribute-panel footer button svg {
@@ -575,7 +586,7 @@ jinn-tap > .jinn-tap-aside .attribute-panel .occurrences {
     flex: 1 1 100%;
     margin: 0.25rem 0 0;
     padding-top: 0.35rem;
-    border-top: 1px solid var(--toolbar-separator, rgba(0, 0, 0, 0.14));
+    border-top: 1px solid var(--jinn-tap-toolbar-separator, rgba(0, 0, 0, 0.14));
     font-size: 0.78rem;
     max-height: 5.5rem;
     overflow-y: auto;
@@ -632,7 +643,7 @@ jinn-tap > .jinn-tap-aside .attribute-panel .occurrences li {
     flex: 0 0 auto;
     margin: 0;
     padding: 0.25rem 0.55rem;
-    border: 1px solid var(--toolbar-separator, rgba(0, 0, 0, 0.14));
+    border: 1px solid var(--jinn-tap-toolbar-separator, rgba(0, 0, 0, 0.14));
     border-radius: 4px;
     background: transparent;
     font: inherit;
@@ -642,7 +653,7 @@ jinn-tap > .jinn-tap-aside .attribute-panel .occurrences li {
 }
 
 .attribute-panel__toggle:hover {
-    background: var(--toolbar-hover, rgba(0, 0, 0, 0.05));
+    background: var(--jinn-tap-toolbar-hover, rgba(0, 0, 0, 0.05));
 }
 
 jinn-tap .attribute-panel.has-connector:not(:empty) {
@@ -655,6 +666,7 @@ jinn-tap .attribute-panel.has-connector > .attribute-panel__chrome {
     min-width: 0;
 }
 
+jinn-tap .attribute-panel.has-connector:not(.is-expanded) h4,
 jinn-tap .attribute-panel.has-connector:not(.is-expanded) form,
 jinn-tap .attribute-panel.has-connector:not(.is-expanded) footer,
 jinn-tap .attribute-panel.has-connector:not(.is-expanded) .occurrences,
@@ -681,14 +693,14 @@ jinn-tap .attribute-panel.has-connector.is-expanded {
     overflow-y: auto;
     background: var(--jinn-tap-background-color, white);
     border: none;
-    border-left: 1px solid var(--toolbar-separator, rgba(0, 0, 0, 0.14));
+    border-left: 1px solid var(--jinn-tap-toolbar-separator, rgba(0, 0, 0, 0.14));
     box-shadow: -12px 0 28px rgba(0, 0, 0, 0.14);
 }
 
 jinn-tap .attribute-panel.has-connector.is-expanded > .attribute-panel__chrome {
     flex: 0 0 auto;
     padding-bottom: 0.35rem;
-    border-bottom: 1px solid var(--toolbar-separator, rgba(0, 0, 0, 0.14));
+    border-bottom: 1px solid var(--jinn-tap-toolbar-separator, rgba(0, 0, 0, 0.14));
 }
 
 jinn-tap .attribute-panel.has-connector.is-expanded > .attribute-panel__info:not(:empty) {
@@ -785,14 +797,14 @@ jinn-tap pb-authority-lookup::part(select):hover {
 
 jinn-tap pb-authority-lookup::part(edit-entity),
 jinn-tap pb-authority-lookup::part(add-entity) {
-    color: var(--toolbar-fg, #1a1a1a);
-    background: var(--toolbar-hover, rgba(0, 0, 0, 0.06));
+    color: var(--jinn-tap-toolbar-fg, #1a1a1a);
+    background: var(--jinn-tap-toolbar-hover, rgba(0, 0, 0, 0.06));
     border-radius: 4px;
 }
 
 jinn-tap pb-authority-lookup::part(edit-entity):hover,
 jinn-tap pb-authority-lookup::part(add-entity):hover {
-    background: var(--toolbar-active, rgba(0, 0, 0, 0.1));
+    background: var(--jinn-tap-toolbar-active, rgba(0, 0, 0, 0.1));
 }
 
 jinn-tap .attribute-panel.has-connector.is-expanded footer {
@@ -814,45 +826,70 @@ jinn-tap .attribute-panel.has-connector.is-expanded .occurrences ul {
     overflow: visible;
 }
 
-/* Wide viewports: connector panel is a fixed right column instead of an overlay. */
-@media (min-width: 1025px) {
-    jinn-tap:has(> .jinn-tap-aside .attribute-panel.has-connector.is-expanded) {
-        grid-template-columns: minmax(0, 1fr) minmax(16rem, 20rem);
-        grid-template-rows: min-content min-content minmax(0, 1fr);
-        grid-template-areas:
-            "toolbar toolbar"
-            "breadcrumb breadcrumb"
-            "editor aside";
-    }
+/* Wide layout: reserve a right column so opening a connector panel does not
+   shift the editor. Normal attributes stay in the bottom status bar; only an
+   expanded connector panel moves into the reserved column. */
+jinn-tap.is-wide-layout {
+    grid-template-columns: minmax(0, 1fr) var(--jinn-tap-connector-panel-width, 20rem);
+    grid-template-rows: min-content min-content minmax(0, 1fr) min-content;
+    grid-template-areas:
+        "toolbar toolbar"
+        "breadcrumb breadcrumb"
+        "editor reserved"
+        "aside aside";
+}
 
-    jinn-tap[fill]:has(> .jinn-tap-aside .attribute-panel.has-connector.is-expanded) {
-        grid-template-rows: auto auto minmax(0, 1fr);
-    }
+jinn-tap.is-wide-layout::after {
+    content: '';
+    grid-area: reserved;
+    min-height: 0;
+    pointer-events: none;
+    border-left: 1px solid var(--jinn-tap-toolbar-separator, rgba(0, 0, 0, 0.14));
+}
 
-    jinn-tap:has(> .jinn-tap-aside .attribute-panel.has-connector.is-expanded) > .jinn-tap-aside {
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-        overflow: hidden;
-        border-left: 1px solid var(--toolbar-separator, rgba(0, 0, 0, 0.14));
-    }
+jinn-tap.is-wide-layout[fill] {
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+}
 
-    jinn-tap .attribute-panel.has-connector.is-expanded {
-        position: static;
-        top: auto;
-        right: auto;
-        bottom: auto;
-        width: auto;
-        flex: 1 1 auto;
-        min-height: 0;
-        z-index: auto;
-        box-shadow: none;
-        border-left: none;
-    }
+jinn-tap.is-wide-layout:has(> .jinn-tap-aside .attribute-panel.has-connector.is-expanded) {
+    grid-template-rows: min-content min-content minmax(0, 1fr);
+    grid-template-areas:
+        "toolbar toolbar"
+        "breadcrumb breadcrumb"
+        "editor aside";
+}
 
-    jinn-tap .attribute-panel.has-connector .attribute-panel__toggle {
-        display: none;
-    }
+jinn-tap.is-wide-layout:has(> .jinn-tap-aside .attribute-panel.has-connector.is-expanded)[fill] {
+    grid-template-rows: auto auto minmax(0, 1fr);
+}
+
+jinn-tap.is-wide-layout:has(> .jinn-tap-aside .attribute-panel.has-connector.is-expanded)::after {
+    display: none;
+}
+
+jinn-tap.is-wide-layout:has(> .jinn-tap-aside .attribute-panel.has-connector.is-expanded) > .jinn-tap-aside {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    border-left: 1px solid var(--jinn-tap-toolbar-separator, rgba(0, 0, 0, 0.14));
+}
+
+jinn-tap.is-wide-layout .attribute-panel.has-connector.is-expanded {
+    position: static;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    width: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    z-index: auto;
+    box-shadow: none;
+    border-left: none;
+}
+
+jinn-tap.is-wide-layout .attribute-panel.has-connector .attribute-panel__toggle {
+    display: none;
 }
 
 jinn-tap:fullscreen {

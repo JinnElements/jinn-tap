@@ -29,7 +29,7 @@
     "dist/index.es.js",
     "dist/index.es.js.map",
     "dist/index.d.ts",
-    "dist/editor-styles.css",
+    "dist/tei-editor-styles.css",
     "dist/jinn-tap.css",
     "dist/jinntap-logo.png",
     "dist/jinntap-logo-128.png"

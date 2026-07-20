@@ -62,9 +62,16 @@ See the [Schema reference](/schema/).
 <h3 id="sidebar"><code>sidebar</code></h3>
 
 CSS selector of an element to host the attribute panel. If omitted, the panel is
-rendered as a bottom dock inside the component. Authority connectors expand into a
-slide-over drawer below 1025px width, or stay open as a fixed right column at wider
-viewports. Use `sidebar` when you want a permanent side panel in your own layout.
+rendered as a bottom dock inside the component. Attributes on elements with an
+authority [connector](/schema/attributes#connectors) use a connector panel whose
+layout is controlled by
+[`--jinn-tap-content-max-width`](/guide/customizing#layout-and-connector-panels)
+and
+[`--jinn-tap-connector-panel-width`](/guide/customizing#layout-and-connector-panels):
+when there is room beside the capped content width, the panel docks in a reserved
+right column; otherwise it opens as a slide-over overlay with a collapsed summary
+in the bottom bar. Normal attributes always use the bottom dock. Use `sidebar`
+when you want a permanent side panel in your own layout.
 
 <h3 id="toolbar"><code>toolbar</code></h3>
 
