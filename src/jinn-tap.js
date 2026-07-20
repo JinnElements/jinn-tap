@@ -19,7 +19,7 @@ import { importXml, exportXml, createDocument } from './util/xml.js';
 import { getFormat } from './util/xml-formats.js';
 import { generateUsername } from 'unique-username-generator';
 import xmlFormat from 'xml-formatter';
-import schema from './schema.json';
+import schema from './tei-schema.json';
 import jatsSchema from './jats-schema.json';
 import './jinn-tap.css';
 import { TableMenu } from './extensions/tables/TableMenu.js';
@@ -48,8 +48,16 @@ import { TableMenu } from './extensions/tables/TableMenu.js';
  * @attr {string} user - The user name to use for collaboration.
  * @attr {string} toolbar - A selector pointing to an HTML element which should be used to host the toolbar. If not
  * present, the toolbar will be created inside the jinn-tap element.
- * @attr {string} sidebar - A selector pointing to an HTML element which should be used to host the sidebar. If not
- * present, the sidebar will be created inside the jinn-tap element.
+ * @attr {string} sidebar - A selector pointing to an HTML element which should be used to host the
+ * attribute panel. If not present, the panel is rendered as a bottom dock (with a slide-over
+ * drawer for authority connectors when there is not enough room to dock the
+ * panel beside `--jinn-tap-content-max-width` without resizing the content)
+ * inside the jinn-tap element.
+ * @attr {boolean} fullscreen - When present, adds a toolbar button that toggles browser
+ * fullscreen on the editor (or its nearest `.jinn-tap-embed` wrapper).
+ * @attr {boolean} fill - When present, the editor fills its parent height and scrolls
+ * only the editor area (for embeds and workbench hosts). Without it, the component
+ * grows with content and the toolbar sticks while the page scrolls.
  * @attr {boolean} block-typing - A boolean attribute determining whether the editor should respond to typing. If set,
  * the editor will not respond to typing. This is useful when an author is only expected to apply mark-up, and not edit
  * the document. The toolbar still works.
@@ -63,7 +71,8 @@ import { TableMenu } from './extensions/tables/TableMenu.js';
  *
  * @slot toolbar - Content to be placed in the toolbar area at the top of the editor.
  *                This slot is intended for custom toolbar buttons or controls.
- * @slot aside - Content to be placed in the sidebar area on the right side of the editor.
+ * @slot aside - Content to be placed alongside the attribute panel (bottom dock by default,
+ *              or in the host element when using the sidebar attribute).
  *              This slot is intended for additional panels or controls.
  *
  * @fires {CustomEvent} content-change - Fired when the editor content changes.
@@ -376,14 +385,20 @@ export class JinnTap extends HTMLElement {
         const temp = document.createElement('div');
         temp.innerHTML = this.innerHTML;
 
-        // Create the editor container structure
+        // Create the editor container structure. The breadcrumb navigation lives
+        // directly under the toolbar (not in the attribute dock) so it stays there
+        // in every layout, including when the panel is hosted in an external sidebar.
+        // Editor precedes the breadcrumb in DOM order (visual order is via grid-areas)
+        // so the contenteditable is the first typeable descendant.
         this.innerHTML = `
             <div class="editor-area"></div>
+            <nav class="navigation-panel" aria-label="breadcrumb"></nav>
 			<div style="display:none"><nav class="table-menu"><ul class="toolbar"/></nav></div>
             <pre class="code-area" style="display: none;"></pre>
         `;
         // if attribute sidebar-container is not present, create one within the jinn-tap component
         const sidebarContainerSelector = this.getAttribute('sidebar');
+        this.externalSidebar = !!sidebarContainerSelector;
         if (sidebarContainerSelector) {
             this.sidebarContainer = document.querySelector(sidebarContainerSelector);
         } else {
@@ -395,7 +410,6 @@ export class JinnTap extends HTMLElement {
         this.sidebarContainer.innerHTML = `
             <div class="user-info"></div>
             <slot name="aside"></slot>
-            <nav class="navigation-panel" aria-label="breadcrumb"></nav>
             <div class="attribute-panel"></div>
         `;
 
@@ -476,6 +490,37 @@ export class JinnTap extends HTMLElement {
             );
         }
         return added.length;
+    }
+
+    /**
+     * Tear down the live editor and rebuild it (with a possibly extended schema)
+     * for `content`. Used when content loaded after the initial build introduces
+     * elements that require new node/mark types not present in the current schema.
+     *
+     * @param {string} content - Content to load, as prefixed HTML.
+     */
+    _rebuildEditor(content) {
+        // Destroy the current ProseMirror editor and clear its mount point so a
+        // fresh instance doesn't stack on top of the old one.
+        if (this.editor) {
+            this.editor.destroy();
+            this.editor = null;
+        }
+        const editorArea = this.querySelector('.editor-area');
+        if (editorArea) editorArea.innerHTML = '';
+
+        // The toolbar appends its generated items into the shared container; drop
+        // them (keeping any author-provided slotted buttons) before Toolbar rebuilds.
+        if (this.toolbarContainer) {
+            Array.from(this.toolbarContainer.children).forEach((child) => {
+                if (!child.hasAttribute('slot')) child.remove();
+            });
+        }
+        // TableMenu also appends into a shared, hidden container.
+        const tableMenu = this.querySelector('.table-menu ul');
+        if (tableMenu) tableMenu.innerHTML = '';
+
+        this._buildEditor(content);
     }
 
     /**

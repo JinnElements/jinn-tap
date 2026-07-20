@@ -1,4 +1,4 @@
-/* JATS Editor Styles - Based on editor-styles.css but adapted for JATS elements */
+/* JATS Editor Styles - Based on tei-editor-styles.css but adapted for JATS elements */
 
 jats-sec,
 jats-p,
@@ -290,7 +290,10 @@ jats-disp-quote {
 }
 
 .ProseMirror-selectednode {
-    outline: 2px solid var(--pico-primary);
+    /* Needs the same fallback as tei-editor-styles.css: this rule is unscoped and
+       loads last, so without a fallback its undefined var(--pico-primary) in the
+       standalone docs reverts the outline to `none` for BOTH editors. */
+    outline: 2px solid var(--pico-primary, var(--accent, #047878));
 }
 
 .table-menu {

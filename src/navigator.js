@@ -4,7 +4,7 @@ export class NavigationPanel {
     constructor(editor, attributePanel) {
         this.editor = editor.tiptap;
         this.attributePanel = attributePanel;
-        this.panel = editor.sidebarContainer.querySelector('.navigation-panel');
+        this.panel = editor.querySelector('.navigation-panel');
         this.setupEventListeners();
     }
 
@@ -25,7 +25,8 @@ export class NavigationPanel {
     updatePanelForCurrentPosition(editor) {
         this.panel.innerHTML = '';
 
-        const { from, to } = editor.state.selection;
+        const selection = editor.state.selection;
+        const { from, to } = selection;
         const $pos = editor.state.doc.resolve(from);
         const node = $pos.node();
 
@@ -54,13 +55,26 @@ export class NavigationPanel {
                 }
                 depth--;
             }
+
+            // When a whole node is selected (NodeSelection — e.g. via a breadcrumb
+            // click or clicking an empty element), the selection's `from` sits just
+            // *before* that node, so $pos.node() above resolves to its parent and the
+            // selected node itself is absent from the ancestor chain. Add it back as
+            // the deepest crumb so the breadcrumb keeps showing the selected node.
+            if (selection.node) {
+                nodeHierarchy.unshift({
+                    type: selection.node.type.name,
+                    node: selection.node,
+                    pos: { from: from + 1, to: to - 1 },
+                });
+            }
         }
 
         let ul = document.createElement('ul');
         nodeHierarchy.reverse().forEach((nodeInfo, index) => {
             const li = document.createElement('li');
-            const link = document.createElement('a');
-            link.setAttribute('href', '#');
+            const link = document.createElement('button');
+            link.type = 'button';
             link.textContent = nodeInfo.type;
             link.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -75,11 +89,11 @@ export class NavigationPanel {
             li.appendChild(link);
             ul.appendChild(li);
         });
-        if (marks) {
+        if (marks && !selection.node) {
             marks.forEach((mark) => {
                 const li = document.createElement('li');
-                const link = document.createElement('a');
-                link.setAttribute('href', '#');
+                const link = document.createElement('button');
+                link.type = 'button';
                 link.textContent = mark.mark.type.name;
                 link.addEventListener('click', (e) => {
                     e.preventDefault();

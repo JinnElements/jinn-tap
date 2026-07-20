@@ -45,15 +45,23 @@
             "command": "toggleDebug",
             "label": "<i class='bi bi-question-circle'></i>",
             "order": 20
+        },
+        "Fullscreen": {
+            "command": "toggleFullscreen",
+            "label": "<i class='bi bi-fullscreen'></i>",
+            "order": 21,
+            "requiresAttribute": "fullscreen"
         }
     },
     "selects": {
         "Blocks": {
             "label": "<i class='bi bi-text-paragraph'></i>",
+            "tooltip": "Block elements",
             "order": 0
         },
         "Textcritical": {
             "label": "<i class='bi bi-highlighter'></i>",
+            "tooltip": "Inline markup",
             "order": 9
         }
     },

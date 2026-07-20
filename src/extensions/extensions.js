@@ -106,6 +106,9 @@ export function createFromSchema(schemaDef, prefix = 'tei-', notesWrapper = 'lis
                             const defaultTag = `${prefix}${this.name}`;
                             const tags = [];
                             if (customTag) {
+                                // Imported HTML uses the format prefix (e.g. jats-list-item);
+                                // also accept the bare XML local name for robustness.
+                                tags.push({ tag: `${prefix}${customTag}` });
                                 tags.push({ tag: customTag });
                             }
                             tags.push({ tag: defaultTag });

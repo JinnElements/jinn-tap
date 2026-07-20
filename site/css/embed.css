@@ -1,0 +1,343 @@
+.jinn-tap-embed {
+    /* JinnTap design system v1.0 — scoped to the docs embed. Overriding
+       `--jinn-tap-*` tokens on `jinn-tap` re-skins the embed subtree. Structural
+       chrome (toolbar, breadcrumbs, attribute dock, `fill` layout) lives in the
+       library `jinn-tap.css`; this file supplies the docs palette and frame. */
+
+    /* Palette (warm neutrals) */
+    --ink: #1A1816;
+    --ink-soft: #55504A;
+    --gray-500: #8C8579;
+    --gray-300: #DDD5C9;
+    --gray-100: #F2EEE6;
+    --amber: #F0A93B;
+    --amber-deep: #C97F1E;
+    --violet: #6C4CF0;
+    --violet-deep: #5138C4;
+    --paper: #F2EEE6;
+    --paper-strong: #FFFEFC;
+    --line: #E9E1D3;
+    --shadow: 0 1px 3px rgba(26, 24, 22, 0.06);
+
+    /* Semantic accent: violet is the DS's single "live / focus" accent — used
+       for the reference colour, selection outline and focus rings. */
+    --accent: #6C4CF0;
+    --accent-dark: #5138C4;
+
+    /* Type */
+    --font-body: 'Public Sans', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+    /* Toolbar surfaces: warm neutrals, with violet for the active-mark state. */
+    --jinn-tap-toolbar-bg: #F2EEE6;
+    --jinn-tap-toolbar-separator: rgba(26, 24, 22, 0.12);
+    --jinn-tap-toolbar-hover: rgba(26, 24, 22, 0.06);
+    --jinn-tap-toolbar-active: rgba(26, 24, 22, 0.10);
+    --jinn-tap-toolbar-mark: rgba(108, 76, 240, 0.16);
+    --jinn-tap-toolbar-btn-size: 2rem;
+    /* Keep toolbar + breadcrumb + status dock in view; editor scrolls inside */
+    --embed-chrome-offset: 10rem;
+    --embed-max-height: calc(100dvh - var(--embed-chrome-offset));
+    --jinn-tap-embed-height: min(42rem, var(--embed-max-height));
+    --jinn-tap-content-max-width: 1280px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 0;
+    margin: 1rem 0;
+    background: var(--paper-strong);
+    overflow: hidden;
+    height: var(--jinn-tap-embed-height);
+    max-height: var(--embed-max-height);
+    min-height: 20rem;
+}
+
+/* pb-page is now a shared ancestor wrapping one or more .jinn-tap-embed
+   widgets (see jinn-tap-embed.njk) rather than living inside each one;
+   custom elements default to inline, so make sure it doesn't split layout. */
+pb-page {
+    display: block;
+}
+
+.jinn-tap-embed jinn-tap {
+    --jinn-tap-background-color: var(--paper-strong);
+    --jinn-tap-toolbar-fg: var(--ink);
+    --jinn-tap-toolbar-mark-fg: var(--accent-dark);
+    --jinn-tap-toolbar-dropdown-bg: var(--paper-strong);
+    --jinn-tap-toolbar-dropdown-border: var(--line);
+    --jinn-tap-toolbar-dropdown-shadow: var(--shadow);
+    --jinn-tap-toolbar-focus-ring: rgba(108, 76, 240, 0.45);
+    width: 100%;
+}
+
+.jinn-tap-embed jinn-tap .user-info:not(:empty) {
+    color: var(--ink-soft);
+    background: var(--paper);
+    border-top-color: var(--line);
+}
+
+.jinn-tap-embed jinn-tap > nav:has(.toolbar) {
+    border-bottom-color: var(--line);
+}
+
+.jinn-tap-embed jinn-tap .editor-area,
+.jinn-tap-embed jinn-tap .code-area {
+    padding: 0.85rem 1rem 1rem;
+    /* Editor content inherits the page's resolved font otherwise; set the DS
+       body type explicitly so the embed uses Public Sans. */
+    font-family: var(--font-body);
+}
+
+/* Source (XML) view uses the DS mono type; the rich-text editor keeps body type. */
+.jinn-tap-embed jinn-tap .code-area {
+    font-family: var(--font-mono);
+}
+
+.jinn-tap-embed jinn-tap .editor-area .ProseMirror {
+    min-height: min(100%, 8rem);
+}
+
+/* Doc pages: more chrome above the embed (sidebar layout, heading) */
+.prose .jinn-tap-embed {
+    --embed-chrome-offset: 12rem;
+}
+
+/* ── Breadcrumb / attribute dock: palette only ───────────────────── */
+
+.jinn-tap-embed jinn-tap > nav.navigation-panel {
+    border-bottom-color: var(--line);
+}
+
+.jinn-tap-embed jinn-tap > nav.navigation-panel li + li::before {
+    color: var(--ink-soft);
+    opacity: 1;
+}
+
+.jinn-tap-embed jinn-tap > nav.navigation-panel a {
+    color: var(--ink-soft);
+    opacity: 1;
+}
+
+.jinn-tap-embed jinn-tap > nav.navigation-panel a:hover {
+    color: var(--ink);
+}
+
+.jinn-tap-embed jinn-tap .attribute-panel:not(:empty) {
+    background: var(--paper);
+    border-top-color: var(--line);
+}
+
+.jinn-tap-embed jinn-tap .attribute-panel:not(:empty) h4 {
+    border-right-color: var(--line);
+    color: var(--accent-dark, var(--ink));
+}
+
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel fieldset label {
+    color: var(--ink-soft);
+}
+
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel fieldset input,
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel fieldset select {
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--paper-strong);
+}
+
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel fieldset input:focus,
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel fieldset select:focus {
+    outline: 2px solid rgba(108, 76, 240, 0.35);
+    outline-offset: 1px;
+}
+
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel footer button {
+    border-color: var(--line);
+    background: var(--paper-strong);
+}
+
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel .occurrences {
+    border-top-color: var(--jinn-tap-toolbar-separator);
+}
+
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel .occurrences h5 {
+    color: var(--ink-soft);
+    opacity: 1;
+}
+
+.jinn-tap-embed jinn-tap .attribute-panel.has-connector .attribute-panel__toggle {
+    border-color: var(--line);
+    background: var(--paper-strong);
+    color: var(--ink);
+}
+
+.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded {
+    background: var(--paper-strong);
+    border-left-color: var(--line);
+    box-shadow: -12px 0 28px rgba(26, 24, 22, 0.14);
+}
+
+.jinn-tap-embed jinn-tap.is-wide-layout:has(> .jinn-tap-aside .attribute-panel.has-connector.is-expanded) > .jinn-tap-aside {
+    border-left-color: var(--line);
+    background: var(--paper-strong);
+}
+
+.jinn-tap-embed jinn-tap.is-wide-layout .attribute-panel.has-connector.is-expanded {
+    box-shadow: none;
+}
+
+.jinn-tap-embed:fullscreen {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+}
+
+.jinn-tap-embed:fullscreen jinn-tap {
+    height: 100%;
+    max-height: none;
+}
+
+.jinn-tap-embed jinn-tap .attribute-panel.has-connector.is-expanded > .attribute-panel__chrome {
+    border-bottom-color: var(--jinn-tap-toolbar-separator);
+}
+
+.jinn-tap-embed jinn-tap .attribute-panel__info .label a {
+    color: inherit;
+}
+
+.jinn-tap-embed jinn-tap .attribute-panel__info p {
+    color: var(--ink-soft);
+}
+
+/* Authority result badges (register/source/occurrences) — recolor to match
+   the editorial palette instead of the component's generic navy/orange defaults. */
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(register) {
+    background: var(--paper-strong);
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    font-weight: 600;
+}
+
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(source) {
+    background: var(--line);
+    color: var(--ink);
+}
+
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(occurrences) {
+    background: var(--accent);
+    color: var(--paper-strong);
+    font-weight: 600;
+}
+
+/* Select control: dark chip so stroke icons read clearly (parts since 3.6.6). */
+.jinn-tap-embed jinn-tap {
+    --jinn-tap-authority-select-bg: var(--ink);
+    --jinn-tap-authority-select-fg: var(--paper-strong);
+    --jinn-tap-authority-select-bg-hover: var(--ink-soft);
+}
+
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(select) {
+    background: var(--ink);
+    color: var(--paper-strong);
+}
+
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(select):hover {
+    background: var(--ink-soft);
+    color: var(--paper-strong);
+}
+
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(edit-entity),
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(add-entity) {
+    color: var(--ink);
+    background: var(--gray-100);
+    border: 1px solid var(--line);
+}
+
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(edit-entity):hover,
+.jinn-tap-embed jinn-tap pb-authority-lookup::part(add-entity):hover {
+    background: var(--jinn-tap-toolbar-hover);
+}
+
+/* Don't let .prose list resets break the toolbar layout on doc pages */
+.prose .jinn-tap-embed :where(ul, ol) {
+    list-style: revert;
+    padding: revert;
+    margin: revert;
+}
+
+.prose .jinn-tap-embed ul.toolbar,
+.prose .jinn-tap-embed .toolbar ul,
+.prose .jinn-tap-embed .navigation-panel ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* --- Tooltips ------------------------------------------------------------ */
+/* JinnTap's toolbar buttons carry data-tooltip (+ data-placement="bottom"),
+   which pico renders as a hover tooltip in the TEI-Publisher build. The docs
+   don't load pico, so provide a small self-contained tooltip here. Applies to
+   any [data-tooltip] inside the embed (toolbar, table menu, Apply buttons). */
+.jinn-tap-embed jinn-tap [data-tooltip] {
+    position: relative;
+}
+
+/* Bubble */
+.jinn-tap-embed jinn-tap [data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translate(-50%, -0.45rem);
+    z-index: 100;
+    padding: 0.2rem 0.45rem;
+    border-radius: 5px;
+    background: var(--ink);
+    color: var(--paper-strong);
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.3;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+}
+
+/* Arrow */
+.jinn-tap-embed jinn-tap [data-tooltip]::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translate(-50%, 0.3rem);
+    z-index: 100;
+    border: 0.3rem solid transparent;
+    border-top-color: var(--ink);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+}
+
+/* Placement below the element — used by the toolbar buttons so the tip drops
+   into the editor area rather than being cramped above the toolbar. */
+.jinn-tap-embed jinn-tap [data-tooltip][data-placement="bottom"]::after {
+    bottom: auto;
+    top: 100%;
+    transform: translate(-50%, 0.45rem);
+}
+.jinn-tap-embed jinn-tap [data-tooltip][data-placement="bottom"]::before {
+    bottom: auto;
+    top: 100%;
+    transform: translate(-50%, -0.3rem);
+    border-top-color: transparent;
+    border-bottom-color: var(--ink);
+}
+
+/* Reveal on hover / keyboard focus */
+.jinn-tap-embed jinn-tap [data-tooltip]:hover::after,
+.jinn-tap-embed jinn-tap [data-tooltip]:hover::before,
+.jinn-tap-embed jinn-tap [data-tooltip]:focus-visible::after,
+.jinn-tap-embed jinn-tap [data-tooltip]:focus-visible::before {
+    opacity: 1;
+}

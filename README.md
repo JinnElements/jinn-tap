@@ -1,10 +1,21 @@
 # JinnTap
 
-![JinnTap Logo](public/jinntap-logo.png)
+![JinnTap Logo](site/public/jinntap-logo.png)
 
 Edit TEI XML documents using a rich text editor. JinnTap preserves the structure of the XML in the editor. There's no need for complex transformation steps from TEI to HTML and back. The representation of the document in the editor corresponds directly with the XML. TEI elements are converted to HTML custom elements, preserving all attributes and structural features.
 
 JinnTap comes as a web component. While it can be used standalone, it is usually meant to be embedded into a larger application context such as TEI Publisher 10, which will include JinnTap and does allow saving and reloading documents. TP 10 has not been released yet.
+
+## Documentation
+
+Full documentation — including a detailed [`tei-schema.json`](src/tei-schema.json) reference and a live editor — is published at **https://jinnelements.github.io/jinn-tap/**.
+
+Work on the docs locally with:
+
+```bash
+npm run docs:dev            # Eleventy dev server with hot reload
+npm run build:site          # build library + docs site into dist/
+```
 
 ## Installation
 
@@ -24,21 +35,18 @@ npm install @jinntec/jinntap
 # Install dependencies
 npm install
 
-# Build the project
+# Build the library
 npm run build
-
-# Build the demo
-npm run build:demo
 ```
 
-### Running the Demo
+### Local development
 
 ```bash
-# Start the development server
-npm run dev
+# Docs site with embedded TEI/JATS editors
+npm run docs:dev
 
-# Preview the built demo
-npm run preview
+# Vite dev server for Cypress tests (serves test/*.html)
+npm run dev
 ```
 
 ### Running Tests
@@ -64,7 +72,7 @@ npm run cypress:run
 	<!-- Import the general editor styles-->
     <link rel="stylesheet" href="node_modules/@jinntec/jinntap/dist/jinn-tap.css" />
 	<!-- Import the styles for displaying TEI documents -->
-    <link rel="stylesheet" href="node_modules/@jinntec/jinntap/dist/editor-styles.css" />
+    <link rel="stylesheet" href="node_modules/@jinntec/jinntap/dist/tei-editor-styles.css" />
     <script type="module" src="node_modules/@jinntec/jinntap/dist/jinn-tap.es.js"></script>
 </head>
 <body>

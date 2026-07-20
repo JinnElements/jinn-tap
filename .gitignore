@@ -1,5 +1,7 @@
 node_modules
 dist
+.cache
+site/public/assets
 cypress/screenshots
 cypress/videos
 cypress/downloads

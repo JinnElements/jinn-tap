@@ -1,4 +1,4 @@
-// Elements that are not described by schema.json must not be dropped: jinntap
+// Elements that are not described by tei-schema.json must not be dropped: jinntap
 // synthesizes generic entries for them so they round-trip through the editor and
 // are visibly marked in the reading pane.
 

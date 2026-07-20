@@ -1,0 +1,27 @@
+{# Expects `catalog` — output of loadSchemaData() #}
+<table>
+  <thead>
+    <tr>
+      <th>Element</th>
+      <th>Type</th>
+      <th>Content</th>
+      <th>Attributes</th>
+      <th>Flags</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for el in catalog.elements %}<tr>
+      <td><code>{{ el.name }}</code></td>
+      <td>
+        {% for t in el.types %}<code>{{ t }}</code>{% if not loop.last %} / {% endif %}{% endfor %}
+      </td>
+      <td>{% if el.content %}<code>{{ el.content }}</code>{% else %}—{% endif %}</td>
+      <td>
+        {% if el.attributes.length %}{% for a in el.attributes %}<code>{{ a.name }}</code>{% if not loop.last %}, {% endif %}{% endfor %}{% else %}—{% endif %}
+      </td>
+      <td>
+        {% if el.defining %}<span title="defining">D </span>{% endif %}{% if el.selectable %}<span title="selectable">S </span>{% endif %}{% if el.conditional %}<span title="conditional (when)">C </span>{% endif %}{% if el.hasConnector %}<span title="authority connector">🔌 </span>{% endif %}{% if el.hasToolbar %}<span title="has toolbar button">T </span>{% endif %}
+      </td>
+    </tr>{% endfor %}
+  </tbody>
+</table>

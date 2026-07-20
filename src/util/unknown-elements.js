@@ -38,12 +38,21 @@ export function synthesizeUnknownEntries(html, schemaDef, prefix = 'tei-', sourc
     const isPrefixed = (el) => el.localName.startsWith(prefix);
 
     // Schema keys may be camelCase while HTML local-names are lowercased, so
-    // resolve known entries case-insensitively. Array entries are conditional
-    // variants of the same element; their base def is enough here.
+    // resolve known entries case-insensitively. Also match entries that declare
+    // a different XML local name via `tagName` (e.g. JATS list-item → schema
+    // key "item"). Array entries are conditional variants of the same element;
+    // their base def is enough here.
     const lowerKeyIndex = new Map();
-    Object.keys(schemaDef.schema).forEach((k) => lowerKeyIndex.set(k.toLowerCase(), k));
+    const tagNameIndex = new Map();
+    Object.entries(schemaDef.schema).forEach(([k, entry]) => {
+        lowerKeyIndex.set(k.toLowerCase(), k);
+        const def = Array.isArray(entry) ? entry[0] : entry;
+        if (def?.tagName) {
+            tagNameIndex.set(String(def.tagName).toLowerCase(), k);
+        }
+    });
     const knownEntry = (name) => {
-        const key = lowerKeyIndex.get(name);
+        const key = lowerKeyIndex.get(name) || tagNameIndex.get(name);
         if (!key) return null;
         const entry = schemaDef.schema[key];
         return Array.isArray(entry) ? entry[0] : entry;

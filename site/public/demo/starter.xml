@@ -1,0 +1,60 @@
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+        <fileDesc>
+            <titleStmt>
+                <title>Untitled</title>
+            </titleStmt>
+            <publicationStmt>
+                <p>Draft, not yet published.</p>
+            </publicationStmt>
+            <sourceDesc>
+                <p>Written directly in JinnTap.</p>
+            </sourceDesc>
+        </fileDesc>
+    </teiHeader>
+    <text>
+        <body>
+            <div>
+                <head>Getting started</head>
+                <p>This is a paragraph. Select a word and try a toolbar button — <hi rend="b">bold</hi>, 
+                    <hi rend="i">italic</hi>, or a <ref target="https://www.tei-c.org/">link</ref>.</p>
+                <list rend="unordered">
+                    <item>
+                        <p>A top-level list item</p>
+                    </item>
+                    <item>
+                        <p>Press <hi rend="b">Tab</hi> here to nest this item — and
+                            <hi rend="b">Shift-Tab</hi> to move it back out</p>
+                        <list rend="ordered">
+                            <item>
+                                <p>A nested ordered list<anchor xml:id="fn-mrqsohrz-7l5ax1"
+                                        type="note" /></p>
+                            </item>
+                            <item>
+                                <p>To make this a bullet list, select the list in the breadcrumbs
+                                    above, then change the <hi rend="i">rend</hi> attribute</p>
+                            </item>
+                        </list>
+                    </item>
+                </list>
+                <p><persName key="gnd-119232022">Ada Lovelace</persName> once worked in <placeName
+                        key="geo-2643743">London</placeName> — entity names can be linked to
+                    external authority databases.</p>
+                <div>
+                    <head>A nested section</head>
+                    <p>A new division always becomes a child of the division you're currently in. To
+                        move it up, use the breadcrumbs below the toolbar to select the entire
+                        division, then click the <hi rend="i">Move Up</hi> toolbar button.</p>
+                </div>
+                <ab xmlns="http://foo.org" rend="center">Elements not defined in the editor's schema appear with markers to draw your attention.</ab>
+            </div>
+        </body>
+    </text>
+    <standOff>
+        <listAnnotation>
+            <note target="#fn-mrqsohrz-7l5ax1">
+                <p>This is a footnote.</p>
+            </note>
+        </listAnnotation>
+    </standOff>
+</TEI>

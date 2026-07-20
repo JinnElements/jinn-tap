@@ -36,12 +36,19 @@
             "command": "toggleDebug",
             "label": "<i class='bi bi-question-circle'></i>",
             "order": 20
+        },
+        "Fullscreen": {
+            "command": "toggleFullscreen",
+            "label": "<i class='bi bi-fullscreen'></i>",
+            "order": 21,
+            "requiresAttribute": "fullscreen"
         }
     },
     "selects": {
         "Blocks": {
             "label": "<i class='bi bi-text-paragraph'></i>",
-            "order": 0
+            "order": 0,
+            "tooltip": "Block elements"
         }
     },
     "schema": {

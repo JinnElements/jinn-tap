@@ -38,6 +38,12 @@ declare %private function jt:transform-to-same-node ($node as node(), $importNot
             attribute id { $node/@xml:id }
         else (
         ),
+        (: Namespace declarations are not in @*; stash foreign URIs so serialize can
+           re-emit xmlns= on export. Skip the TEI default namespace. :)
+        if (namespace-uri($node) != '' and namespace-uri($node) != 'http://www.tei-c.org/ns/1.0') then
+            attribute {'_xmlns'} { namespace-uri($node) }
+        else (
+        ),
         jt:import($node/node(), $importNotes)
     }
 };

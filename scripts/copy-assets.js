@@ -2,10 +2,10 @@ import { copyFile, mkdir } from 'fs/promises';
 import { dirname } from 'path';
 
 const FILES_TO_COPY = [
-    { source: 'editor-styles.css', dest: 'dist/editor-styles.css' },
+    { source: 'tei-editor-styles.css', dest: 'dist/tei-editor-styles.css' },
     { source: 'src/jinn-tap.css', dest: 'dist/jinn-tap.css' },
-    { source: 'public/jinntap-logo.png', dest: 'dist/jinntap-logo.png' },
-    { source: 'public/jinntap-logo-128.png', dest: 'dist/jinntap-logo-128.png' },
+    { source: 'site/public/jinntap-logo.png', dest: 'dist/jinntap-logo.png' },
+    { source: 'site/public/jinntap-logo-128.png', dest: 'dist/jinntap-logo-128.png' },
 ];
 
 async function copyAssets() {

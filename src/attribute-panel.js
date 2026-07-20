@@ -30,9 +30,15 @@ import { Mark } from '@tiptap/pm/model';
  * @param {Object} schemaDef - The schema definition.
  */
 export class AttributePanel {
+    static CONTENT_MAX_WIDTH_VAR = '--jinn-tap-content-max-width';
+    static CONNECTOR_PANEL_WIDTH_VAR = '--jinn-tap-connector-panel-width';
+    static DEFAULT_CONNECTOR_PANEL_WIDTH = '20rem';
+
     constructor(editor, schemaDef) {
+        this.host = editor;
         this.editor = editor.tiptap;
         this.schemaDef = schemaDef;
+        this.externalSidebar = editor.externalSidebar;
         this.panel = editor.sidebarContainer.querySelector('.attribute-panel');
         this.currentElement = null;
         this.currentMark = null;
@@ -45,6 +51,63 @@ export class AttributePanel {
         this.overlay.style.pointerEvents = 'none';
         this.overlay.style.zIndex = '1000';
         this.overlay.style.display = 'none';
+    }
+
+    static lengthPx(host, varName, fallback = null) {
+        if (!host || typeof getComputedStyle === 'undefined') {
+            return fallback != null ? AttributePanel._probeLengthPx(host, fallback) : null;
+        }
+        const raw = getComputedStyle(host).getPropertyValue(varName).trim();
+        if (!raw || raw === 'none' || raw === 'initial' || raw === 'unset') {
+            return fallback != null ? AttributePanel._probeLengthPx(host, fallback) : null;
+        }
+        if (!/^[\d.]+\s*(px|rem|em|vw|vh|%|ch|ex)$/.test(raw)) {
+            return fallback != null ? AttributePanel._probeLengthPx(host, fallback) : null;
+        }
+        return AttributePanel._probeLengthPx(host, raw);
+    }
+
+    static _probeLengthPx(host, length) {
+        const probe = document.createElement('div');
+        probe.style.cssText = 'position:absolute;visibility:hidden;height:0;width:0';
+        probe.style.width = length;
+        (host || document.documentElement).appendChild(probe);
+        const px = probe.getBoundingClientRect().width;
+        probe.remove();
+        return px;
+    }
+
+    _hasRoomForDockedPanel() {
+        if (!this.host) return false;
+        const hostWidth = this.host.getBoundingClientRect().width;
+        const contentMax = AttributePanel.lengthPx(this.host, AttributePanel.CONTENT_MAX_WIDTH_VAR);
+        if (contentMax == null) {
+            return false;
+        }
+        const panelWidth = AttributePanel.lengthPx(
+            this.host,
+            AttributePanel.CONNECTOR_PANEL_WIDTH_VAR,
+            AttributePanel.DEFAULT_CONNECTOR_PANEL_WIDTH,
+        );
+        return hostWidth >= contentMax + panelWidth;
+    }
+
+    _isWideLayout() {
+        return this.host?.classList.contains('is-wide-layout') ?? false;
+    }
+
+    _syncWideLayoutClass() {
+        if (this.externalSidebar || !this.host) return;
+        const wide = this._hasRoomForDockedPanel();
+        const wasWide = this.host.classList.contains('is-wide-layout');
+        this.host.classList.toggle('is-wide-layout', wide);
+        if (!this.panel?.classList.contains('has-connector')) return;
+        if (wide && !wasWide) {
+            this.expandSheet();
+        } else if (!wide && wasWide && this.panel.classList.contains('is-expanded')) {
+            this.panel.classList.remove('is-expanded');
+            this._syncSheetToggle();
+        }
     }
 
     setupEventListeners(component) {
@@ -68,10 +131,38 @@ export class AttributePanel {
             this.editor.chain().focus().setNodeSelection(pos).run();
             this.updatePanel(node, pos);
         });
+
+        if (!this.externalSidebar && typeof window !== 'undefined' && typeof ResizeObserver !== 'undefined') {
+            this._wideLayoutObserver = new ResizeObserver(() => this._syncWideLayoutClass());
+            this._wideLayoutObserver.observe(this.host);
+            this._syncWideLayoutClass();
+        }
     }
 
     updatePanelForCurrentPosition(editor) {
-        const { from, to } = editor.state.selection;
+        const { from, to, node: selectedNode } = editor.state.selection;
+
+        // Whole-node selection (NodeSelection - e.g. from a breadcrumb click or an
+        // empty-element click): `from` sits at the node's own boundary, so
+        // resolving it below with $pos.node() would give its *parent*, not the
+        // selected node. Use the selection's node directly instead.
+        if (selectedNode) {
+            this.currentMark = null;
+            if (Object.keys(this.schemaDef.schema).includes(selectedNode.type.name)) {
+                if (this.currentElement === selectedNode) {
+                    return;
+                }
+                this.currentElement = selectedNode;
+                this.currentAttributes = { ...selectedNode.attrs };
+                this.updatePanel(selectedNode, from);
+            } else {
+                this.currentElement = null;
+                this.currentAttributes = {};
+                this.hidePanel();
+            }
+            return;
+        }
+
         const matchingMarks = marksInRange(editor, from, to);
 
         if (matchingMarks && matchingMarks.length > 0) {
@@ -109,7 +200,87 @@ export class AttributePanel {
         this.updatePanel();
     }
 
+    expandSheet() {
+        if (!this.panel?.classList.contains('has-connector')) return;
+        this.panel.classList.add('is-expanded');
+        this._syncSheetToggle();
+        this._syncWideLayoutClass();
+    }
+
+    collapseSheet() {
+        // Wide layout keeps the connector panel open as a fixed right column.
+        if (this._isWideLayout()) return;
+        this.panel?.classList.remove('is-expanded');
+        this._syncSheetToggle();
+    }
+
+    _syncSheetToggle() {
+        const toggle = this.panel?.querySelector('.attribute-panel__toggle');
+        if (!toggle) return;
+        const expanded = this.panel.classList.contains('is-expanded');
+        toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        const count = Number(this.panel.dataset.occurrenceCount || 0);
+        const suffix = !expanded && count > 0 ? ` · ${count} more` : '';
+        toggle.textContent = (expanded ? 'Collapse' : 'Expand') + suffix;
+    }
+
+    _connectorSummary(elementName, attributes, nodeOrMark) {
+        const refs = Object.entries(attributes)
+            .filter(([, def]) => def.connector)
+            .map(([name]) => nodeOrMark.attrs[name])
+            .filter(Boolean);
+        if (refs.length > 0) {
+            return `${elementName} · ${refs.join(', ')}`;
+        }
+        return `${elementName} · No reference`;
+    }
+
+    _setSummaryText(nodeOrMark, displayValue) {
+        const summary = this.panel.querySelector('.attribute-panel__summary');
+        if (summary) {
+            summary.textContent = `${nodeOrMark.type.name} · ${displayValue}`;
+        }
+    }
+
+    _addSheetChrome(elementName, attributes, nodeOrMark) {
+        // The chrome provides the collapse/expand affordance for the bottom-dock /
+        // slide-over UX. When the panel lives in an external, always-visible sidebar
+        // there is nothing to collapse, so skip it.
+        if (this.externalSidebar) return;
+        this.panel.classList.add('has-connector');
+
+        const chrome = document.createElement('header');
+        chrome.className = 'attribute-panel__chrome';
+
+        const summary = document.createElement('p');
+        summary.className = 'attribute-panel__summary';
+        summary.textContent = this._connectorSummary(elementName, attributes, nodeOrMark);
+
+        const toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.className = 'attribute-panel__toggle';
+        toggle.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.panel.classList.toggle('is-expanded');
+            this._syncSheetToggle();
+            this._syncWideLayoutClass();
+        });
+
+        chrome.append(summary, toggle);
+        this.panel.prepend(chrome);
+        if (this._hasRoomForDockedPanel()) {
+            this.expandSheet();
+        } else {
+            this._syncWideLayoutClass();
+            this._syncSheetToggle();
+        }
+    }
+
     createAttributeConnector(fieldset, attrName, attrDef, currentValue, info, nodeOrMark, pos, text) {
+        const field = document.createElement('span');
+        field.className = 'attribute-panel__field';
+
         const label = document.createElement('label');
         label.textContent = attrName;
         const input = document.createElement('input');
@@ -118,8 +289,9 @@ export class AttributePanel {
         input.readOnly = true;
         input.name = attrName;
         input.placeholder = 'No reference assigned';
-        fieldset.appendChild(label);
-        fieldset.appendChild(input);
+        field.appendChild(label);
+        field.appendChild(input);
+        fieldset.appendChild(field);
 
         const details = document.createElement('details');
         details.open = !currentValue;
@@ -190,7 +362,12 @@ export class AttributePanel {
                 : event.detail.properties.ref;
             input.value = value;
             details.open = false;
+            this._setSummaryText(nodeOrMark, event.detail.strings?.[0] || value);
             this.handleAttributeUpdate(nodeOrMark, pos, { [attrName]: value });
+            this.collapseSheet();
+        });
+        details.addEventListener('toggle', () => {
+            if (details.open) this.expandSheet();
         });
         details.appendChild(lookup);
         fieldset.parentNode.appendChild(details);
@@ -199,6 +376,9 @@ export class AttributePanel {
             const ref = currentValue.substring(currentValue.indexOf('-') + 1);
             lookup.lookup(attrDef.connector.type, ref, info).then((occurrences) => {
                 const strings = occurrences.strings;
+                if (strings.length > 0) {
+                    this._setSummaryText(nodeOrMark, strings[0]);
+                }
                 // Sort strings by length in descending order
                 strings.sort((a, b) => b.length - a.length);
                 strings.unshift(text);
@@ -208,9 +388,12 @@ export class AttributePanel {
     }
 
     createAttributeInput(form, attrName, attrDef, currentValue, placeholder = '') {
+        const field = document.createElement('span');
+        field.className = 'attribute-panel__field';
+
         const label = document.createElement('label');
         label.textContent = attrName;
-        form.appendChild(label);
+        field.appendChild(label);
 
         let input;
         if (attrDef.enum) {
@@ -225,7 +408,7 @@ export class AttributePanel {
                     option.value = value;
                     datalist.appendChild(option);
                 });
-                form.appendChild(datalist);
+                field.appendChild(datalist);
             } else {
                 input = document.createElement('select');
                 attrDef.enum.forEach((value) => {
@@ -243,7 +426,8 @@ export class AttributePanel {
         input.value = currentValue || attrDef.default || '';
         input.name = attrName;
 
-        form.appendChild(input);
+        field.appendChild(input);
+        form.appendChild(field);
         return input;
     }
 
@@ -299,6 +483,8 @@ export class AttributePanel {
         if (!this.panel) return;
 
         this.panel.innerHTML = '';
+        this.panel.classList.remove('has-connector', 'is-expanded');
+        delete this.panel.dataset.occurrenceCount;
 
         if (!nodeOrMark) {
             return;
@@ -325,6 +511,7 @@ export class AttributePanel {
         this.panel.appendChild(title);
 
         const info = document.createElement('div');
+        info.className = 'attribute-panel__info';
         this.panel.appendChild(info);
 
         const form = document.createElement('form');
@@ -338,6 +525,15 @@ export class AttributePanel {
 
         // Merge global attributes with node-specific attributes
         const attributes = { ...globalAttributes, ...schemaDefAttributes };
+
+        const connectorEntries = Object.entries(attributes).filter(
+            ([name, attrDef]) => !name.startsWith('_') && attrDef.connector,
+        );
+        const hasConnector = connectorEntries.length > 0;
+
+        if (hasConnector) {
+            this._addSheetChrome(nodeOrMark.type.name, attributes, nodeOrMark);
+        }
 
         Object.entries(attributes).forEach(([attrName, attrDef]) => {
             if (attrName.startsWith('_')) {
@@ -456,6 +652,10 @@ export class AttributePanel {
             <ul></ul>`;
         const ul = div.querySelector('ul');
         this.panel.appendChild(div);
+
+        const totalOccurrences = Object.values(result).reduce((sum, positions) => sum + positions.length, 0);
+        this.panel.dataset.occurrenceCount = String(totalOccurrences);
+        this._syncSheetToggle();
 
         // Store all occurrence positions and their checkboxes
         const occurrenceData = [];

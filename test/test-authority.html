@@ -20,7 +20,8 @@
 </head>
 <body>
   <div class="container">
-	<pb-page>
+	<!-- api-version skips pb-page's ./api/version fetch (no eXist backend here). -->
+	<pb-page api-version="1.0.0">
       <jinn-tap schema="./authority-schema.json">
 <tei-div><tei-p>Hello world! <tei-rs type="gnd" corresp="gnd-4040841-3">GND connector</tei-rs><tei-rs type="airtable" corresp="airtable-1234">Airtable connector</tei-rs> Piet Heyn</tei-p></tei-div>
 	  </jinn-tap>

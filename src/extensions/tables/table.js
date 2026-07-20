@@ -277,7 +277,11 @@ export const JinnTable = Node.create({
         return [
             BubbleMenu.configure({
                 element: document.querySelector('.table-menu'),
+                // Append outside the jinn-tap grid so the menu isn't trapped under the
+                // attribute dock (aside z-index: 10) or auto-placed as a grid item.
+                appendTo: () => document.body,
                 options: {
+                    strategy: 'fixed',
                     offset: 50,
                     // Place at the bottom to prevent it from overlapping with the toolbar
                     // TODO: redo the HTML structure there to prevent this from happening at all
