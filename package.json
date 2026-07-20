@@ -74,13 +74,13 @@
     "@hocuspocus/server": "^4.0.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^9.2.6",
-    "@semantic-release/npm": "^10.0.4",
+    "@semantic-release/github": "^12.0.9",
+    "@semantic-release/npm": "^13.1.5",
     "chai-xml": "^0.4.1",
     "cypress": "^15.9.0",
     "jsonwebtoken": "^9.0.2",
     "prettier": "^3.6.2",
-    "semantic-release": "^22.0.8",
+    "semantic-release": "^25.0.8",
     "vite": "^5.1.0"
   },
   "keywords": [
@@ -111,5 +111,9 @@
   },
   "peerDependencies": {
     "@teipublisher/pb-components": "^3.6.6"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
