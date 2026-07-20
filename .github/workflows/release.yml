@@ -17,20 +17,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
+          # Node 24 bundles npm 11.x, which satisfies trusted publishing's npm >= 11.5.1
+          # requirement while still running dependency install scripts (Cypress downloads
+          # its binary in a postinstall hook). Do NOT force npm@latest: npm 12 disables
+          # dependency install scripts by default, which breaks the Cypress install.
           node-version: '24'
           cache: 'npm'
-
-      # Trusted publishing needs npm CLI >= 11.5.1. Node 24 ships npm 11.x, but
-      # upgrade explicitly so the requirement holds regardless of the bundled version.
-      - name: Upgrade npm
-        run: npm install -g npm@latest
 
       # Install exactly what package-lock.json pins so CI is reproducible.
       - name: Install dependencies
