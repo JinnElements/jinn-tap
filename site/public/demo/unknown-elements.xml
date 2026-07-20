@@ -1,0 +1,31 @@
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+        <fileDesc>
+            <titleStmt>
+                <title>Unknown elements</title>
+            </titleStmt>
+            <publicationStmt>
+                <p>Draft, not yet published.</p>
+            </publicationStmt>
+            <sourceDesc>
+                <p>Written directly in JinnTap.</p>
+            </sourceDesc>
+        </fileDesc>
+    </teiHeader>
+    <text>
+        <body>
+            <div>
+                <head>Unknown elements</head>
+                <p>Elements not defined in the editor's schema are not dropped. Instead they are
+                    <soCalled>synthesized</soCalled> so they stay editable and round-trip back to
+                    XML. Inline unknowns like the one above appear with a coloured marker.</p>
+                <ab xmlns="http://foo.org" rend="center">This whole block is an unknown element. Block-level
+                    unknowns are tagged in the reading pane so you can see they aren't part of the
+                    schema. Toggle the source view (<hi rend="i">&lt;/&gt;</hi>) to confirm it
+                    serializes back unchanged.</ab>
+                <p>Attributes seen on an unknown element are preserved too — select the block above and
+                    check the attribute panel.</p>
+            </div>
+        </body>
+    </text>
+</TEI>

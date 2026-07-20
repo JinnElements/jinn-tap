@@ -3,6 +3,7 @@ layout: layouts/doc.njk
 title: "Unknown elements"
 section: schema
 permalink: /schema/unknown-elements/index.html
+embedEditor: true
 ---
 
 # Unknown elements
@@ -14,6 +15,16 @@ entry for each unknown element so it round-trips through the editor and stays ed
 This is handled by
 [`src/util/unknown-elements.js`](https://github.com/JinnElements/jinn-tap/blob/main/src/util/unknown-elements.js),
 which runs whenever content is loaded.
+
+The document below contains a block-level unknown element (`<ab>` from a foreign
+namespace) and an inline one (`<soCalled>`). Both survive loading, stay editable, and
+serialize back unchanged — toggle the source view (`</>`) to check.
+
+{% include "partials/pb-page-open.njk" %}
+{% set documentUrl = '/demo/unknown-elements.xml' %}
+{% include "partials/jinn-tap-embed.njk" %}
+<jinn-toast></jinn-toast>
+</pb-page>
 
 ## How the kind is inferred
 
