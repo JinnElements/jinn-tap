@@ -1,3 +1,28 @@
+# [1.32.0](https://github.com/JinnElements/jinn-tap/compare/v1.31.0...v1.32.0) (2026-07-20)
+
+
+### Bug Fixes
+
+* add tooltips to selects ([2b43ebb](https://github.com/JinnElements/jinn-tap/commit/2b43ebbb21b438e1ddb731daf9f1871c8c3e4cb1))
+* breadcrumb for current element disappears ([c44130a](https://github.com/JinnElements/jinn-tap/commit/c44130acce7dacdcd701c229449a8032c27b3053))
+* entity panel should stay fixed if screen width allows ([f8a6be7](https://github.com/JinnElements/jinn-tap/commit/f8a6be7d0e43ef68d724cd45352dd2bf5c1afcfb))
+* footnote re-linking bug ([71f4307](https://github.com/JinnElements/jinn-tap/commit/71f43073cd8a59c8e1ffc93b2d3f55326e5e819a))
+* JinnReference outputs <unknown> wrapper element ([a54c983](https://github.com/JinnElements/jinn-tap/commit/a54c983343b2ddc5cd4c080c3e20df8b463e94db))
+* links rendered with an <unknown> custom tag ([1d1efe1](https://github.com/JinnElements/jinn-tap/commit/1d1efe106588ba763d1a0ac39ea43bc2190398f3))
+* preserve namespaces for unknown elements ([465a670](https://github.com/JinnElements/jinn-tap/commit/465a670f353833227d84f9c4a85a266ecd5bbabe))
+* show element label in attributes panel ([bc08010](https://github.com/JinnElements/jinn-tap/commit/bc080102a200fa52f90a9b83709fc2a0b87659ee))
+* split navigation breadcrumbs and attribute panel ([16540ec](https://github.com/JinnElements/jinn-tap/commit/16540ecf03fa4a080819fe3b8b441c82a7028361))
+* tab in list item ([8e53c3c](https://github.com/JinnElements/jinn-tap/commit/8e53c3c15699efc11b28df62c3ddef5a723ce7c5))
+* unknown element detection should look at tag name, not schema key ([1cf9884](https://github.com/JinnElements/jinn-tap/commit/1cf98841ccd9438788381a519482ffed6a77a9d0))
+* use stricter whitespace preservation ([9178dfd](https://github.com/JinnElements/jinn-tap/commit/9178dfd11d4def287e5371d27570cf9a18af4f62))
+
+
+### Features
+
+* add optional fullscreen mode ([ca3a37e](https://github.com/JinnElements/jinn-tap/commit/ca3a37ee9892b23619f2612f0a5d020d0f50aede))
+* documentation website and improved demo ([cb1ba5b](https://github.com/JinnElements/jinn-tap/commit/cb1ba5b8a598546580bd9cde88b1766dcfcd03dd))
+* synthesize generic schema node for unknown elements ([f6e06c9](https://github.com/JinnElements/jinn-tap/commit/f6e06c97108cab9a4c33f871e8f198a3a9ef8431))
+
 # [1.31.0](https://github.com/JinnElements/jinn-tap/compare/v1.30.0...v1.31.0) (2026-04-30)
 
 
