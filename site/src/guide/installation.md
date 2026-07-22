@@ -32,6 +32,13 @@ The package ships as an ES module with the web component and its styles under `d
 </body>
 ```
 
+Optional: **`@jinntec/jinntap/storage`** adds IndexedDB autosave for browser-only
+hosts (demos, offline drafts). See [Local document storage](/guide/local-storage/).
+
+```html
+<script type="module" src="node_modules/@jinntec/jinntap/dist/storage.es.js"></script>
+```
+
 Once the module has loaded, the `<jinn-tap>` custom element is registered and any
 `<jinn-tap>` in the page becomes an editor.
 

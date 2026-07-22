@@ -45,3 +45,41 @@ the `<jinn-toast>` element. Include one in your page to display them:
 <jinn-tap></jinn-tap>
 <jinn-toast></jinn-toast>
 ```
+
+Dispatch a toast from anywhere:
+
+```js
+document.dispatchEvent(new CustomEvent('jinn-toast', {
+  detail: { message: 'Saved', type: 'info' }, // info | warn | error
+}));
+```
+
+For a confirm dialog, pass a `confirm` object (or use the helper):
+
+```js
+import { jinnToastConfirm } from '@jinntec/jinntap/jinn-toast';
+
+const ok = await jinnToastConfirm('Discard unsaved changes?', {
+  confirmLabel: 'Discard',
+  cancelLabel: 'Keep editing',
+  type: 'warn',
+});
+```
+
+Under the hood this dispatches a sticky toast with action buttons:
+
+```js
+document.dispatchEvent(new CustomEvent('jinn-toast', {
+  detail: {
+    message: 'Restore local draft?',
+    type: 'info',
+    sticky: true,
+    confirm: {
+      confirmLabel: 'Restore',
+      cancelLabel: 'Keep current',
+      onConfirm: () => { /* … */ },
+      onCancel: () => { /* … */ },
+    },
+  },
+}));
+```

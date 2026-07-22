@@ -39,3 +39,6 @@ editor.addEventListener('ready', () => {
 Not dispatched on the element but on `document`: a request to display a toast
 message (info/error). Render a `<jinn-toast>` element to show them. See
 [Events guide → toasts](/guide/events#toast-notifications).
+
+Pass `detail.confirm` (or use `jinnToastConfirm` from `@jinntec/jinntap/jinn-toast`)
+for a sticky toast with confirm/cancel actions that resolves to a boolean.

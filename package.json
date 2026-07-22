@@ -17,6 +17,9 @@
     "./jinn-toast": {
       "import": "./dist/jinn-toast.es.js",
       "types": "./dist/jinn-toast.d.ts"
+    },
+    "./storage": {
+      "import": "./dist/storage.es.js"
     }
   },
   "files": [
@@ -26,6 +29,8 @@
     "dist/jinn-toast.es.js",
     "dist/jinn-toast.es.js.map",
     "dist/jinn-toast.d.ts",
+    "dist/storage.es.js",
+    "dist/storage.es.js.map",
     "dist/index.es.js",
     "dist/index.es.js.map",
     "dist/index.d.ts",

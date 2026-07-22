@@ -2,20 +2,110 @@
 <script type="module" src="{{ '/assets/jinn-tap.es.js' | prefixUrl }}"></script>
 <script type="module" src="{{ '/assets/jinn-toast.es.js' | prefixUrl }}"></script>
 <script type="module">
+    import { jinnToastConfirm } from '{{ '/assets/jinn-toast.es.js' | prefixUrl }}';
+    import { attachLocalStore, deduceDocumentName } from '{{ '/assets/storage.es.js' | prefixUrl }}';
+
     const toast = (message, type = 'info') =>
         document.dispatchEvent(new CustomEvent('jinn-toast', { detail: { message, type } }));
 
+    const formatDraftDate = (updatedAt) => {
+        try {
+            return new Date(updatedAt).toLocaleString();
+        } catch {
+            return '';
+        }
+    };
+
     customElements.whenDefined('jinn-tap').then(() => {
-        document.querySelectorAll('.jinn-tap-embed jinn-tap').forEach((editor) => {
+        document.querySelectorAll('.jinn-tap-embed jinn-tap').forEach(async (editor) => {
             const newBtn = editor.querySelector('[data-action="new"]');
             const uploadInput = editor.querySelector('input[data-action="upload"]');
             const downloadBtn = editor.querySelector('[data-action="download"]');
             const copyBtn = editor.querySelector('[data-action="copy"]');
+            const titleInput = editor.querySelector('[data-action="document-title"]');
+
+            const setTitleInput = (name) => {
+                if (titleInput && document.activeElement !== titleInput) {
+                    titleInput.value = name || '';
+                }
+            };
+
+            let localStore = null;
+            try {
+                localStore = await attachLocalStore(editor, {
+                    onNameChange: setTitleInput,
+                    onDraftAvailable: async (record) => {
+                        const saved = formatDraftDate(record.updatedAt);
+                        const savedLine = saved ? `<br><small>Saved ${saved}</small>` : '';
+                        return jinnToastConfirm(
+                            `Restore local draft “${record.name}”?${savedLine}`,
+                            {
+                                confirmLabel: 'Restore',
+                                cancelLabel: 'Keep current',
+                                type: 'info',
+                            },
+                        );
+                    },
+                    onRestore: (record) => {
+                        setTitleInput(record.name);
+                        toast('Restored local draft');
+                    },
+                });
+                if (localStore && !localStore.restored) {
+                    setTitleInput(
+                        deduceDocumentName({
+                            xml: editor.xml,
+                            metadata: editor.metadata,
+                            plainText: editor.content,
+                        }),
+                    );
+                }
+            } catch (error) {
+                console.error('Local document store unavailable', error);
+            }
+
+            if (titleInput && localStore) {
+                const commitTitle = async () => {
+                    const name = titleInput.value.trim();
+                    if (!name) {
+                        titleInput.value = editor.metadata?.title || 'Untitled Document';
+                        return;
+                    }
+                    try {
+                        await localStore.rename(name);
+                    } catch (error) {
+                        toast(error.message || 'Failed to rename document', 'error');
+                    }
+                };
+                titleInput.addEventListener('change', commitTitle);
+                titleInput.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        titleInput.blur();
+                    }
+                });
+            }
 
             if (newBtn) {
-                newBtn.addEventListener('click', (event) => {
+                newBtn.addEventListener('click', async (event) => {
                     event.preventDefault();
+                    if (localStore) {
+                        const existing = await localStore.getRecord();
+                        if (existing?.xml) {
+                            const ok = await jinnToastConfirm(
+                                'Start a new document? Your local draft will be replaced.',
+                                {
+                                    confirmLabel: 'New document',
+                                    cancelLabel: 'Cancel',
+                                    type: 'warn',
+                                },
+                            );
+                            if (!ok) return;
+                        }
+                        await localStore.clear();
+                    }
                     editor.newDocument();
+                    setTitleInput(editor.metadata?.title || 'Untitled Document');
                 });
             }
 
@@ -24,10 +114,15 @@
                     const file = event.target.files[0];
                     if (!file) return;
                     const reader = new FileReader();
-                    reader.onload = (e) => {
+                    reader.onload = async (e) => {
                         try {
                             editor.xml = e.target.result;
-                            editor.metadata = { name: file.name };
+                            editor.metadata = { ...(editor.metadata || {}), name: file.name };
+                            if (localStore) {
+                                await localStore.saveNow();
+                                const record = await localStore.getRecord();
+                                setTitleInput(record?.name || file.name);
+                            }
                         } catch (error) {
                             toast(error.message || 'Failed to load XML', 'error');
                         } finally {

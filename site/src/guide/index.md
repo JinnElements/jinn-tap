@@ -37,12 +37,13 @@ see the [Schema reference](/schema/).
 
 JinnTap is usually embedded into a larger application such as **TEI Publisher 10**,
 which handles loading and saving documents. The editor itself is purely client-side and doesn't need any server.
-The embedded demo instances included in this documentation are browser-only: they won't save your edits, but are still fully functional.
+The embedded demo instances included in this documentation are browser-only: edits are kept in **IndexedDB on this device** (not uploaded anywhere), and you are asked on reload whether to restore your local draft. See [Local document storage](/guide/local-storage/) for how to add this to your own embed.
 
 ## Next steps
 
 - [Installation](/guide/installation)
 - [Usage](/guide/usage)
+- [Local document storage](/guide/local-storage) — IndexedDB drafts for browser-only hosts
 - [Customizing the editor](/guide/customizing) — schema, CSS, toolbar, connectors
 - [Writing with the editor](/editing/) — blocks, footnotes, attributes, shortcodes
 - [Schema reference](/schema/) — the main extension point

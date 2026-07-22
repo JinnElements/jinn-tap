@@ -34,6 +34,53 @@ el.addEventListener('content-change', ({ detail }) => {
 });
 ```
 
+<h2 id="local-document-store-indexeddb">Local document store (IndexedDB)</h2>
+
+Optional module: **`@jinntec/jinntap/storage`** (re-exported from `@jinntec/jinntap`).
+Keeps full document XML in the browser's IndexedDB — nothing is uploaded. Not used
+by `<jinn-tap>` itself; hosts opt in.
+
+See the [Local document storage](/guide/local-storage/) guide for behaviour, record
+shape, naming, restore prompts, and when to use it vs. server save.
+
+```js
+import { attachLocalStore, DocumentStore } from '@jinntec/jinntap/storage';
+import { jinnToastConfirm } from '@jinntec/jinntap/jinn-toast';
+
+const handle = await attachLocalStore(el, {
+  onDraftAvailable: async (record) =>
+    jinnToastConfirm(`Restore local draft “${record.name}”?`, {
+      confirmLabel: 'Restore',
+      cancelLabel: 'Keep current',
+    }),
+  onRestore: (record) => console.log('Restored', record.name),
+});
+
+await handle.rename('My letter'); // lock display title
+await handle.clear();
+el.newDocument();
+```
+
+**`attachLocalStore(editor, options?)`** → handle or `null` (skipped during collab
+unless `{ force: true }`).
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `documentId` | `current-<format>` | IndexedDB key |
+| `debounceMs` | `500` | Autosave delay (ms) |
+| `autoRestore` | `false` | Restore without prompting |
+| `onDraftAvailable` | — | `(record) => boolean \| Promise<boolean>` |
+| `onRestore` | — | After restore |
+| `onNameChange` | — | Display title changed |
+
+Handle: `restore()`, `saveNow()`, `rename(name)`, `clear()`, `getRecord()`,
+`detach()`, `restored`, `pendingDraft`, `store`.
+
+**`DocumentStore`**: `open()`, `list()`, `get(id)`, `put(doc)`, `delete(id)`.
+
+**Utilities**: `deduceDocumentName`, `extractTitleFromXml`, `isGenericTitle`,
+`truncateTitle`.
+
 ## Commands
 
 The `tiptap` editor exposes ProseMirror commands. The command names correspond to the

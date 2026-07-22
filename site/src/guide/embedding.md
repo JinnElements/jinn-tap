@@ -79,6 +79,14 @@ When collaboration is active and a document fails the schema check, the editor
 switches to read-only rather than dropping markup. See
 [Attributes](/api/attributes#collaboration) for the full list.
 
+## Local document storage
+
+For browser-only embeds (no backend save), the optional
+[`@jinntec/jinntap/storage`](/guide/local-storage/) module can autosave full document
+XML to IndexedDB and offer restore on reload. It is opt-in — TEI Publisher and
+similar hosts should use [`content-change`](/api/events#content-change) to persist
+to a server instead. Collaboration sessions skip local storage by default.
+
 ## Authority lookups
 
 Attributes configured with a [connector](/schema/attributes#connectors) (e.g. the

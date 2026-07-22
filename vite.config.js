@@ -7,6 +7,7 @@ export default defineConfig({
             entry: {
                 'jinn-tap': 'src/jinn-tap.js',
                 'jinn-toast': 'src/components/jinn-toast.js',
+                storage: 'src/storage/index.js',
                 index: 'src/index.js',
             },
             formats: ['es'],

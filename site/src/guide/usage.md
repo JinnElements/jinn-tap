@@ -69,6 +69,17 @@ editor.addEventListener('content-change', (event) => {
 });
 ```
 
+## Local drafts
+
+The editor above autosaves to **IndexedDB** in your browser (nothing is sent to a
+server). Reload this page after editing and you will be prompted to restore your
+draft or keep the starter document. Use **New** in the toolbar to discard the local
+copy and start fresh (with a confirmation if a draft exists).
+
+This behaviour comes from the optional [`@jinntec/jinntap/storage`](/guide/local-storage/)
+module wired in by the docs site — it is not enabled on `<jinn-tap>` by default.
+Server-backed apps (e.g. TEI Publisher) should save via `content-change` instead.
+
 ## Choosing a format
 
 JinnTap supports TEI (default) and JATS. The format is fixed at initialization and

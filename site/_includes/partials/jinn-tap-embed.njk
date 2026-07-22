@@ -7,6 +7,9 @@
   {%- set docUrl = '/demo/starter.xml' -%}
 {%- endif -%}
 {%- set toolbarButtons %}
+    <li slot="toolbar" class="document-title-item">
+        <input type="text" class="document-title" data-action="document-title" aria-label="Document title" placeholder="Untitled Document" spellcheck="false">
+    </li>
     <li slot="toolbar">
         <a href="#" class="toolbar-button" data-action="new" title="New document" data-tooltip="New" data-placement="bottom">
             <i class="bi bi-file-earmark-plus"></i>

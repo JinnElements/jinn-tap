@@ -79,6 +79,36 @@ pb-page {
     border-bottom-color: var(--line);
 }
 
+.jinn-tap-embed jinn-tap .document-title-item {
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+    min-width: 8rem;
+    max-width: 18rem;
+    margin-inline-end: 0.25rem;
+    list-style: none;
+}
+
+.jinn-tap-embed jinn-tap .document-title {
+    width: 100%;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    background: transparent;
+    color: var(--ink);
+    font: 600 0.875rem/1.25 var(--font-body);
+    padding: 0.25rem 0.5rem;
+    outline: none;
+}
+
+.jinn-tap-embed jinn-tap .document-title:hover {
+    background: var(--jinn-tap-toolbar-hover);
+}
+
+.jinn-tap-embed jinn-tap .document-title:focus {
+    border-color: var(--accent);
+    background: var(--paper-strong);
+}
+
 .jinn-tap-embed jinn-tap .editor-area,
 .jinn-tap-embed jinn-tap .code-area {
     padding: 0.85rem 1rem 1rem;
