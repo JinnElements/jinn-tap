@@ -1,3 +1,10 @@
+# [1.33.0](https://github.com/JinnElements/jinn-tap/compare/v1.32.0...v1.33.0) (2026-07-22)
+
+
+### Features
+
+* add optional indexedDb backed storage layer ([3800d08](https://github.com/JinnElements/jinn-tap/commit/3800d08546617dd23a38d9664311a816d0bcb16e))
+
 # [1.32.0](https://github.com/JinnElements/jinn-tap/compare/v1.31.0...v1.32.0) (2026-07-20)
 
 
