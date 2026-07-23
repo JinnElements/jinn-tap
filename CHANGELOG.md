@@ -1,3 +1,21 @@
+# [1.34.0](https://github.com/JinnElements/jinn-tap/compare/v1.33.0...v1.34.0) (2026-07-23)
+
+
+### Bug Fixes
+
+* auto close sidebar on apply ([47a0b63](https://github.com/JinnElements/jinn-tap/commit/47a0b63e03d7c21487bbe5cec4acb3045d63ae9a))
+* export should omit footnote wrappers if there are no footnotes ([adf8274](https://github.com/JinnElements/jinn-tap/commit/adf82743499754b5e26d83e48a9b65c976ab4fbe))
+* **jats:** incorrect XML for figure inserted ([577f02c](https://github.com/JinnElements/jinn-tap/commit/577f02cee4944ecbb09f029c8c4a539eba3552eb))
+* normalize pretty-print whitespace when importing XML ([8165ad6](https://github.com/JinnElements/jinn-tap/commit/8165ad6e1c50bac200b9f6a59f38cb2ed4feedd4))
+* upload content issues ([39855af](https://github.com/JinnElements/jinn-tap/commit/39855af77bf6b1887b7b1bd9dee9bcf5dd3e20b7))
+* when guessing title for new document, wait until there are at least two words ([759f074](https://github.com/JinnElements/jinn-tap/commit/759f0743884c062e399e013246b3ad94c8c099a0))
+
+
+### Features
+
+* add asset manager to indexedDb storage; allow upload of images ([8037128](https://github.com/JinnElements/jinn-tap/commit/8037128fb301e9ead087237934119680f510be08))
+* add asset store which manages images in a jinks app ([b154be2](https://github.com/JinnElements/jinn-tap/commit/b154be2595d8f29b15ebd4d1153a60c4292fce95))
+
 # [1.33.0](https://github.com/JinnElements/jinn-tap/compare/v1.32.0...v1.33.0) (2026-07-22)
 
 
