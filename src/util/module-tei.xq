@@ -14,8 +14,15 @@ declare function jt:new-document () {
             </fileDesc>
         </teiHeader>
         <text><body><div><p /></div></body></text>
-        <standOff><listAnnotation /></standOff>
     </TEI>
+};
+
+(: Only emit listAnnotation when it contains notes. :)
+declare %private function jt:export-list-annotation ($input as document-node()) as element()? {
+    if ($input//tei:listAnnotation/*) then
+        $input//tei:listAnnotation
+    else
+        ()
 };
 
 declare function jt:import ($doc as node()) {
@@ -106,13 +113,30 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
                 for $child in $node!(tei:teiHeader, tei:text, tei:facsimile, tei:sourceDoc)
                 return jt:export($child, $input, $meta),
                 if (not($node/tei:standOff)) then
-                    <standOff xmlns="http://www.tei-c.org/ns/1.0">{ $input//tei:listAnnotation }</standOff>
+                    (: Create standOff only when there are notes to export :)
+                    let $notes := jt:export-list-annotation($input)
+                    return
+                        if (exists($notes)) then
+                            <standOff xmlns="http://www.tei-c.org/ns/1.0">{ $notes }</standOff>
+                        else
+                            ()
                 else (
                 ),
                 jt:export($node/tei:standOff, $input, $meta)
             }
         case element(tei:standOff) return
-            element {node-name($node)} { $node/@*, $node/* except $node/tei:listAnnotation, $input//tei:listAnnotation }
+            (: TEI standOff requires model.standOffPart+ — omit when empty :)
+            let $other := $node/* except $node/tei:listAnnotation
+            let $notes := jt:export-list-annotation($input)
+            return
+                if (exists($other) or exists($notes)) then
+                    element {node-name($node)} {
+                        $node/@*,
+                        $other,
+                        $notes
+                    }
+                else
+                    ()
         case element(tei:body) return
             element {node-name($node)} {
                 $node/@*,

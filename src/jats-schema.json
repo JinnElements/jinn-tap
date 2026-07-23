@@ -32,11 +32,6 @@
             "label": "<i class='bi bi-filetype-xml'></i>",
             "order": 20
         },
-        "Debug Mode": {
-            "command": "toggleDebug",
-            "label": "<i class='bi bi-question-circle'></i>",
-            "order": 20
-        },
         "Fullscreen": {
             "command": "toggleFullscreen",
             "label": "<i class='bi bi-fullscreen'></i>",

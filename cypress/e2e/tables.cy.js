@@ -55,7 +55,7 @@ describe('Tables', () => {
             cy.get('jinn-tap').should((e) => {
                 const [editor] = e.get();
                 expect(editor.xml).to.equal(
-                    '<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body><div><head>The title</head><table><row><cell>A</cell><cell>B</cell></row><row><cell>C</cell><cell>D</cell></row></table></div></body></text><standOff/></TEI>',
+                    '<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body><div><head>The title</head><table><row><cell>A</cell><cell>B</cell></row><row><cell>C</cell><cell>D</cell></row></table></div></body></text></TEI>',
                 );
             });
 
@@ -91,7 +91,7 @@ describe('Tables', () => {
 
     it('can handle pb elements in tables', () => {
         const testContent =
-            '<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body><table cols="2" rows="2"><row><cell>A</cell><cell>B</cell></row><row><cell><pb/>C</cell><cell>D</cell></row></table></body></text><standOff/></TEI>';
+            '<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body><table cols="2" rows="2"><row><cell>A</cell><cell>B</cell></row><row><cell><pb/>C</cell><cell>D</cell></row></table></body></text></TEI>';
 
         // Get the component instance
         cy.get('jinn-tap').then(($component) => {

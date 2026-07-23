@@ -3,7 +3,7 @@
 // are visibly marked in the reading pane.
 
 const wrapInTEIBoilerplate = (input) => {
-    return `<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body>${input}</body></text><standOff/></TEI>`;
+    return `<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body>${input}</body></text></TEI>`;
 };
 
 describe('Unknown elements', () => {

@@ -1,5 +1,5 @@
 const wrapInTEIBoilerplate = (input) => {
-    return `<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body><p>${input}</p></body></text><standOff/></TEI>`;
+    return `<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader><fileDesc><titleStmt><title>Untitled Document</title></titleStmt><publicationStmt><p>Information about publication or distribution</p></publicationStmt><sourceDesc><p>Information about the source</p></sourceDesc></fileDesc></teiHeader><text><body><p>${input}</p></body></text></TEI>`;
 };
 
 describe('JinnTap Component', () => {
@@ -89,7 +89,7 @@ describe('JinnTap Component', () => {
 </body>
 </text><facsimile id="firstpage">
 <graphic url="firstpage.png"/>
-</facsimile><standOff><listAnnotation/></standOff></TEI>`);
+</facsimile></TEI>`);
         });
     });
 
