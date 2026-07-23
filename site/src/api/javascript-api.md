@@ -73,8 +73,8 @@ unless `{ force: true }`).
 | `onRestore` | — | After restore |
 | `onNameChange` | — | Display title changed |
 
-Handle: `restore()`, `saveNow()`, `rename(name)`, `clear()`, `getRecord()`,
-`detach()`, `restored`, `pendingDraft`, `store`.
+Handle: `restore()`, `saveNow()`, `rename(name)`, `loadDocument(xml, { filename? })`,
+`clear()`, `getRecord()`, `detach()`, `restored`, `pendingDraft`, `store`.
 
 **`DocumentStore`**: `open()`, `list()`, `get(id)`, `put(doc)`, `delete(id)`.
 

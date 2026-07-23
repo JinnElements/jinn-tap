@@ -26,6 +26,7 @@ import { deduceDocumentName, isGenericTitle, isProvisionalTitle } from './docume
  * @property {() => void} detach
  * @property {(record?: StoredDocument) => Promise<boolean>} restore
  * @property {(name: string) => Promise<StoredDocument>} rename
+ * @property {(xml: string, opts?: { filename?: string }) => Promise<StoredDocument>} loadDocument
  * @property {() => Promise<void>} clear
  * @property {() => Promise<StoredDocument|undefined>} getRecord
  * @property {() => Promise<StoredDocument>} saveNow
@@ -226,6 +227,53 @@ export async function attachLocalStore(editor, options = {}) {
                     nameLocked: true,
                 }),
             );
+        },
+        /**
+         * Replace editor content with newly loaded XML (e.g. file upload).
+         * Unlocks the display name and re-deduces it from the new document —
+         * does not keep a previous `metadata.title` or `nameLocked` value.
+         *
+         * @param {string} xml
+         * @param {{ filename?: string }} [opts]
+         * @returns {Promise<StoredDocument>}
+         */
+        async loadDocument(xml, { filename } = {}) {
+            if (!xml) {
+                throw new Error('Document XML must not be empty');
+            }
+            nameLocked = false;
+            suppressingSave = true;
+            try {
+                if (editor.hasAttribute('url')) {
+                    editor.removeAttribute('url');
+                }
+                editor.xml = xml;
+                const fallback = filename
+                    ? filename.replace(/\.xml$/i, '').trim() || 'Untitled Document'
+                    : 'Untitled Document';
+                const displayName = deduceDocumentName({
+                    xml,
+                    // Ignore stale metadata from the previous document
+                    metadata: {},
+                    plainText: typeof editor.content === 'string' ? editor.content : undefined,
+                    fallback,
+                });
+                editor.metadata = {
+                    name: filename || editor.metadata?.name || 'untitled.xml',
+                    title: displayName,
+                };
+                emitName(displayName);
+                clearTimeout(timer);
+                // Persist directly: `persist()` no-ops while suppressingSave is set
+                // (that flag only exists to ignore the content-change from assigning xml).
+                const record = buildRecord(editor.xml);
+                await store.put(record);
+                return record;
+            } finally {
+                setTimeout(() => {
+                    suppressingSave = false;
+                }, debounceMs + 50);
+            }
         },
         async clear() {
             clearTimeout(timer);

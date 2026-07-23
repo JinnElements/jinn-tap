@@ -75,6 +75,7 @@ Returns a **handle** (or `null` when skipped). The handle exposes:
 | `restore(record?)` | Load a draft into the editor (uses `pendingDraft` or fetches by id) |
 | `saveNow()` | Persist the current document immediately |
 | `rename(name)` | Set a human-readable title and lock it (`nameLocked`) |
+| `loadDocument(xml, { filename? })` | Replace content from an upload; unlocks and re-deduces the display name |
 | `clear()` | Delete the stored record for this `documentId` |
 | `getRecord()` | Read the current stored record |
 | `detach()` | Stop autosaving and remove the listener |

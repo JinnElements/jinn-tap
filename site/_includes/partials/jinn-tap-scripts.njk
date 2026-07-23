@@ -129,12 +129,29 @@
                     const reader = new FileReader();
                     reader.onload = async (e) => {
                         try {
-                            editor.xml = e.target.result;
-                            editor.metadata = { ...(editor.metadata || {}), name: file.name };
+                            const xml = e.target.result;
                             if (localStore) {
-                                await localStore.saveNow();
-                                const record = await localStore.getRecord();
+                                const record = await localStore.loadDocument(xml, {
+                                    filename: file.name,
+                                });
                                 setTitleInput(record?.name || file.name);
+                            } else {
+                                editor.xml = xml;
+                                const displayName = deduceDocumentName({
+                                    xml,
+                                    plainText:
+                                        typeof editor.content === 'string'
+                                            ? editor.content
+                                            : undefined,
+                                    fallback:
+                                        file.name.replace(/\.xml$/i, '').trim() ||
+                                        'Untitled Document',
+                                });
+                                editor.metadata = {
+                                    name: file.name,
+                                    title: displayName,
+                                };
+                                setTitleInput(displayName);
                             }
                         } catch (error) {
                             toast(error.message || 'Failed to load XML', 'error');
