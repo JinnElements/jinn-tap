@@ -1,5 +1,5 @@
 import { DocumentStore } from './document-store.js';
-import { deduceDocumentName, isGenericTitle } from './document-name.js';
+import { deduceDocumentName, isGenericTitle, isProvisionalTitle } from './document-name.js';
 
 /**
  * @typedef {import('./document-store.js').StoredDocument} StoredDocument
@@ -8,7 +8,7 @@ import { deduceDocumentName, isGenericTitle } from './document-name.js';
 /**
  * @typedef {object} AttachLocalStoreOptions
  * @property {string} [documentId] - Stable key for the active document (default: `current-<format>`)
- * @property {number} [debounceMs=500]
+ * @property {number} [debounceMs=1200]
  * @property {DocumentStore} [store] - Reuse an existing store instance
  * @property {boolean} [force=false] - Attach even when collaboration (`server`) is active
  * @property {boolean} [autoRestore=false] - Restore immediately without asking
@@ -40,7 +40,7 @@ import { deduceDocumentName, isGenericTitle } from './document-name.js';
  * @returns {Promise<LocalStoreHandle|null>} `null` when skipped (e.g. collaboration without `force`)
  */
 export async function attachLocalStore(editor, options = {}) {
-    const { debounceMs = 500, force = false, autoRestore = false, onDraftAvailable, onNameChange, onRestore } = options;
+    const { debounceMs = 1200, force = false, autoRestore = false, onDraftAvailable, onNameChange, onRestore } = options;
 
     if (!force && editor.hasAttribute('server')) {
         return null;
@@ -74,7 +74,7 @@ export async function attachLocalStore(editor, options = {}) {
                 metadata,
                 plainText: typeof editor.content === 'string' ? editor.content : undefined,
             });
-            if (!isGenericTitle(name) && metadata.title !== name) {
+            if (!isGenericTitle(name) && !isProvisionalTitle(name) && metadata.title !== name) {
                 editor.metadata = { ...metadata, title: name };
             }
         }

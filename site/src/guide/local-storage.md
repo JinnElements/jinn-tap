@@ -125,10 +125,16 @@ metadata round-trip through the existing import/export pipeline.
 On each autosave, if `nameLocked` is not set, the display name is deduced in order
 from:
 
-1. A meaningful `editor.metadata.title`
-2. The TEI `titleStmt/title` or JATS `article-title` in the XML header
+1. A meaningful `editor.metadata.title` (two words with the last at least three
+   letters — shorter values are treated as provisional and do not stick)
+2. The TEI `titleStmt/title` or JATS `article-title` in the XML header (same rule)
 3. The first non-empty line of plain text in the editor
 4. `"Untitled Document"`
+
+Provisional titles (fewer than two words, or a last word shorter than three
+letters) still update the toolbar while you type, but are not written into
+`metadata.title` until they look complete — otherwise a paused keystroke would
+freeze the name mid-word. Autosave itself debounces for 1.2s by default.
 
 Call `handle.rename('My letter')` to set a title explicitly; this sets
 `nameLocked` and syncs `metadata.title` so export writes it into the header.

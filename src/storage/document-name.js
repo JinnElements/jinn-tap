@@ -9,6 +9,26 @@ export function isGenericTitle(title) {
 }
 
 /**
+ * True while a deduced title still looks like an incomplete draft
+ * (e.g. a single typed letter, or a second word still being typed).
+ * Auto-save should keep updating until this returns false.
+ *
+ * @param {string} title
+ * @returns {boolean}
+ */
+export function isProvisionalTitle(title) {
+    if (!title || isGenericTitle(title)) {
+        return true;
+    }
+    const words = title.trim().split(/\s+/).filter(Boolean);
+    if (words.length < 2) {
+        return true;
+    }
+    // Require the last word to look finished — "Hello w" stays provisional.
+    return words[words.length - 1].length < 3;
+}
+
+/**
  * @param {string} text
  * @param {number} [max=80]
  * @returns {string}
@@ -70,6 +90,8 @@ export function extractTitleFromXml(xml) {
  * Deduce a display name for a document.
  *
  * Order: meaningful `metadata.title` → XML header title → first plain-text line → fallback.
+ * Short / incomplete titles (fewer than two words) are treated as provisional and
+ * do not win over a longer plain-text line, so typing is not frozen after one letter.
  *
  * @param {object} options
  * @param {string} [options.xml]
@@ -79,22 +101,32 @@ export function extractTitleFromXml(xml) {
  * @returns {string}
  */
 export function deduceDocumentName({ xml, metadata, plainText, fallback = 'Untitled Document' } = {}) {
-    const metaTitle = metadata?.title?.trim();
-    if (metaTitle && !isGenericTitle(metaTitle)) {
-        return truncateTitle(metaTitle);
-    }
-
-    const fromXml = extractTitleFromXml(xml);
-    if (fromXml) {
-        return fromXml;
-    }
-
     const firstLine = plainText
         ?.trim()
         .split(/\r?\n/)
         .find((line) => line.trim());
-    if (firstLine) {
-        return truncateTitle(firstLine);
+    const fromPlain = firstLine ? truncateTitle(firstLine) : null;
+
+    const metaTitle = metadata?.title?.trim();
+    if (metaTitle && !isGenericTitle(metaTitle) && !isProvisionalTitle(metaTitle)) {
+        return truncateTitle(metaTitle);
+    }
+
+    const fromXml = extractTitleFromXml(xml);
+    if (fromXml && !isProvisionalTitle(fromXml)) {
+        return fromXml;
+    }
+
+    if (fromPlain) {
+        return fromPlain;
+    }
+
+    if (fromXml) {
+        return fromXml;
+    }
+
+    if (metaTitle && !isGenericTitle(metaTitle)) {
+        return truncateTitle(metaTitle);
     }
 
     return fallback;

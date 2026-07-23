@@ -6,6 +6,7 @@ export {
     deduceDocumentName,
     extractTitleFromXml,
     isGenericTitle,
+    isProvisionalTitle,
     truncateTitle,
     IndexedDbAssetStore,
     HttpAssetStore,

@@ -79,7 +79,7 @@ Handle: `restore()`, `saveNow()`, `rename(name)`, `clear()`, `getRecord()`,
 **`DocumentStore`**: `open()`, `list()`, `get(id)`, `put(doc)`, `delete(id)`.
 
 **Utilities**: `deduceDocumentName`, `extractTitleFromXml`, `isGenericTitle`,
-`truncateTitle`.
+`isProvisionalTitle`, `truncateTitle`.
 
 ### Assets
 
