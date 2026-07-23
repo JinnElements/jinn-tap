@@ -214,8 +214,6 @@ export class AttributePanel {
     }
 
     collapseSheet() {
-        // Wide layout keeps the connector panel open as a fixed right column.
-        if (this._isWideLayout()) return;
         this.panel?.classList.remove('is-expanded');
         this._syncSheetToggle();
     }
@@ -804,6 +802,7 @@ export class AttributePanel {
             applyButton.addEventListener('click', (ev) => {
                 ev.preventDefault();
                 this.handleAttributeUpdate(nodeOrMark, pos);
+                this.collapseSheet();
             });
             footer.appendChild(applyButton);
             this.panel.appendChild(footer);
