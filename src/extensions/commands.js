@@ -84,12 +84,19 @@ export const JinnTapCommands = Extension.create({
                     const placeholder = 'https://placehold.co/320x200';
                     const graphicAttrs = figNodeType ? { 'xlink:href': placeholder } : { url: placeholder };
 
+                    // JATS caption is `p+`; TEI head/figDesc are `inline*`
+                    const descSpec = state.schema.nodes[descriptionNodeType]?.spec?.content || 'inline*';
+                    const descriptionText = { type: 'text', text: 'Description' };
+                    const descriptionContent = /\binline\b/.test(descSpec)
+                        ? [descriptionText]
+                        : [{ type: 'p', content: [descriptionText] }];
+
                     commands.insertContent({
                         type: containerNodeType,
                         attrs: {},
                         content: [
                             { type: 'graphic', attrs: graphicAttrs },
-                            { type: descriptionNodeType, content: [{ type: 'text', text: 'Description' }] },
+                            { type: descriptionNodeType, content: descriptionContent },
                         ],
                     });
                     return true;

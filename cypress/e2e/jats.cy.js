@@ -144,4 +144,26 @@ describe('JinnTap Component (JATS format)', () => {
             expect(editor.xml).to.include('<p>Hello There! Initial Content</p>');
         });
     });
+
+    it('inserts a fig with caption wrapping a paragraph', () => {
+        const testContent = '<jats-sec><jats-p>Hello world!</jats-p></jats-sec>';
+
+        cy.get('jinn-tap').then(($component) => {
+            $component[0].content = testContent;
+        });
+
+        cy.get('jinn-tap').then(($component) => {
+            const editor = $component[0].editor;
+            editor.chain().focus().setTextSelection({ from: 1, to: 1 }).insertFigure().run();
+        });
+
+        cy.get('jinn-tap').should((e) => {
+            const [component] = e.get();
+            expect(component.xml).to.include('<fig>');
+            expect(component.xml).to.include('<graphic');
+            expect(component.xml).to.include('<caption><p>Description</p></caption>');
+        });
+
+        cy.get('jinn-tap .editor-area').should('not.contain.text', 'Content does not match schema');
+    });
 });
