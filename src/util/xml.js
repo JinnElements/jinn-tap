@@ -29,6 +29,53 @@ function getModuleNamespace(formatId) {
 }
 
 /**
+ * Whether an element (or its nearest ancestor) requests preserved space.
+ * Handles both the XML attribute form and the HTML `xml:space` name.
+ * @param {Element} el
+ * @returns {boolean}
+ */
+function hasXmlSpacePreserve(el) {
+    if (!(el instanceof Element)) return false;
+    const value =
+        el.getAttribute('xml:space') ||
+        el.getAttributeNS?.('http://www.w3.org/XML/1998/namespace', 'space') ||
+        el.getAttribute('space');
+    return value === 'preserve';
+}
+
+/**
+ * Collapse pretty-print whitespace from imported XML so indentation and
+ * newlines between tags do not show up as editable text. Significant leading /
+ * trailing spaces in mixed content are kept as a single space. Honours
+ * `xml:space="preserve"`.
+ *
+ * @param {Node} node
+ * @param {boolean} [preserve=false]
+ */
+function normalizeImportWhitespace(node, preserve = false) {
+    if (node.nodeType === Node.ELEMENT_NODE) {
+        const preserveHere = preserve || hasXmlSpacePreserve(node);
+        // Copy first — we may remove children while iterating.
+        for (const child of Array.from(node.childNodes)) {
+            normalizeImportWhitespace(child, preserveHere);
+        }
+        return;
+    }
+    if (node.nodeType !== Node.TEXT_NODE || preserve) {
+        return;
+    }
+    const raw = node.nodeValue ?? '';
+    if (!/\S/.test(raw)) {
+        // Insignificant whitespace between elements (pretty-printed XML).
+        node.parentNode?.removeChild(node);
+        return;
+    }
+    const leading = /^\s/.test(raw);
+    const trailing = /\s$/.test(raw);
+    node.nodeValue = `${leading ? ' ' : ''}${raw.trim().replace(/\s+/g, ' ')}${trailing ? ' ' : ''}`;
+}
+
+/**
  * @param content {string|Node} - The content to transform to the internal XML
  * @param formatId {string} - Format identifier ('tei', 'jats', etc.). Required - format is not auto-detected.
  * @returns {{content: string, doc: Node, format: string}}
@@ -64,6 +111,7 @@ export function importXml(content, formatId) {
     );
     const xmlText = [];
     output.forEach((node) => {
+        normalizeImportWhitespace(node);
         xmlText.push(node.outerHTML);
     });
     return {
