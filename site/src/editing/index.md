@@ -153,9 +153,12 @@ More detail: [Keyboard & input rules](/schema/keyboard-and-input-rules).
 ## Figures and tables
 
 Use the toolbar **Figure** and **Table** actions (or schema snippets) to insert a
-figure (`figure` / `graphic` / `figDesc`) or a small table. Edit attributes of
-`graphic` (e.g. `url`) in the side panel after selecting the figure or graphic via
-breadcrumbs.
+figure (`figure` / `graphic` / `figDesc`) or a small table. Click the image (or
+select `graphic` in the breadcrumb) to open the attribute panel. When an
+[asset store](/guide/local-storage#assets) is attached, the panel shows thumbnails
+of local images and accepts uploads (including drag-and-drop); choosing one writes
+a relative path such as `myimage.png` into `url` (TEI) or `xlink:href` (JATS).
+Without a store, enter a URL by hand.
 
 ![The Table and Figure buttons in the Block elements dropdown]({{ '/screenshots/figures-tables.png' | prefixUrl }})
 *Both live in the same dropdown as Division and the other block-level elements.*

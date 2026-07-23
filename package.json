@@ -66,6 +66,7 @@
     "@tiptap/extensions": "^3.28.0",
     "@tiptap/pm": "^3.28.0",
     "@tiptap/starter-kit": "^3.28.0",
+    "fflate": "^0.8.3",
     "fontoxpath": "^3.33.2",
     "prettier-plugin-xquery": "^1.2.5",
     "rollup": "^4.62.2",

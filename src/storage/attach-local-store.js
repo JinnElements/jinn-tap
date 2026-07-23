@@ -12,7 +12,7 @@ import { deduceDocumentName, isGenericTitle } from './document-name.js';
  * @property {DocumentStore} [store] - Reuse an existing store instance
  * @property {boolean} [force=false] - Attach even when collaboration (`server`) is active
  * @property {boolean} [autoRestore=false] - Restore immediately without asking
- * @property {(record: StoredDocument) => boolean|Promise<boolean>} [onDraftAvailable] - Called when a draft exists; return true to restore
+ * @property {(record: StoredDocument) => boolean|Promise<boolean>} [onDraftAvailable] - Called when a draft exists; return true to restore, false to discard it
  * @property {(name: string) => void} [onNameChange] - Called when the display name changes
  * @property {(record: StoredDocument) => void} [onRestore] - Called after a draft is restored
  */
@@ -156,6 +156,12 @@ export async function attachLocalStore(editor, options = {}) {
         let shouldRestore = autoRestore;
         if (!autoRestore && onDraftAvailable) {
             shouldRestore = Boolean(await onDraftAvailable(existing));
+            if (!shouldRestore) {
+                // User declined — drop the draft so we do not prompt again on reload
+                await store.delete(documentId);
+                pendingDraft = undefined;
+                return false;
+            }
         }
 
         if (shouldRestore) {

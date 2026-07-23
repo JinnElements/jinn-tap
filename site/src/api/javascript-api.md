@@ -69,7 +69,7 @@ unless `{ force: true }`).
 | `documentId` | `current-<format>` | IndexedDB key |
 | `debounceMs` | `500` | Autosave delay (ms) |
 | `autoRestore` | `false` | Restore without prompting |
-| `onDraftAvailable` | — | `(record) => boolean \| Promise<boolean>` |
+| `onDraftAvailable` | — | `(record) => boolean \| Promise<boolean>` (false deletes the draft) |
 | `onRestore` | — | After restore |
 | `onNameChange` | — | Display title changed |
 
@@ -80,6 +80,23 @@ Handle: `restore()`, `saveNow()`, `rename(name)`, `clear()`, `getRecord()`,
 
 **Utilities**: `deduceDocumentName`, `extractTitleFromXml`, `isGenericTitle`,
 `truncateTitle`.
+
+### Assets
+
+```js
+import { IndexedDbAssetStore, attachAssetStore } from '@jinntec/jinntap/storage';
+
+await attachAssetStore(el, new IndexedDbAssetStore());
+// el.assets.list / get / put / delete / resolve
+```
+
+Graphic `url` / `xlink:href` use relative paths (`myimage.png`). The attribute
+panel shows an image picker when `editor.assets` is set. See
+[Local document storage → Assets](/guide/local-storage#assets).
+
+**Export helpers**: `collectReferencedAssets(xml, store)`, `downloadXml`,
+`downloadDocumentZip` — when local images are referenced, hosts can offer a ZIP
+bundle (see [Exporting with images](/guide/local-storage#exporting-with-images)).
 
 ## Commands
 

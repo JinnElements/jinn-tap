@@ -7,4 +7,13 @@ export {
     extractTitleFromXml,
     isGenericTitle,
     truncateTitle,
+    IndexedDbAssetStore,
+    attachAssetStore,
+    isAbsoluteAssetHref,
+    sanitizeAssetPath,
+    findReferencedAssetPaths,
+    collectReferencedAssets,
+    downloadXml,
+    downloadDocumentZip,
+    buildDocumentZip,
 } from './storage/index.js';

@@ -103,6 +103,8 @@ export class JinnTap extends HTMLElement {
             title: 'Untitled Document',
             name: 'untitled.xml',
         };
+        /** @type {import('./storage/asset-store.js').AssetStore|null} */
+        this._assets = null;
         this._initialized = false;
         this._format = 'tei'; // Default format
         this._schema = null; // Will be set in connectedCallback or via getDefaultSchema()
@@ -750,6 +752,19 @@ export class JinnTap extends HTMLElement {
     // Getter for the full XML content
     get xml() {
         return exportXml(serialize(this.editor, this._schema), this.document, this.metadata, this._format);
+    }
+
+    /**
+     * Pluggable asset store for resolving relative graphic URLs (e.g. `myimage.png`).
+     * Set via `attachAssetStore(editor, store)` or assign directly.
+     * @type {import('./storage/asset-store.js').AssetStore|null}
+     */
+    get assets() {
+        return this._assets;
+    }
+
+    set assets(store) {
+        this._assets = store || null;
     }
 
     // Setter for the full XML content

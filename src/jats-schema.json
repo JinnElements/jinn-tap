@@ -223,7 +223,11 @@
             "attributes": {
                 "xlink:href": {
                     "type": "string",
-                    "default": "https://placehold.co/320x200"
+                    "default": "https://placehold.co/320x200",
+                    "connector": {
+                        "name": "Asset",
+                        "type": "image"
+                    }
                 }
             },
             "toolbar": {

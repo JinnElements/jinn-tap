@@ -127,7 +127,13 @@ export class AttributePanel {
         });
 
         this.editor.options.element.addEventListener('empty-element-clicked', ({ detail }) => {
-            const { node, pos } = detail;
+            const pos = detail.pos;
+            // Always read the live node from the document — node views may close over
+            // a stale Node object from when the view was first created.
+            const node = this.editor.state.doc.nodeAt(pos);
+            if (!node) {
+                return;
+            }
             this.editor.chain().focus().setNodeSelection(pos).run();
             this.updatePanel(node, pos);
         });
@@ -278,6 +284,11 @@ export class AttributePanel {
     }
 
     createAttributeConnector(fieldset, attrName, attrDef, currentValue, info, nodeOrMark, pos, text) {
+        if (attrDef.connector?.name === 'Asset') {
+            this.createAssetConnector(fieldset, attrName, attrDef, currentValue, nodeOrMark, pos);
+            return;
+        }
+
         const field = document.createElement('span');
         field.className = 'attribute-panel__field';
 
@@ -326,10 +337,10 @@ export class AttributePanel {
                 authority.setAttribute('fields', attrDef.connector.fields.join(', '));
                 authority.setAttribute('label', attrDef.connector.label);
 
-                const info = document.createElement('template');
-                info.classList.add('info');
-                info.content.appendChild(document.createTextNode(attrDef.connector.label));
-                authority.appendChild(info);
+                const infoTpl = document.createElement('template');
+                infoTpl.classList.add('info');
+                infoTpl.content.appendChild(document.createTextNode(attrDef.connector.label));
+                authority.appendChild(infoTpl);
                 break;
             case 'KBGA':
                 authority.setAttribute('api', attrDef.connector.api);
@@ -385,6 +396,215 @@ export class AttributePanel {
                 this.updateOccurrences(this.editor, nodeOrMark, strings);
             });
         }
+    }
+
+    /**
+     * Asset picker for graphic `url` / `xlink:href` when `connector.name === 'Asset'`.
+     */
+    createAssetConnector(fieldset, attrName, attrDef, currentValue, nodeOrMark, pos) {
+        const assets = this.host.assets;
+        const field = document.createElement('span');
+        field.className = 'attribute-panel__field';
+
+        const label = document.createElement('label');
+        label.textContent = attrName;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentValue || '';
+        input.name = attrName;
+        input.placeholder = 'myimage.png';
+        field.appendChild(label);
+        field.appendChild(input);
+        fieldset.appendChild(field);
+
+        if (!assets) {
+            // Should not be reached — callers fall back to createAttributeInput
+            input.readOnly = false;
+            return;
+        }
+
+        input.readOnly = true;
+
+        const details = document.createElement('details');
+        details.open = true;
+        const summary = document.createElement('summary');
+        summary.textContent = 'Images';
+        details.appendChild(summary);
+
+        const picker = document.createElement('div');
+        picker.className = 'asset-picker';
+
+        const dropzone = document.createElement('div');
+        dropzone.className = 'asset-picker__dropzone';
+        dropzone.innerHTML =
+            '<span>Drop an image here, or <label class="asset-picker__browse">browse<input type="file" accept="image/*" hidden></label></span>';
+        const fileInput = dropzone.querySelector('input[type="file"]');
+
+        const grid = document.createElement('div');
+        grid.className = 'asset-picker__grid';
+
+        const status = document.createElement('p');
+        status.className = 'asset-picker__status';
+
+        picker.append(dropzone, status, grid);
+        details.appendChild(picker);
+        fieldset.parentNode.appendChild(details);
+
+        details.addEventListener('toggle', () => {
+            if (details.open) this.expandSheet();
+        });
+        this.expandSheet();
+
+        const selectPath = (path) => {
+            input.value = path;
+            this._setSummaryText(nodeOrMark, path);
+            this.handleAttributeUpdate(nodeOrMark, pos, { [attrName]: path });
+            this.collapseSheet();
+            details.open = false;
+            refreshGrid();
+        };
+
+        const refreshGrid = async () => {
+            grid.replaceChildren();
+            status.textContent = 'Loading…';
+            try {
+                const list = await assets.list();
+                const images = list.filter((a) => (a.mimeType || '').startsWith('image/'));
+                if (images.length === 0) {
+                    status.textContent = 'No images yet — upload one above.';
+                    return;
+                }
+                status.textContent = '';
+                for (const meta of images) {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'asset-picker__item';
+
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'asset-picker__thumb';
+                    if (meta.path === input.value) {
+                        button.classList.add('is-selected');
+                    }
+                    button.title = meta.path;
+                    const img = document.createElement('img');
+                    img.alt = meta.path;
+                    img.loading = 'lazy';
+                    const src = await assets.resolve(meta.path);
+                    img.src = src;
+                    const caption = document.createElement('span');
+                    caption.textContent = meta.path;
+                    button.append(img, caption);
+                    button.addEventListener('click', () => selectPath(meta.path));
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.type = 'button';
+                    deleteBtn.className = 'asset-picker__delete';
+                    deleteBtn.title = `Delete ${meta.path}`;
+                    deleteBtn.setAttribute('aria-label', `Delete ${meta.path}`);
+                    deleteBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                        </svg>`;
+                    deleteBtn.addEventListener('click', async (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        const ok = await new Promise((resolve) => {
+                            document.dispatchEvent(
+                                new CustomEvent('jinn-toast', {
+                                    detail: {
+                                        message: `Delete “${meta.path}” from local storage?`,
+                                        type: 'warn',
+                                        sticky: true,
+                                        confirm: {
+                                            confirmLabel: 'Delete',
+                                            cancelLabel: 'Cancel',
+                                            onConfirm: () => resolve(true),
+                                            onCancel: () => resolve(false),
+                                        },
+                                    },
+                                }),
+                            );
+                        });
+                        if (!ok) {
+                            return;
+                        }
+                        try {
+                            await assets.delete(meta.path);
+                            if (input.value === meta.path) {
+                                input.value = '';
+                                this._setSummaryText(nodeOrMark, nodeOrMark.type.name);
+                                this.handleAttributeUpdate(nodeOrMark, pos);
+                            }
+                            await refreshGrid();
+                            document.dispatchEvent(
+                                new CustomEvent('jinn-toast', {
+                                    detail: { message: `Deleted ${meta.path}`, type: 'info' },
+                                }),
+                            );
+                        } catch (err) {
+                            console.error(err);
+                            document.dispatchEvent(
+                                new CustomEvent('jinn-toast', {
+                                    detail: {
+                                        message: err.message || 'Failed to delete asset',
+                                        type: 'error',
+                                    },
+                                }),
+                            );
+                        }
+                    });
+
+                    wrap.append(button, deleteBtn);
+                    grid.appendChild(wrap);
+                }
+            } catch (err) {
+                console.error(err);
+                status.textContent = 'Failed to load assets.';
+            }
+        };
+
+        const uploadFiles = async (files) => {
+            const file = files?.[0];
+            if (!file) return;
+            try {
+                status.textContent = 'Uploading…';
+                const path = (file.name || 'image').replace(/\\/g, '/').split('/').pop().trim() || 'image';
+                await assets.put({ path, blob: file, mimeType: file.type || 'image/png' });
+                selectPath(path);
+                document.dispatchEvent(
+                    new CustomEvent('jinn-toast', {
+                        detail: { message: `Uploaded ${path}`, type: 'info' },
+                    }),
+                );
+            } catch (err) {
+                console.error(err);
+                status.textContent = err.message || 'Upload failed.';
+                document.dispatchEvent(
+                    new CustomEvent('jinn-toast', {
+                        detail: { message: err.message || 'Upload failed', type: 'error' },
+                    }),
+                );
+            }
+        };
+
+        fileInput.addEventListener('change', () => {
+            uploadFiles(fileInput.files);
+            fileInput.value = '';
+        });
+
+        dropzone.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropzone.classList.add('is-dragover');
+        });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('is-dragover'));
+        dropzone.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropzone.classList.remove('is-dragover');
+            uploadFiles(event.dataTransfer?.files);
+        });
+
+        refreshGrid();
     }
 
     createAttributeInput(form, attrName, attrDef, currentValue, placeholder = '') {
@@ -526,9 +746,16 @@ export class AttributePanel {
         // Merge global attributes with node-specific attributes
         const attributes = { ...globalAttributes, ...schemaDefAttributes };
 
-        const connectorEntries = Object.entries(attributes).filter(
-            ([name, attrDef]) => !name.startsWith('_') && attrDef.connector,
-        );
+        const connectorEntries = Object.entries(attributes).filter(([name, attrDef]) => {
+            if (name.startsWith('_') || !attrDef.connector) {
+                return false;
+            }
+            // Asset connector only activates the sheet when a store is attached
+            if (attrDef.connector.name === 'Asset' && !this.host.assets) {
+                return false;
+            }
+            return true;
+        });
         const hasConnector = connectorEntries.length > 0;
 
         if (hasConnector) {
@@ -539,7 +766,9 @@ export class AttributePanel {
             if (attrName.startsWith('_')) {
                 return;
             }
-            if (attrDef.connector) {
+            const useAssetConnector = attrDef.connector?.name === 'Asset' && this.host.assets;
+            const useAuthorityConnector = attrDef.connector && attrDef.connector.name !== 'Asset';
+            if (useAssetConnector || useAuthorityConnector) {
                 this.createAttributeConnector(
                     fieldset,
                     attrName,
@@ -563,6 +792,7 @@ export class AttributePanel {
         ) {
             const footer = document.createElement('footer');
             const applyButton = document.createElement('button');
+            applyButton.className = 'attribute-panel__apply';
             applyButton.dataset.tooltip = 'Apply Changes';
             applyButton.type = 'submit';
             applyButton.innerHTML = `
@@ -612,11 +842,13 @@ export class AttributePanel {
                 // Find the position of the node or mark in the document
                 if (pos !== null) {
                     const tr = this.editor.state.tr;
-                    // Create new attributes object without cleared attributes
-                    const newAttrs = { ...nodeOrMark.attrs, ...pendingChanges };
+                    // Prefer the live node at pos — panel may still hold a stale Node
+                    // reference from before a previous attribute update.
+                    const liveNode = this.editor.state.doc.nodeAt(pos) || nodeOrMark;
+                    const newAttrs = { ...liveNode.attrs, ...pendingChanges };
                     clearedAttributes.forEach((attr) => delete newAttrs[attr]);
                     console.log('<jinn-tap> newAttrs: %o', newAttrs);
-                    tr.setNodeMarkup(pos, nodeOrMark.type, newAttrs);
+                    tr.setNodeMarkup(pos, liveNode.type, newAttrs);
                     this.editor.view.dispatch(tr);
                 } else {
                     console.log('<jinn-tap> updating attributes: %o', pendingChanges);
