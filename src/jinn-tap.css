@@ -556,29 +556,29 @@ jinn-tap > .jinn-tap-aside .attribute-panel footer {
 jinn-tap > .jinn-tap-aside .attribute-panel footer button {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.35rem;
     height: auto;
     min-height: 0;
     margin: 0;
-    padding: 0.22rem 0.45rem;
-    border: 1px solid var(--jinn-tap-toolbar-separator, rgba(0, 0, 0, 0.14));
-    border-radius: 4px;
-    background: var(--jinn-tap-background-color, white);
-    color: inherit;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--jinn-tap-toolbar-fg, #1a1a1a);
+    border-radius: 5px;
+    background: var(--jinn-tap-toolbar-fg, #1a1a1a);
+    color: var(--jinn-tap-background-color, white);
     font: inherit;
-    font-size: 0.78rem;
-    font-weight: 500;
-    line-height: 1;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.15;
     cursor: pointer;
 }
 
 jinn-tap > .jinn-tap-aside .attribute-panel footer button:hover {
-    background: var(--jinn-tap-toolbar-hover, rgba(0, 0, 0, 0.06));
+    filter: brightness(1.25);
 }
 
 jinn-tap > .jinn-tap-aside .attribute-panel footer button svg {
-    width: 0.95rem;
-    height: 0.95rem;
+    width: 1.1rem;
+    height: 1.1rem;
     flex: 0 0 auto;
 }
 
@@ -779,6 +779,138 @@ jinn-tap .attribute-panel.has-connector.is-expanded pb-authority-lookup::part(ou
     overflow-y: auto;
 }
 
+/* Asset picker (graphic url / xlink:href) */
+jinn-tap .asset-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-height: 0;
+    flex: 1 1 auto;
+}
+
+jinn-tap .asset-picker__note {
+    margin: 0.5rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--jinn-tap-muted, #55504a);
+}
+
+jinn-tap .asset-picker__dropzone {
+    border: 1px dashed var(--jinn-tap-toolbar-separator, rgba(26, 24, 22, 0.25));
+    border-radius: 0.35rem;
+    padding: 0.75rem;
+    text-align: center;
+    font-size: 0.8125rem;
+    color: var(--jinn-tap-muted, #55504a);
+    background: rgba(26, 24, 22, 0.03);
+    transition: border-color 0.15s, background 0.15s;
+}
+
+jinn-tap .asset-picker__dropzone.is-dragover {
+    border-color: var(--jinn-tap-accent, #6c4cf0);
+    background: rgba(108, 76, 240, 0.08);
+}
+
+jinn-tap .asset-picker__browse {
+    color: var(--jinn-tap-accent, #6c4cf0);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+jinn-tap .asset-picker__status {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--jinn-tap-muted, #55504a);
+}
+
+jinn-tap .asset-picker__status:empty {
+    display: none;
+}
+
+jinn-tap .asset-picker__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+    gap: 0.5rem;
+    overflow-y: auto;
+    max-height: min(50vh, 32rem);
+    padding: 0.15rem;
+}
+
+jinn-tap .asset-picker__item {
+    position: relative;
+}
+
+jinn-tap .asset-picker__thumb {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+    width: 100%;
+    margin: 0;
+    padding: 0.25rem;
+    border: 1px solid transparent;
+    border-radius: 0.35rem;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+}
+
+jinn-tap .asset-picker__thumb:hover {
+    background: rgba(26, 24, 22, 0.06);
+}
+
+jinn-tap .asset-picker__thumb.is-selected {
+    border-color: var(--jinn-tap-accent, #6c4cf0);
+    background: rgba(108, 76, 240, 0.1);
+}
+
+jinn-tap .asset-picker__thumb img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 0.25rem;
+    background: rgba(26, 24, 22, 0.06);
+}
+
+jinn-tap .asset-picker__thumb span {
+    font-size: 0.6875rem;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+jinn-tap .asset-picker__delete {
+    position: absolute;
+    top: 0.2rem;
+    right: 0.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0.25rem;
+    background: rgba(26, 24, 22, 0.72);
+    color: #fffefc;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+jinn-tap .asset-picker__item:hover .asset-picker__delete,
+jinn-tap .asset-picker__item:focus-within .asset-picker__delete {
+    opacity: 1;
+}
+
+jinn-tap .asset-picker__delete:hover {
+    background: var(--jinn-tap-error, #ee402e);
+}
+
 /*
  * Authority action buttons (link / edit / add). Icons are inline SVGs that use
  * stroke="currentColor"; requires @teipublisher/pb-components >= 3.6.6 for
@@ -955,6 +1087,32 @@ jinn-tap:fullscreen .code-area {
     display: flex;
     justify-content: flex-end;
     margin-top: 1rem;
+}
+
+.jinn-tap-aside .attribute-panel footer button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--jinn-tap-toolbar-fg, #1a1a1a);
+    border-radius: 5px;
+    background: var(--jinn-tap-toolbar-fg, #1a1a1a);
+    color: var(--jinn-tap-background-color, white);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.15;
+    cursor: pointer;
+}
+
+.jinn-tap-aside .attribute-panel footer button:hover {
+    filter: brightness(1.25);
+}
+
+.jinn-tap-aside .attribute-panel footer button svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex: 0 0 auto;
 }
 
 .jinn-tap-aside pb-authority-lookup::part(output) {

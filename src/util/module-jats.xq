@@ -18,10 +18,25 @@ declare function jt:new-document () {
                 <p />
             </sec>
         </body>
-        <back>
-            <fn-group />
-        </back>
     </article>
+};
+
+(: Notes from editor content: prefer serialized fn-group, fall back to prefixed HTML form. :)
+declare %private function jt:export-fn-group ($input as document-node(), $meta as map(*)) as element(fn-group)? {
+    let $notes :=
+        if ($input//fn-group/*) then
+            $input//fn-group/node()
+        else if ($input//jats-fnGroup/*) then
+            $input//jats-fnGroup/node()
+        else
+            ()
+    return
+        if (exists($notes)) then
+            element fn-group {
+                jt:export($notes, $input, $meta)
+            }
+        else
+            ()
 };
 
 declare function jt:import ($doc as node()) {
@@ -109,21 +124,30 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
                     $node/@*,
                     jt:export($node/front, $input, $meta),
                     jt:export($node/body, $input, $meta),
-                    jt:export($node/back, $input, $meta)
+                    if ($node/back) then
+                        jt:export($node/back, $input, $meta)
+                    else
+                        (: Source has no back: create one only when there are footnotes :)
+                        let $fn-group := jt:export-fn-group($input, $meta)
+                        return
+                            if (exists($fn-group)) then
+                                element back { $fn-group }
+                            else
+                                ()
                 }
             case element(back) return
-                element {node-name($node)} {
-                    $node/@*, $node/* except $node/fn-group, 
-                    (: Export fn-group from input (jats-fnGroup in editor HTML) :)
-                    if ($input//jats-fnGroup) then
-                        element fn-group {
-                            jt:export($input//jats-fnGroup/node(), $input, $meta)
+                let $other := $node/* except $node/fn-group
+                let $fn-group := jt:export-fn-group($input, $meta)
+                return
+                    if (exists($other) or exists($fn-group)) then
+                        element {node-name($node)} {
+                            $node/@*,
+                            $other,
+                            $fn-group
                         }
-                    else if ($input//fn-group) then
-                        $input//fn-group
                     else
+                        (: Omit empty back / empty fn-group :)
                         ()
-                }
             case element(body) return
                 element {node-name($node)} {
                     $node/@*,
@@ -157,10 +181,13 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
                         else ()
                     }
             case element(jats-fnGroup) return
-                (: Convert jats-fnGroup back to fn-group :)
-                element fn-group {
-                    jt:export($node/node(), $input, $meta)
-                }
+                (: Convert jats-fnGroup back to fn-group; omit when empty :)
+                if ($node/node()) then
+                    element fn-group {
+                        jt:export($node/node(), $input, $meta)
+                    }
+                else
+                    ()
             case element(jats-fn) return
                 (: Convert jats-fn back to fn :)
                 element fn {

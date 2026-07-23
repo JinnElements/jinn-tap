@@ -152,13 +152,57 @@ More detail: [Keyboard & input rules](/schema/keyboard-and-input-rules).
 
 ## Figures and tables
 
-Use the toolbar **Figure** and **Table** actions (or schema snippets) to insert a
-figure (`figure` / `graphic` / `figDesc`) or a small table. Edit attributes of
-`graphic` (e.g. `url`) in the side panel after selecting the figure or graphic via
-breadcrumbs.
+**Figure** and **Table** both live in the **Block elements** dropdown (same place as
+Division).
 
-![The Table and Figure buttons in the Block elements dropdown]({{ '/screenshots/figures-tables.png' | prefixUrl }})
+### Inserting a figure
+
+Choose **Figure** to insert a container with a placeholder image and a short
+description you can edit in place:
+
+| Format | Markup inserted |
+| --- | --- |
+| **TEI** | `figure` → `graphic` + `head` |
+| **JATS** | `fig` → `graphic` + `caption` (with a `p`) |
+
+The schema also allows TEI `figDesc` inside `figure`; the toolbar command uses
+`head` as the default caption. A lone **Graphic** action is available in the same
+dropdown if you need an image without the surrounding figure wrapper.
+
 *Both live in the same dropdown as Division and the other block-level elements.*
+
+### Choosing an image
+
+Click the image (or select `graphic` in the breadcrumb) to open the attribute
+panel. The image URL is stored on `url` (TEI) or `xlink:href` (JATS).
+
+In these documentation embeds an [asset store](/guide/local-storage#assets) is
+attached, so the panel shows an **image picker**:
+
+- upload via browse or drag-and-drop (same filename overwrites),
+- pick a thumbnail to write a relative path such as `myimage.png`,
+- delete a stored image from the picker (with confirm).
+
+![Placeholder figure selected with the Images upload panel open]({{ '/screenshots/figure-asset-picker.png' | prefixUrl }})
+*Select the graphic, then upload or pick an image in the attribute panel.*
+
+Absolute `http(s):` URLs still work if you type them into the field and click
+**Apply**. Host apps without an asset store only get that manual URL field —
+see [Assets](/guide/local-storage#assets) for wiring `IndexedDbAssetStore` or a
+publisher HTTP store.
+
+When you **download** a document that references local images, the demo offers a
+ZIP (XML plus the image files) or XML only. Details:
+[Exporting with images](/guide/local-storage#exporting-with-images).
+
+### Tables
+
+**Table** inserts a small starter grid (two rows, two cells). Click inside a cell
+to edit; use the table bubble menu for row/column actions when the cursor is in
+the table.
+
+![A 2×2 table with the row/column bubble menu highlighted]({{ '/screenshots/table-bubble-menu.png' | prefixUrl }})
+*With the cursor in a cell, the floating menu adds or removes rows and columns.*
 
 ## Source view
 

@@ -103,6 +103,8 @@ export class JinnTap extends HTMLElement {
             title: 'Untitled Document',
             name: 'untitled.xml',
         };
+        /** @type {import('./storage/asset-store.js').AssetStore|null} */
+        this._assets = null;
         this._initialized = false;
         this._format = 'tei'; // Default format
         this._schema = null; // Will be set in connectedCallback or via getDefaultSchema()
@@ -498,8 +500,9 @@ export class JinnTap extends HTMLElement {
      * elements that require new node/mark types not present in the current schema.
      *
      * @param {string} content - Content to load, as prefixed HTML.
+     * @param {object} [parseOptions] - Passed through to the TipTap editor.
      */
-    _rebuildEditor(content) {
+    _rebuildEditor(content, parseOptions = {}) {
         // Destroy the current ProseMirror editor and clear its mount point so a
         // fresh instance doesn't stack on top of the old one.
         if (this.editor) {
@@ -511,16 +514,22 @@ export class JinnTap extends HTMLElement {
 
         // The toolbar appends its generated items into the shared container; drop
         // them (keeping any author-provided slotted buttons) before Toolbar rebuilds.
-        if (this.toolbarContainer) {
-            Array.from(this.toolbarContainer.children).forEach((child) => {
-                if (!child.hasAttribute('slot')) child.remove();
-            });
-        }
+        this._clearGeneratedToolbarItems();
         // TableMenu also appends into a shared, hidden container.
         const tableMenu = this.querySelector('.table-menu ul');
         if (tableMenu) tableMenu.innerHTML = '';
 
-        this._buildEditor(content);
+        this._buildEditor(content, parseOptions);
+    }
+
+    /**
+     * Remove schema-generated toolbar items, keeping author-provided `[slot="toolbar"]` children.
+     */
+    _clearGeneratedToolbarItems() {
+        if (!this.toolbarContainer) return;
+        Array.from(this.toolbarContainer.children).forEach((child) => {
+            if (!child.hasAttribute('slot')) child.remove();
+        });
     }
 
     /**
@@ -539,7 +548,7 @@ export class JinnTap extends HTMLElement {
             this.editor.destroy();
             const area = this.querySelector('.editor-area');
             area?.replaceWith(area.cloneNode(false));
-            this.toolbarContainer?.replaceChildren();
+            this._clearGeneratedToolbarItems();
             this.querySelector('.table-menu .toolbar')?.replaceChildren();
         }
 
@@ -730,7 +739,7 @@ export class JinnTap extends HTMLElement {
         // content takes the cheap in-place path.
         const { prefix } = getFormat(this._format);
         if (this._applyUnknownElements(value, prefix) > 0) {
-            this._buildEditor(value, { preserveWhitespace: true });
+            this._rebuildEditor(value, { preserveWhitespace: true });
         } else {
             // preserveWhitespace: true keeps significant whitespace (multi-space runs,
             // leading/trailing spaces in mixed content) that ProseMirror would otherwise
@@ -750,6 +759,19 @@ export class JinnTap extends HTMLElement {
     // Getter for the full XML content
     get xml() {
         return exportXml(serialize(this.editor, this._schema), this.document, this.metadata, this._format);
+    }
+
+    /**
+     * Pluggable asset store for resolving relative graphic URLs (e.g. `myimage.png`).
+     * Set via `attachAssetStore(editor, store)` or assign directly.
+     * @type {import('./storage/asset-store.js').AssetStore|null}
+     */
+    get assets() {
+        return this._assets;
+    }
+
+    set assets(store) {
+        this._assets = store || null;
     }
 
     // Setter for the full XML content

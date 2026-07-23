@@ -58,6 +58,8 @@ const handle = await attachLocalStore(editor, {
 1. Looks up a stored document for the current format.
 2. If one exists, calls `onDraftAvailable` (when provided) and restores only when
    that callback returns `true`, or when `{ autoRestore: true }` is set.
+   If the callback returns `false` (e.g. “Keep current”), the stored draft is
+   **deleted** so the prompt does not appear again on the next reload.
 3. Listens to [`content-change`](/api/events#content-change) and debounces writes
    (500&nbsp;ms by default) to IndexedDB.
 
@@ -73,11 +75,12 @@ Returns a **handle** (or `null` when skipped). The handle exposes:
 | `restore(record?)` | Load a draft into the editor (uses `pendingDraft` or fetches by id) |
 | `saveNow()` | Persist the current document immediately |
 | `rename(name)` | Set a human-readable title and lock it (`nameLocked`) |
+| `loadDocument(xml, { filename? })` | Replace content from an upload; unlocks and re-deduces the display name |
 | `clear()` | Delete the stored record for this `documentId` |
 | `getRecord()` | Read the current stored record |
 | `detach()` | Stop autosaving and remove the listener |
 | `restored` | `true` if a draft was restored during attach |
-| `pendingDraft` | The draft found on attach if the user declined restore |
+| `pendingDraft` | The draft found on attach if restore was deferred (no `onDraftAvailable`) |
 | `documentId` | The IndexedDB key in use |
 | `store` | The underlying `DocumentStore` instance |
 
@@ -88,7 +91,7 @@ Returns a **handle** (or `null` when skipped). The handle exposes:
 | `documentId` | `current-<format>` | Stable key (`current-tei`, `current-jats`, …) |
 | `debounceMs` | `500` | Delay before writing after each edit |
 | `autoRestore` | `false` | Restore immediately without asking |
-| `onDraftAvailable` | — | `(record) => boolean \| Promise<boolean>` — return `true` to restore |
+| `onDraftAvailable` | — | `(record) => boolean \| Promise<boolean>` — return `true` to restore. Returning `false` **deletes** the stored draft so the prompt does not repeat. |
 | `onRestore` | — | Called after a draft is loaded into the editor |
 | `onNameChange` | — | Called when the display name changes (autosave or rename) |
 | `store` | new `DocumentStore()` | Reuse an existing store (e.g. for multiple editors) |
@@ -123,10 +126,16 @@ metadata round-trip through the existing import/export pipeline.
 On each autosave, if `nameLocked` is not set, the display name is deduced in order
 from:
 
-1. A meaningful `editor.metadata.title`
-2. The TEI `titleStmt/title` or JATS `article-title` in the XML header
+1. A meaningful `editor.metadata.title` (two words with the last at least three
+   letters — shorter values are treated as provisional and do not stick)
+2. The TEI `titleStmt/title` or JATS `article-title` in the XML header (same rule)
 3. The first non-empty line of plain text in the editor
 4. `"Untitled Document"`
+
+Provisional titles (fewer than two words, or a last word shorter than three
+letters) still update the toolbar while you type, but are not written into
+`metadata.title` until they look complete — otherwise a paused keystroke would
+freeze the name mid-word. Autosave itself debounces for 1.2s by default.
 
 Call `handle.rename('My letter')` to set a title explicitly; this sets
 `nameLocked` and syncs `metadata.title` so export writes it into the header.
@@ -152,8 +161,88 @@ const all = await store.list(); // sorted by updatedAt, newest first
 await store.delete('letter-1');
 ```
 
-The database schema is versioned; a future release may add an `assets` object store
-for binary files (e.g. images) without changing the documents API.
+The database schema is versioned. Version 2 adds an `assets` object store for
+binary files (images) — see [Assets](#assets) below.
+
+## Assets
+
+Graphic elements store a simple **relative path** in `url` (TEI) or `xlink:href`
+(JATS), e.g. `myimage.png`. Absolute `http(s):` URLs still work as before.
+
+To resolve and pick those paths, attach an AssetStore implementation to
+the editor:
+
+```js
+import { IndexedDbAssetStore, attachAssetStore } from '@jinntec/jinntap/storage';
+
+await attachAssetStore(editor, new IndexedDbAssetStore());
+// equivalent: editor.assets = await new IndexedDbAssetStore().open();
+```
+
+With a store attached, selecting a `graphic` opens the connector panel with:
+
+- a thumbnail grid of stored images,
+- drag-and-drop / browse upload (overwrites the same filename),
+- delete (with confirm) on each thumbnail,
+- write-back of the relative path into the attribute.
+
+`IndexedDbAssetStore` shares the `jinntap` IndexedDB database with documents.
+A **HTTP** implementation for TEI Publisher is also available:
+
+```js
+import { attachPublisherAssetStore } from '@jinntec/jinntap/storage';
+
+// docPath is relative to data-root; dataDefaultRel is data-default under data-root
+attachPublisherAssetStore(editor, {
+  contextPath: '/exist/apps/workbench',
+  docPath,
+  dataDefaultRel: 'annotate',
+});
+```
+
+It talks to `/api/jinntap/assets` (jinntap Jinks profile). Collections and asset
+ids are resolved relative to **`$config:data-default`** (not `data-root`), so a
+document `annotate/essay.xml` with `data-default = …/annotate` stores
+`photo.png` directly in that collection.
+
+```js
+const assets = editor.assets;
+await assets.put({ path: 'photo.png', blob: file, mimeType: file.type });
+const url = await assets.resolve('photo.png'); // object URL for <img>
+```
+
+### Exporting with images
+
+When downloading a document that references local assets, hosts can offer a ZIP
+(XML + image files at their relative paths) or XML alone:
+
+```js
+import {
+  collectReferencedAssets,
+  downloadXml,
+  downloadDocumentZip,
+} from '@jinntec/jinntap/storage';
+
+const xml = editor.xml;
+const filename = editor.metadata?.name || 'document.xml';
+const referenced = await collectReferencedAssets(xml, editor.assets);
+
+if (referenced.length > 0) {
+  const asZip = await jinnToastConfirm(
+    `Download ZIP with ${referenced.length} image(s), or XML only?`,
+    { confirmLabel: 'ZIP with images', cancelLabel: 'XML only' },
+  );
+  if (asZip) {
+    await downloadDocumentZip(xml, referenced, filename);
+  } else {
+    downloadXml(xml, filename);
+  }
+} else {
+  downloadXml(xml, filename);
+}
+```
+
+The documentation demo download button uses this flow.
 
 ## Example: new document with confirm
 

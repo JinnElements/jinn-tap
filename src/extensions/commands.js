@@ -73,21 +73,30 @@ export const JinnTapCommands = Extension.create({
                     return true;
                 },
             insertFigure:
-                (snippet) =>
+                () =>
                 ({ state, commands }) => {
                     // Use 'fig' and 'caption' for JATS, 'figure' and 'head' for TEI
                     const figNodeType = state.schema.nodes.fig;
                     const captionNodeType = state.schema.nodes.caption;
-                    
+
                     const containerNodeType = figNodeType ? 'fig' : 'figure';
                     const descriptionNodeType = captionNodeType ? 'caption' : 'head';
-                    
+                    const placeholder = 'https://placehold.co/320x200';
+                    const graphicAttrs = figNodeType ? { 'xlink:href': placeholder } : { url: placeholder };
+
+                    // JATS caption is `p+`; TEI head/figDesc are `inline*`
+                    const descSpec = state.schema.nodes[descriptionNodeType]?.spec?.content || 'inline*';
+                    const descriptionText = { type: 'text', text: 'Description' };
+                    const descriptionContent = /\binline\b/.test(descSpec)
+                        ? [descriptionText]
+                        : [{ type: 'p', content: [descriptionText] }];
+
                     commands.insertContent({
                         type: containerNodeType,
                         attrs: {},
                         content: [
-                            { type: 'graphic', attrs: { url: 'https://placehold.co/320x200' } },
-                            { type: descriptionNodeType, content: [{ type: 'text', text: 'Description' }] },
+                            { type: 'graphic', attrs: graphicAttrs },
+                            { type: descriptionNodeType, content: descriptionContent },
                         ],
                     });
                     return true;

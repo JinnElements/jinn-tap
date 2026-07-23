@@ -1,6 +1,4 @@
-const DB_NAME = 'jinntap';
-const DB_VERSION = 1;
-const DOCUMENTS_STORE = 'documents';
+import { openJinntapDb, idbRequest, DOCUMENTS_STORE, DB_NAME } from './db.js';
 
 /**
  * @typedef {object} StoredDocument
@@ -15,7 +13,7 @@ const DOCUMENTS_STORE = 'documents';
 
 /**
  * Thin IndexedDB wrapper for local JinnTap documents.
- * Schema versioning leaves room for a future `assets` object store.
+ * Shares the `jinntap` database with {@link IndexedDbAssetStore}.
  */
 export class DocumentStore {
     /**
@@ -35,20 +33,7 @@ export class DocumentStore {
         if (this._db) {
             return this;
         }
-        this._db = await new Promise((resolve, reject) => {
-            const request = indexedDB.open(this.dbName, DB_VERSION);
-            request.onerror = () => reject(request.error ?? new Error('Failed to open IndexedDB'));
-            request.onsuccess = () => resolve(request.result);
-            request.onupgradeneeded = (event) => {
-                const db = /** @type {IDBOpenDBRequest} */ (event.target).result;
-                if (!db.objectStoreNames.contains(DOCUMENTS_STORE)) {
-                    const store = db.createObjectStore(DOCUMENTS_STORE, { keyPath: 'id' });
-                    store.createIndex('updatedAt', 'updatedAt', { unique: false });
-                    store.createIndex('format', 'format', { unique: false });
-                }
-                // Future: assets object store in a later DB_VERSION
-            };
-        });
+        this._db = await openJinntapDb(this.dbName);
         return this;
     }
 
@@ -71,23 +56,11 @@ export class DocumentStore {
     }
 
     /**
-     * @template T
-     * @param {IDBRequest<T>} request
-     * @returns {Promise<T>}
-     */
-    _request(request) {
-        return new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error ?? new Error('IndexedDB request failed'));
-        });
-    }
-
-    /**
      * @param {string} id
      * @returns {Promise<StoredDocument|undefined>}
      */
     async get(id) {
-        const result = await this._request(this._store('readonly').get(id));
+        const result = await idbRequest(this._store('readonly').get(id));
         return result ?? undefined;
     }
 
@@ -95,7 +68,7 @@ export class DocumentStore {
      * @returns {Promise<StoredDocument[]>}
      */
     async list() {
-        const docs = await this._request(this._store('readonly').getAll());
+        const docs = await idbRequest(this._store('readonly').getAll());
         return (docs ?? []).sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0));
     }
 
@@ -113,7 +86,7 @@ export class DocumentStore {
             ...doc,
             updatedAt: doc.updatedAt ?? Date.now(),
         };
-        await this._request(this._store('readwrite').put(record));
+        await idbRequest(this._store('readwrite').put(record));
         return record;
     }
 
@@ -122,7 +95,7 @@ export class DocumentStore {
      * @returns {Promise<void>}
      */
     async delete(id) {
-        await this._request(this._store('readwrite').delete(id));
+        await idbRequest(this._store('readwrite').delete(id));
     }
 
     /**

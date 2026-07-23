@@ -125,6 +125,7 @@ tei-figure > img {
     display: block;
     margin: 0 auto;
     cursor: pointer;
+    max-width: 100%;
 }
 
 tei-figure > tei-figDesc {

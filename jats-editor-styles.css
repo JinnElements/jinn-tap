@@ -107,6 +107,7 @@ jats-fig > img {
     display: block;
     margin: 0 auto;
     cursor: pointer;
+    max-width: 100%;
 }
 
 jats-fig > jats-caption {

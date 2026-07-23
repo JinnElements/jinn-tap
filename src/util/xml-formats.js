@@ -44,7 +44,6 @@ export const TEI_FORMAT = {
             </fileDesc>
         </teiHeader>
         <text><body><div><p /></div></body></text>
-        <standOff><listAnnotation /></standOff>
     </TEI>`,
 };
 
@@ -75,9 +74,6 @@ export const JATS_FORMAT = {
                 <p />
             </sec>
         </body>
-        <back>
-            <fn-group />
-        </back>
     </article>`,
 };
 

@@ -1,5 +1,5 @@
 import { DocumentStore } from './document-store.js';
-import { deduceDocumentName, isGenericTitle } from './document-name.js';
+import { deduceDocumentName, isGenericTitle, isProvisionalTitle } from './document-name.js';
 
 /**
  * @typedef {import('./document-store.js').StoredDocument} StoredDocument
@@ -8,11 +8,11 @@ import { deduceDocumentName, isGenericTitle } from './document-name.js';
 /**
  * @typedef {object} AttachLocalStoreOptions
  * @property {string} [documentId] - Stable key for the active document (default: `current-<format>`)
- * @property {number} [debounceMs=500]
+ * @property {number} [debounceMs=1200]
  * @property {DocumentStore} [store] - Reuse an existing store instance
  * @property {boolean} [force=false] - Attach even when collaboration (`server`) is active
  * @property {boolean} [autoRestore=false] - Restore immediately without asking
- * @property {(record: StoredDocument) => boolean|Promise<boolean>} [onDraftAvailable] - Called when a draft exists; return true to restore
+ * @property {(record: StoredDocument) => boolean|Promise<boolean>} [onDraftAvailable] - Called when a draft exists; return true to restore, false to discard it
  * @property {(name: string) => void} [onNameChange] - Called when the display name changes
  * @property {(record: StoredDocument) => void} [onRestore] - Called after a draft is restored
  */
@@ -26,6 +26,7 @@ import { deduceDocumentName, isGenericTitle } from './document-name.js';
  * @property {() => void} detach
  * @property {(record?: StoredDocument) => Promise<boolean>} restore
  * @property {(name: string) => Promise<StoredDocument>} rename
+ * @property {(xml: string, opts?: { filename?: string }) => Promise<StoredDocument>} loadDocument
  * @property {() => Promise<void>} clear
  * @property {() => Promise<StoredDocument|undefined>} getRecord
  * @property {() => Promise<StoredDocument>} saveNow
@@ -40,7 +41,7 @@ import { deduceDocumentName, isGenericTitle } from './document-name.js';
  * @returns {Promise<LocalStoreHandle|null>} `null` when skipped (e.g. collaboration without `force`)
  */
 export async function attachLocalStore(editor, options = {}) {
-    const { debounceMs = 500, force = false, autoRestore = false, onDraftAvailable, onNameChange, onRestore } = options;
+    const { debounceMs = 1200, force = false, autoRestore = false, onDraftAvailable, onNameChange, onRestore } = options;
 
     if (!force && editor.hasAttribute('server')) {
         return null;
@@ -74,7 +75,7 @@ export async function attachLocalStore(editor, options = {}) {
                 metadata,
                 plainText: typeof editor.content === 'string' ? editor.content : undefined,
             });
-            if (!isGenericTitle(name) && metadata.title !== name) {
+            if (!isGenericTitle(name) && !isProvisionalTitle(name) && metadata.title !== name) {
                 editor.metadata = { ...metadata, title: name };
             }
         }
@@ -156,6 +157,12 @@ export async function attachLocalStore(editor, options = {}) {
         let shouldRestore = autoRestore;
         if (!autoRestore && onDraftAvailable) {
             shouldRestore = Boolean(await onDraftAvailable(existing));
+            if (!shouldRestore) {
+                // User declined — drop the draft so we do not prompt again on reload
+                await store.delete(documentId);
+                pendingDraft = undefined;
+                return false;
+            }
         }
 
         if (shouldRestore) {
@@ -220,6 +227,53 @@ export async function attachLocalStore(editor, options = {}) {
                     nameLocked: true,
                 }),
             );
+        },
+        /**
+         * Replace editor content with newly loaded XML (e.g. file upload).
+         * Unlocks the display name and re-deduces it from the new document —
+         * does not keep a previous `metadata.title` or `nameLocked` value.
+         *
+         * @param {string} xml
+         * @param {{ filename?: string }} [opts]
+         * @returns {Promise<StoredDocument>}
+         */
+        async loadDocument(xml, { filename } = {}) {
+            if (!xml) {
+                throw new Error('Document XML must not be empty');
+            }
+            nameLocked = false;
+            suppressingSave = true;
+            try {
+                if (editor.hasAttribute('url')) {
+                    editor.removeAttribute('url');
+                }
+                editor.xml = xml;
+                const fallback = filename
+                    ? filename.replace(/\.xml$/i, '').trim() || 'Untitled Document'
+                    : 'Untitled Document';
+                const displayName = deduceDocumentName({
+                    xml,
+                    // Ignore stale metadata from the previous document
+                    metadata: {},
+                    plainText: typeof editor.content === 'string' ? editor.content : undefined,
+                    fallback,
+                });
+                editor.metadata = {
+                    name: filename || editor.metadata?.name || 'untitled.xml',
+                    title: displayName,
+                };
+                emitName(displayName);
+                clearTimeout(timer);
+                // Persist directly: `persist()` no-ops while suppressingSave is set
+                // (that flag only exists to ignore the content-change from assigning xml).
+                const record = buildRecord(editor.xml);
+                await store.put(record);
+                return record;
+            } finally {
+                setTimeout(() => {
+                    suppressingSave = false;
+                }, debounceMs + 50);
+            }
         },
         async clear() {
             clearTimeout(timer);

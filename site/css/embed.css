@@ -179,8 +179,16 @@ pb-page {
 }
 
 .jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel footer button {
-    border-color: var(--line);
-    background: var(--paper-strong);
+    border-color: var(--amber);
+    background: var(--amber);
+    color: var(--ink);
+}
+
+.jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel footer button:hover {
+    border-color: var(--amber-deep);
+    background: var(--amber-deep);
+    color: var(--ink);
+    filter: none;
 }
 
 .jinn-tap-embed jinn-tap > .jinn-tap-aside .attribute-panel .occurrences {

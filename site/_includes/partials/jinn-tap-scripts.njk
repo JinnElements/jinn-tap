@@ -3,7 +3,15 @@
 <script type="module" src="{{ '/assets/jinn-toast.es.js' | prefixUrl }}"></script>
 <script type="module">
     import { jinnToastConfirm } from '{{ '/assets/jinn-toast.es.js' | prefixUrl }}';
-    import { attachLocalStore, deduceDocumentName } from '{{ '/assets/storage.es.js' | prefixUrl }}';
+    import {
+        attachLocalStore,
+        deduceDocumentName,
+        IndexedDbAssetStore,
+        attachAssetStore,
+        collectReferencedAssets,
+        downloadXml,
+        downloadDocumentZip,
+    } from '{{ '/assets/storage.es.js' | prefixUrl }}';
 
     const toast = (message, type = 'info') =>
         document.dispatchEvent(new CustomEvent('jinn-toast', { detail: { message, type } }));
@@ -31,6 +39,11 @@
             };
 
             let localStore = null;
+            try {
+                await attachAssetStore(editor, new IndexedDbAssetStore());
+            } catch (error) {
+                console.error('Asset store unavailable', error);
+            }
             try {
                 localStore = await attachLocalStore(editor, {
                     onNameChange: setTitleInput,
@@ -116,12 +129,29 @@
                     const reader = new FileReader();
                     reader.onload = async (e) => {
                         try {
-                            editor.xml = e.target.result;
-                            editor.metadata = { ...(editor.metadata || {}), name: file.name };
+                            const xml = e.target.result;
                             if (localStore) {
-                                await localStore.saveNow();
-                                const record = await localStore.getRecord();
+                                const record = await localStore.loadDocument(xml, {
+                                    filename: file.name,
+                                });
                                 setTitleInput(record?.name || file.name);
+                            } else {
+                                editor.xml = xml;
+                                const displayName = deduceDocumentName({
+                                    xml,
+                                    plainText:
+                                        typeof editor.content === 'string'
+                                            ? editor.content
+                                            : undefined,
+                                    fallback:
+                                        file.name.replace(/\.xml$/i, '').trim() ||
+                                        'Untitled Document',
+                                });
+                                editor.metadata = {
+                                    name: file.name,
+                                    title: displayName,
+                                };
+                                setTitleInput(displayName);
                             }
                         } catch (error) {
                             toast(error.message || 'Failed to load XML', 'error');
@@ -134,20 +164,34 @@
             }
 
             if (downloadBtn) {
-                downloadBtn.addEventListener('click', (event) => {
+                downloadBtn.addEventListener('click', async (event) => {
                     event.preventDefault();
                     try {
-                        const blob = new Blob([editor.xml], { type: 'application/xml' });
-                        const url = URL.createObjectURL(blob);
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.download = editor.metadata?.name || 'document.xml';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        URL.revokeObjectURL(url);
+                        const xml = editor.xml;
+                        const filename = editor.metadata?.name || 'document.xml';
+                        const referenced = editor.assets
+                            ? await collectReferencedAssets(xml, editor.assets)
+                            : [];
+                        if (referenced.length > 0) {
+                            const asZip = await jinnToastConfirm(
+                                `This document references ${referenced.length} local image${
+                                    referenced.length === 1 ? '' : 's'
+                                }. Download a ZIP with images, or XML only?`,
+                                {
+                                    confirmLabel: 'ZIP with images',
+                                    cancelLabel: 'XML only',
+                                    type: 'info',
+                                },
+                            );
+                            if (asZip) {
+                                await downloadDocumentZip(xml, referenced, filename);
+                                return;
+                            }
+                        }
+                        downloadXml(xml, filename);
                     } catch (error) {
-                        toast('Failed to save XML file', 'error');
+                        console.error(error);
+                        toast(error.message || 'Failed to save file', 'error');
                     }
                 });
             }

@@ -62,18 +62,24 @@ raw value, the editor shows a search panel and stores the chosen entry's identif
 
 | Property | Meaning |
 | --- | --- |
-| `name` | The authority provider: `GND`, `GeoNames`, `Airtable`, … |
-| `type` | The record type to search (e.g. `person`, `organization`, `place`, `term`). |
+| `name` | The authority provider: `GND`, `GeoNames`, `Airtable`, … — or `Asset` for the built-in image picker |
+| `type` | The record type to search (e.g. `person`, `organization`, `place`, `term`), or `image` for assets |
 | `prefix` | Prefix prepended to the stored identifier (e.g. `gnd` → `gnd-118774352`). |
 | `user` | Provider-specific account/user, where required (e.g. GeoNames). |
+
+**`Asset`** is a built-in connector (no `pb-components` needed). On `graphic.url` /
+`graphic` `xlink:href` it opens a thumbnail grid and upload zone when
+[`editor.assets`](/guide/local-storage#assets) is set; the attribute stores a
+relative path such as `myimage.png`.
 
 Providers such as **Airtable** take additional configuration (`base`, `api-key`,
 `table`, `fields`, `filter`, …) forwarded to the underlying `pb-authority` element.
 
 <aside class="callout callout-warning"><strong>Runtime dependency</strong>
-<p>Connectors are rendered by <code>@teipublisher/pb-components</code> (a peer dependency). Load its
-bundle to enable the lookup panels — see
-<a href="{{ '/guide/installation/' | prefixUrl }}#authority-lookups">Installation</a>.</p>
+<p>Authority connectors (GND, GeoNames, …) are rendered by <code>@teipublisher/pb-components</code> (a peer dependency). Load its
+bundle to enable those lookup panels — see
+<a href="{{ '/guide/installation/' | prefixUrl }}#authority-lookups">Installation</a>.
+The <code>Asset</code> image picker does not require pb-components.</p>
 </aside>
 
 ## Elements with connectors in the TEI schema
