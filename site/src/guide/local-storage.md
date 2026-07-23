@@ -180,8 +180,23 @@ With a store attached, selecting a `graphic` opens the connector panel with:
 - write-back of the relative path into the attribute.
 
 `IndexedDbAssetStore` shares the `jinntap` IndexedDB database with documents.
-A future TEI Publisher store can implement the same interface and swap in via
-`editor.assets = …` without changing the panel.
+A **HTTP** implementation for TEI Publisher is also available:
+
+```js
+import { attachPublisherAssetStore } from '@jinntec/jinntap/storage';
+
+// docPath is relative to data-root; dataDefaultRel is data-default under data-root
+attachPublisherAssetStore(editor, {
+  contextPath: '/exist/apps/workbench',
+  docPath,
+  dataDefaultRel: 'annotate',
+});
+```
+
+It talks to `/api/jinntap/assets` (jinntap Jinks profile). Collections and asset
+ids are resolved relative to **`$config:data-default`** (not `data-root`), so a
+document `annotate/essay.xml` with `data-default = …/annotate` stores
+`photo.png` directly in that collection.
 
 ```js
 const assets = editor.assets;
