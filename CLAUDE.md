@@ -58,13 +58,15 @@ that happens, restore the site with a plain `npx @11ty/eleventy` (no `--serve`) 
 ### Schema-driven extension generation
 
 There is no hand-written Tiptap extension per element. `src/tei-schema.json` (TEI) and `src/jats-schema.json`
-(JATS) each declare, per XML element name, a `type` (`block`, `inline`, `list`, `listItem`, `empty`, `anchor`,
-`ref`, `graphic`, `table`/`row`/`cell`), plus its `attributes`, `toolbar` button(s), `keyboard` shortcuts, and
-`inputRules`. `src/extensions/extensions.js#createFromSchema` walks this definition at editor-setup time and
-generates the actual Tiptap node/mark classes by extending the small set of base extensions in
-`src/extensions/*.js` (`JinnBlock`, `JinnInline`, `JinnList`/`JinnItem`, `JinnEmptyElement`, `JinnAnchor`,
-`JinnReference`, `JinnGraphic`, table nodes). This is the first place to look when an element behaves oddly —
-the fix is almost always a schema entry or a base extension, not a new one-off extension.
+(JATS) each declare a top-level optional `css` path (relative to the schema file; resolved and auto-injected
+by `<jinn-tap>` unless `no-schema-css` is set), and per XML element name a `type` (`block`, `inline`, `list`,
+`listItem`, `empty`, `anchor`, `ref`, `graphic`, `table`/`row`/`cell`), plus its `attributes`, `toolbar`
+button(s), `keyboard` shortcuts, and `inputRules`. `src/extensions/extensions.js#createFromSchema` walks this
+definition at editor-setup time and generates the actual Tiptap node/mark classes by extending the small set
+of base extensions in `src/extensions/*.js` (`JinnBlock`, `JinnInline`, `JinnList`/`JinnItem`,
+`JinnEmptyElement`, `JinnAnchor`, `JinnReference`, `JinnGraphic`, table nodes). This is the first place to look
+when an element behaves oddly — the fix is almost always a schema entry or a base extension, not a new
+one-off extension.
 
 A schema entry may also be an **array of conditional definitions** with a `when: {attr: value}` matcher, so one
 XML element name can map to different node types depending on an attribute (e.g. a `ref` that's a citation vs.

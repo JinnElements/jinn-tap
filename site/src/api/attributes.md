@@ -57,6 +57,18 @@ See the [Schema reference](/schema/).
 <jinn-tap schema="./my-schema.json"></jinn-tap>
 ```
 
+Relative paths in the schema's top-level `css` property are resolved against this
+URL, so a custom schema can ship its stylesheet beside the JSON file.
+
+<h3 id="no-schema-css"><code>no-schema-css</code></h3>
+
+When present, skip auto-injecting the stylesheet declared by the schema's `css`
+property. Use this if the host page already loads document styles (or wants none).
+
+```html
+<jinn-tap no-schema-css></jinn-tap>
+```
+
 ## Layout
 
 <h3 id="sidebar"><code>sidebar</code></h3>

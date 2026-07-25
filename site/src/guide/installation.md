@@ -21,9 +21,8 @@ The package ships as an ES module with the web component and its styles under `d
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
-  <!-- JinnTap: the editor chrome and the styles for displaying TEI documents -->
+  <!-- JinnTap chrome; document styles load automatically from the schema `css` property -->
   <link rel="stylesheet" href="node_modules/@jinntec/jinntap/dist/jinn-tap.css" />
-  <link rel="stylesheet" href="node_modules/@jinntec/jinntap/dist/tei-editor-styles.css" />
 
   <script type="module" src="node_modules/@jinntec/jinntap/dist/jinn-tap.es.js"></script>
 </head>
@@ -31,6 +30,12 @@ The package ships as an ES module with the web component and its styles under `d
   <jinn-tap></jinn-tap>
 </body>
 ```
+
+The built-in schemas declare a `css` path (relative to the schema file). When the
+component initialises it resolves that path against the schema URL (or against the
+library module for built-ins) and injects a `<link rel="stylesheet">`. Use
+[`no-schema-css`](/api/attributes#no-schema-css) if you prefer to load document
+styles yourself.
 
 Optional: **`@jinntec/jinntap/storage`** adds IndexedDB autosave for browser-only
 hosts (demos, offline drafts). See [Local document storage](/guide/local-storage/).

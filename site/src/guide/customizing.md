@@ -63,10 +63,14 @@ Full property list: [Element definitions](/schema/elements).
 
 ## 2. Style it in CSS
 
-Schema awareness alone does not make the element visible to authors. Load a
-stylesheet beside the editor chrome (the package ships
-[`tei-editor-styles.css`](https://github.com/JinnElements/jinn-tap/blob/main/tei-editor-styles.css)
-for TEI and `jats-editor-styles.css` for JATS — override or extend them).
+Schema awareness alone does not make the element visible to authors. Each schema
+declares a stylesheet via its top-level [`css`](/schema/#top-level-structure)
+property (built-ins ship
+[`tei-editor-styles.css`](https://github.com/JinnElements/jinn-tap/blob/main/src/tei-editor-styles.css)
+and
+[`jats-editor-styles.css`](https://github.com/JinnElements/jinn-tap/blob/main/src/jats-editor-styles.css)).
+`<jinn-tap>` injects that sheet automatically; override or extend the rules in your
+host stylesheet.
 
 In the editor, XML elements become HTML custom elements with a format prefix:
 `rs` → `tei-rs` (or `jats-…` for JATS). Configured attributes are copied onto the

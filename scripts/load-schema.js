@@ -59,6 +59,7 @@ export function loadSchemaData(filename = 'tei-schema.json') {
 
     return {
         filename,
+        css: schema.css ?? null,
         elements,
         elementCount: elements.length,
         typeCounts,

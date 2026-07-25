@@ -34,6 +34,7 @@ To replace the built-in schema for the active format, point the
 
 ```jsonc
 {
+  "css":        "./tei-editor-styles.css", // stylesheet for this format (optional)
   "attributes": { /* attributes available on every element */ },
   "toolbar":    { /* global toolbar buttons (not tied to one element) */ },
   "selects":    { /* dropdown groups that toolbar buttons can belong to */ },
@@ -43,6 +44,7 @@ To replace the built-in schema for the active format, point the
 
 | Key | Purpose | Reference |
 | --- | --- | --- |
+| `css` | Path to a stylesheet for document elements, relative to the schema file. Injected automatically unless [`no-schema-css`](/api/attributes#no-schema-css) is set. | [Customizing](/guide/customizing#2-style-it-in-css) |
 | `attributes` | Attributes offered on **every** element (e.g. `rend`, `id`) | [Attributes](/schema/attributes#global-attributes) |
 | `toolbar` | Global toolbar buttons — snippets, mode toggles, structural commands | [Toolbar & selects](/schema/toolbar) |
 | `selects` | Named dropdown groups the toolbar buttons can be filed under | [Toolbar & selects](/schema/toolbar#selects) |

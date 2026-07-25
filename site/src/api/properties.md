@@ -51,6 +51,17 @@ The active format (`'tei'` or `'jats'`). Set at initialization via the
 console.log(editor.format); // 'tei'
 ```
 
+## `stylesheet`
+
+Resolved URL of the stylesheet from the active schema's `css` property, or `null`
+if none is declared. The component injects this as a `<link>` unless
+[`no-schema-css`](/api/attributes#no-schema-css) is set.
+
+```js
+console.log(editor.stylesheet);
+// e.g. 'http://localhost:5174/src/tei-editor-styles.css'
+```
+
 ## `tiptap`
 
 The underlying [Tiptap](https://tiptap.dev/) `Editor` instance, for direct access to

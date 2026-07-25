@@ -67,7 +67,7 @@ Exact note/xref wiring depends on how your dialect links footnotes — tune
 
 1. Create `src/docbook-schema.json` — same top-level shape as
    [`src/tei-schema.json`](https://github.com/JinnElements/jinn-tap/blob/main/src/tei-schema.json)
-   (`attributes`, `toolbar`, `selects`, `schema`). Element keys are DocBook **local
+   (`css`, `attributes`, `toolbar`, `selects`, `schema`). Element keys are DocBook **local
    names** (`section`, `para`, `emphasis`, `footnote`, …).
 2. Import it in
    [`src/jinn-tap.js`](https://github.com/JinnElements/jinn-tap/blob/main/src/jinn-tap.js)
@@ -111,15 +111,28 @@ them.
 merges it back into the original document (`$input`), and restores the DocBook
 namespace / wrappers.
 
-## 4. Stylesheet for the new prefix
+## 4. Stylesheet via schema `css`
 
-Editor look-and-feel is prefix-specific:
+Point the schema at a stylesheet with a top-level `css` property. Paths are
+resolved relative to the schema file (or against the library module for built-ins):
 
-- [`tei-editor-styles.css`](https://github.com/JinnElements/jinn-tap/blob/main/tei-editor-styles.css) — `tei-*`
-- [`jats-editor-styles.css`](https://github.com/JinnElements/jinn-tap/blob/main/jats-editor-styles.css) — `jats-*`
+```json
+{
+  "css": "./docbook-editor-styles.css",
+  "attributes": { },
+  "schema": { }
+}
+```
 
-Add e.g. `docbook-editor-styles.css` targeting `db-*` and load it beside the
-component (the docs site copies JATS styles via `scripts/copy-site-assets.js`).
+Built-in examples:
+
+- [`src/tei-editor-styles.css`](https://github.com/JinnElements/jinn-tap/blob/main/src/tei-editor-styles.css) — `tei-*`
+- [`src/jats-editor-styles.css`](https://github.com/JinnElements/jinn-tap/blob/main/src/jats-editor-styles.css) — `jats-*`
+
+`<jinn-tap>` injects the resolved URL as a `<link rel="stylesheet">`. Add e.g.
+`src/docbook-editor-styles.css` targeting `db-*`, set `"css": "./docbook-editor-styles.css"`
+in the schema, and ship the CSS next to the schema (the docs site copies package
+CSS via `scripts/copy-site-assets.js`).
 
 <aside class="callout callout-warning">
 <strong>Debug colours</strong>

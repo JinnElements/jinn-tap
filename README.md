@@ -69,10 +69,8 @@ npm run cypress:run
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-	<!-- Import the general editor styles-->
+	<!-- Import the general editor styles; document styles load from the schema `css` property -->
     <link rel="stylesheet" href="node_modules/@jinntec/jinntap/dist/jinn-tap.css" />
-	<!-- Import the styles for displaying TEI documents -->
-    <link rel="stylesheet" href="node_modules/@jinntec/jinntap/dist/tei-editor-styles.css" />
     <script type="module" src="node_modules/@jinntec/jinntap/dist/jinn-tap.es.js"></script>
 </head>
 <body>

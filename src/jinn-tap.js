@@ -37,7 +37,10 @@ import { TableMenu } from './extensions/tables/TableMenu.js';
  *                      and loaded into the editor when this attribute is set.
  * @attr {string} schema - URL to load the TEI schema from. The schema will be fetched
  *                         and used to configure the editor's capabilities. If not provided,
- *                         a default schema will be used.
+ *                         a default schema will be used. Relative paths in the schema's
+ *                         `css` property are resolved against this URL.
+ * @attr {boolean} no-schema-css - When present, do not auto-inject the stylesheet declared
+ *                         by the schema's `css` property (host must load styles manually).
  * @attr {string} notes-wrapper - The wrapper element to use for notes. The default is 'listAnnotation'.
  * @attr {string} notes - Which of the two modes for editing notes should be used. Default is 'connected', i.e. deleting
  * an anchor will delete the associated note. The alternative, 'disconnected', allows notes to be detached from their
@@ -68,6 +71,8 @@ import { TableMenu } from './extensions/tables/TableMenu.js';
  * @property {string} content - The current text content of the editor. Can be set to update
  *                             the editor's content programmatically.
  * @property {string} xml - The current TEI XML content of the editor.
+ * @property {string|null} stylesheet - Resolved URL of the schema stylesheet currently
+ *                             injected (or that would be injected), or null if none.
  *
  * @slot toolbar - Content to be placed in the toolbar area at the top of the editor.
  *                This slot is intended for custom toolbar buttons or controls.
@@ -108,6 +113,12 @@ export class JinnTap extends HTMLElement {
         this._initialized = false;
         this._format = 'tei'; // Default format
         this._schema = null; // Will be set in connectedCallback or via getDefaultSchema()
+        /** @type {string|null} Absolute URL the schema was loaded from; null for built-ins. */
+        this._schemaUrl = null;
+        /** @type {string|null} Resolved stylesheet URL for the active schema. */
+        this._stylesheetUrl = null;
+        /** @type {HTMLLinkElement|null} Per-instance <link> for schema.css */
+        this._schemaCssLink = null;
         this._suspendUrlLoad = false;
         // Format is set at initialization and cannot be changed
         this.isTypingBlocked = false;
@@ -160,10 +171,67 @@ export class JinnTap extends HTMLElement {
         // Only update if schema wasn't explicitly set via attribute
         if (!this.hasAttribute('schema')) {
             this._schema = format === 'jats' ? jatsSchema : schema;
+            this._schemaUrl = null;
             // If editor is already initialized, recreate it with new schema
             if (recreateEditor && this.editor && this._initialized) {
                 this.setupEditor();
             }
+        }
+    }
+
+    /**
+     * Resolved URL of the active schema stylesheet, or null if the schema has no `css`.
+     * @returns {string|null}
+     */
+    get stylesheet() {
+        return this._stylesheetUrl;
+    }
+
+    /**
+     * Resolve schema.css against the schema URL (remote) or this module (built-in).
+     * @returns {string|null}
+     */
+    _resolveSchemaStylesheetUrl() {
+        const css = this._schema?.css;
+        if (!css || typeof css !== 'string') {
+            return null;
+        }
+        const base = this._schemaUrl || import.meta.url;
+        try {
+            return new URL(css, base).href;
+        } catch (err) {
+            console.warn('Could not resolve schema css path:', css, err);
+            return null;
+        }
+    }
+
+    /**
+     * Inject or update a <link rel="stylesheet"> for the schema's `css` property.
+     * Skipped when `no-schema-css` is set.
+     */
+    _applySchemaStylesheet() {
+        this._stylesheetUrl = this._resolveSchemaStylesheetUrl();
+
+        if (this.hasAttribute('no-schema-css') || !this._stylesheetUrl) {
+            this._removeSchemaStylesheet();
+            return;
+        }
+
+        if (!this._schemaCssLink) {
+            this._schemaCssLink = document.createElement('link');
+            this._schemaCssLink.rel = 'stylesheet';
+            this._schemaCssLink.dataset.jinnTapSchemaCss = 'true';
+            document.head.appendChild(this._schemaCssLink);
+        }
+        if (this._schemaCssLink.href !== this._stylesheetUrl) {
+            this._schemaCssLink.href = this._stylesheetUrl;
+        }
+    }
+
+    _removeSchemaStylesheet() {
+        if (this._schemaCssLink) {
+            this._schemaCssLink.remove();
+            this._schemaCssLink = null;
         }
     }
 
@@ -212,11 +280,13 @@ export class JinnTap extends HTMLElement {
 
     async loadSchema(url) {
         try {
-            const response = await fetch(url);
+            const absoluteUrl = new URL(url, document.baseURI).href;
+            const response = await fetch(absoluteUrl);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             this._schema = await response.json();
+            this._schemaUrl = absoluteUrl;
 
             // If editor is already initialized, recreate it with new schema
             if (this.editor) {
@@ -356,7 +426,8 @@ export class JinnTap extends HTMLElement {
     }
 
     disconnectedCallback() {
-        this._disconnectedAbortController.signal();
+        this._disconnectedSignal?.abort();
+        this._removeSchemaStylesheet();
     }
 
     async setupEditor() {
@@ -366,10 +437,14 @@ export class JinnTap extends HTMLElement {
         } else if (!this._schema || (this.hasAttribute('schema') && typeof this._schema === 'string')) {
             // No schema set or schema attribute is set but not loaded yet
             this._schema = this.getDefaultSchema();
+            this._schemaUrl = null;
         } else if (!this.hasAttribute('schema')) {
             // Use default schema for current format
             this._schema = this.getDefaultSchema();
+            this._schemaUrl = null;
         }
+
+        this._applySchemaStylesheet();
 
         // Generate CSS for schema colors
         const colorCss = colorCssFromSchema(this._schema);
@@ -712,7 +787,7 @@ export class JinnTap extends HTMLElement {
         if (!this._initialized && this.collaboration) {
             return;
         }
-        const body = serialize(this.editor, this._schema);
+        const body = serialize(this.editor, this._schema, getFormat(this._format));
         this.dispatchEvent(
             new CustomEvent('content-change', {
                 detail: {
@@ -758,7 +833,7 @@ export class JinnTap extends HTMLElement {
 
     // Getter for the full XML content
     get xml() {
-        return exportXml(serialize(this.editor, this._schema), this.document, this.metadata, this._format);
+        return exportXml(serialize(this.editor, this._schema, getFormat(this._format)), this.document, this.metadata, this._format);
     }
 
     /**
