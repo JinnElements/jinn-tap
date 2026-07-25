@@ -106,7 +106,7 @@ Configure behaviour on the web component with [`notes`](/api/attributes#notes):
 | Mode | Attribute | Behaviour |
 | --- | --- | --- |
 | **Connected** | `notes="connected"` | Notes cannot exist without an anchor; deleting the anchor deletes the note. |
-| **Disconnected** (default) | omit or unset | Deleting an anchor leaves the note (shown as orphaned). Inserting a new anchor can offer to re-link an orphan: the anchor id is copied to the clipboard and the first orphaned note is selected — paste the id into the note’s `target` field. |
+| **Disconnected** (default) | omit or unset | Deleting an anchor leaves the note (shown as orphaned). Inserting a new anchor automatically re-links the first orphaned note (TEI: sets `note/@target`; JATS: sets `xref/@rid`). |
 
 Disconnected mode is especially useful for OCR-sourced text where notes were
 recognised but anchors were not.

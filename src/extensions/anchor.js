@@ -60,8 +60,48 @@ export const JinnAnchor = JinnEmptyElement.extend({
         return {
             addAnchor:
                 (attributes) =>
-                ({ commands }) => {
+                ({ commands, editor }) => {
                     const id = attributes.id || generateUniqueId();
+                    const noteName = this.options.noteName || 'note';
+                    const anchorName = this.options.anchorName || 'anchor';
+                    const linkDirection = this.options.linkDirection || 'note-to-anchor';
+
+                    // Detect an orphan note before insert so we can select it after FootnoteRules reconnects
+                    let hadOrphan = false;
+                    if (!attributes.id) {
+                        editor.state.doc.descendants((node) => {
+                            if (node.type.name !== noteName) return;
+                            if (linkDirection === 'note-to-anchor') {
+                                if (!node.attrs.target) {
+                                    hadOrphan = true;
+                                    return false;
+                                }
+                            } else {
+                                const noteId = node.attrs.id;
+                                if (!noteId) {
+                                    hadOrphan = true;
+                                    return false;
+                                }
+                                let hasAnchor = false;
+                                editor.state.doc.descendants((anchorNode) => {
+                                    if (anchorNode.type.name !== anchorName) return;
+                                    const rid = anchorNode.attrs.rid || anchorNode.attrs.target;
+                                    if (rid) {
+                                        const ridId = rid.startsWith('#') ? rid.substring(1) : rid;
+                                        if (ridId === noteId) {
+                                            hasAnchor = true;
+                                            return false;
+                                        }
+                                    }
+                                });
+                                if (!hasAnchor) {
+                                    hadOrphan = true;
+                                    return false;
+                                }
+                            }
+                        });
+                    }
+
                     commands.insertContent({
                         type: this.name,
                         attrs: {
@@ -69,110 +109,112 @@ export const JinnAnchor = JinnEmptyElement.extend({
                             id,
                         },
                     });
-                    if (!attributes.id) {
-                        // Copy the generated ID to clipboard
-                        navigator.clipboard
-                            .writeText(`#${id}`)
-                            .then(() => {
-                                document.dispatchEvent(
-                                    new CustomEvent('jinn-toast', {
-                                        detail: {
-                                            message: 'Anchor ID copied to clipboard',
-                                            type: 'info',
-                                        },
-                                    }),
-                                );
-                            })
-                            .catch((err) => {
-                                document.dispatchEvent(
-                                    new CustomEvent('jinn-toast', {
-                                        detail: {
-                                            message: 'Failed to copy ID to clipboard',
-                                            type: 'error',
-                                        },
-                                    }),
-                                );
-                            });
 
-                        // Find the first unconnected note and scroll it into view
-                        const { view } = this.editor;
-                        let foundNote = false;
-                        const noteName = this.options.noteName || 'note';
-                        const anchorName = this.options.anchorName || 'anchor';
-                        const linkDirection = this.options.linkDirection || 'note-to-anchor';
-                        
-                        view.state.doc.descendants((node, pos) => {
-                            if (node.type.name === noteName) {
-                                let isUnconnected = false;
-                                
+                    // After reconnect, select the linked note once the insert+FootnoteRules
+                    // transaction has landed (view.state is still stale inside this command).
+                    if (!attributes.id && hadOrphan) {
+                        const editorRef = this.editor;
+                        const element = this.editor.options.element;
+                        queueMicrotask(() => {
+                            const { view, state } = editorRef;
+                            let notePos = null;
+                            state.doc.descendants((node, pos) => {
+                                let isLinked = false;
                                 if (linkDirection === 'note-to-anchor') {
-                                    // TEI: note without target is unconnected
-                                    isUnconnected = !node.attrs.target;
-                                } else {
-                                    // JATS: note without an anchor pointing to it is unconnected
-                                    const noteId = node.attrs.id;
-                                    if (noteId) {
-                                        // Check if any anchor points to this note
-                                        let hasAnchor = false;
-                                        view.state.doc.descendants((anchorNode, anchorPos) => {
-                                            if (anchorNode.type.name === anchorName) {
-                                                const rid = anchorNode.attrs.rid || anchorNode.attrs.target;
-                                                if (rid) {
-                                                    const ridId = rid.startsWith('#') ? rid.substring(1) : rid;
-                                                    if (ridId === noteId) {
-                                                        hasAnchor = true;
-                                                        return false; // Stop searching
-                                                    }
-                                                }
-                                            }
-                                        });
-                                        isUnconnected = !hasAnchor;
-                                    } else {
-                                        // Note without id is unconnected
-                                        isUnconnected = true;
+                                    isLinked = node.type.name === noteName && node.attrs.target === `#${id}`;
+                                } else if (node.type.name === noteName && node.attrs.id) {
+                                    let rid = null;
+                                    state.doc.descendants((anchorNode) => {
+                                        if (anchorNode.type.name === anchorName && anchorNode.attrs.id === id) {
+                                            rid = anchorNode.attrs.rid || anchorNode.attrs.target;
+                                            return false;
+                                        }
+                                    });
+                                    if (rid) {
+                                        const ridId = rid.startsWith('#') ? rid.substring(1) : rid;
+                                        isLinked = node.attrs.id === ridId;
                                     }
                                 }
-                                
-                                if (isUnconnected) {
-                                    const noteElement = view.domAtPos(pos).node;
-                                    if (noteElement) {
-                                        noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                        // `pos` here is resolved against `view.state`, which - since
-                                        // this command runs inside a chain - still predates the anchor
-                                        // insertion earlier in this same function; the note has since
-                                        // shifted by the anchor's size (1). Every other dispatcher of
-                                        // 'empty-element-clicked' (empty.js, graphic.js, the plain
-                                        // anchor click handler below) sends the ready-to-use
-                                        // before-the-node position, so do the same here - otherwise
-                                        // the attribute panel's Apply button ends up calling
-                                        // setNodeMarkup one position too early and silently no-ops.
-                                        const notePos = pos + 1;
-                                        commands.setNodeSelection(notePos);
-                                        this.editor.options.element.dispatchEvent(
-                                            new CustomEvent('empty-element-clicked', { detail: { node, pos: notePos } }),
-                                        );
-                                        foundNote = true;
-                                    }
-                                    return foundNote; // Stop searching
+                                if (!isLinked) return;
+                                notePos = pos;
+                                return false;
+                            });
+                            if (notePos == null) return;
+
+                            editorRef.commands.setNodeSelection(notePos);
+                            element.dispatchEvent(
+                                new CustomEvent('empty-element-clicked', {
+                                    detail: { node: state.doc.nodeAt(notePos), pos: notePos },
+                                }),
+                            );
+                            document.dispatchEvent(
+                                new CustomEvent('jinn-toast', {
+                                    detail: {
+                                        message: 'Linked to existing footnote',
+                                        type: 'info',
+                                    },
+                                }),
+                            );
+
+                            // Defer scroll so it wins over focus/caret scroll from the insert chain.
+                            setTimeout(() => {
+                                const { view: v } = editorRef;
+                                try {
+                                    v.dispatch(v.state.tr.scrollIntoView());
+                                } catch (_) {
+                                    /* ignore */
                                 }
-                            }
+                                let dom = v.nodeDOM(notePos);
+                                if (!dom || dom.nodeType !== 1) {
+                                    const at = v.domAtPos(notePos);
+                                    dom = at.node.nodeType === 1 ? at.node : at.node.parentElement;
+                                }
+                                if (dom?.scrollIntoView) {
+                                    dom.scrollIntoView({ block: 'center' });
+                                }
+                            }, 50);
                         });
                     }
                 },
             gotoNote:
                 (id) =>
                 ({ commands, editor }) => {
-                    const target = `#${id}`;
-                    // Use the noteName from options if available, fallback to 'note'
                     const noteName = this.options.noteName || 'note';
-                    editor.view.state.doc.descendants((node, pos) => {
-                        if (node.type.name === noteName && node.attrs.target === target) {
-                            const noteElement = editor.view.domAtPos(pos).node;
-                            noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            commands.setNodeSelection(pos + 1);
-                            return true;
-                        }
-                    });
+                    const anchorName = this.options.anchorName || 'anchor';
+                    const linkDirection = this.options.linkDirection || 'note-to-anchor';
+
+                    if (linkDirection === 'note-to-anchor') {
+                        const target = `#${id}`;
+                        editor.view.state.doc.descendants((node, pos) => {
+                            if (node.type.name === noteName && node.attrs.target === target) {
+                                const noteElement = editor.view.domAtPos(pos).node;
+                                noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                commands.setNodeSelection(pos + 1);
+                                return true;
+                            }
+                        });
+                    } else {
+                        // JATS: id is the xref's id — resolve via rid to the fn
+                        let noteId = null;
+                        editor.view.state.doc.descendants((node) => {
+                            if (node.type.name === anchorName && node.attrs.id === id) {
+                                const rid = node.attrs.rid || node.attrs.target;
+                                if (rid) {
+                                    noteId = rid.startsWith('#') ? rid.substring(1) : rid;
+                                }
+                                return false;
+                            }
+                        });
+                        if (!noteId) return;
+                        editor.view.state.doc.descendants((node, pos) => {
+                            if (node.type.name === noteName && node.attrs.id === noteId) {
+                                const noteElement = editor.view.domAtPos(pos).node;
+                                noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                commands.setNodeSelection(pos + 1);
+                                return true;
+                            }
+                        });
+                    }
                 },
         };
     },

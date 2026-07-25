@@ -5,6 +5,12 @@ import { ReplaceStep } from '@tiptap/pm/transform';
 // Map to store references for each anchor node
 const anchorReferences = new Map();
 
+/** Strip a leading `#` from an idref (TEI uses `#id`; JATS rid is a bare id). */
+function normalizeIdRef(value) {
+    if (!value) return null;
+    return value.startsWith('#') ? value.substring(1) : value;
+}
+
 // Helper functions to handle different link directions
 function getNoteLink(note, linkDirection) {
     if (linkDirection === 'note-to-anchor') {
@@ -51,14 +57,11 @@ function findAnchorByNote(doc, noteId, anchorName, linkDirection) {
     doc.nodesBetween(0, doc.content.size, (node, pos) => {
         if (node.type.name === anchorName) {
             if (linkDirection === 'anchor-to-note') {
-                // JATS: anchor.rid points to note.id
-                const rid = node.attrs.rid || node.attrs.target;
-                if (rid) {
-                    const ridId = rid.startsWith('#') ? rid.substring(1) : rid;
-                    if (ridId === noteId) {
-                        foundAnchor = { node, pos };
-                        return false;
-                    }
+                // JATS: anchor.rid points to note.id (bare id, no #)
+                const ridId = normalizeIdRef(node.attrs.rid || node.attrs.target);
+                if (ridId === noteId) {
+                    foundAnchor = { node, pos };
+                    return false;
                 }
             } else {
                 // TEI: anchor has id, note has target pointing to it
@@ -141,9 +144,8 @@ function computeAnchorReferences(doc, anchorName, noteName, linkDirection) {
             }
         } else {
             // JATS: anchor.rid points to note.id
-            const rid = getAnchorLink(anchor.node, linkDirection);
-            if (rid) {
-                const noteId = rid.startsWith('#') ? rid.substring(1) : rid;
+            const noteId = normalizeIdRef(getAnchorLink(anchor.node, linkDirection));
+            if (noteId) {
                 if (notes.has(noteId)) {
                     // Use existing 'n' attribute value
                     refNumber = notes.get(noteId);
@@ -311,6 +313,7 @@ function reorderNotes(tr, doc, notesWrapper, noteName, anchorName, linkDirection
         }
 
         tr = tr.setSelection(TextSelection.create(tr.doc, currentPos + 1));
+        tr.scrollIntoView();
     }
 
     return tr;
@@ -400,7 +403,8 @@ export const FootnoteRules = Extension.create({
                     let newTr = newState.tr;
                     let anchorId = null; // Store the ID of the newly inserted anchor
                     let referencesNeedUpdate = false; // Track if references need to be updated
-                    let deletedAnchorIds = new Set(); // Track IDs of deleted anchors
+                    let deletedAnchors = new Map(); // id -> attrs of deleted anchors
+                    let reconnectedNoteId = null; // JATS: fn id linked during orphan reconnect
 
                     // Check for complete document replacement
                     const isCompleteReplacement = transactions.some((tr) => {
@@ -445,9 +449,8 @@ export const FootnoteRules = Extension.create({
                                                     });
                                                 } else {
                                                     // JATS: check if anchor has rid pointing to a note
-                                                    const rid = node.attrs.rid || node.attrs.target;
-                                                    if (rid) {
-                                                        const noteId = rid.startsWith('#') ? rid.substring(1) : rid;
+                                                    const noteId = normalizeIdRef(node.attrs.rid || node.attrs.target);
+                                                    if (noteId) {
                                                         newState.doc.descendants((n, p) => {
                                                             if (n.type.name === options.noteName && n.attrs.id === noteId) {
                                                                 hasExistingNote = true;
@@ -475,7 +478,7 @@ export const FootnoteRules = Extension.create({
 
                                 oldDoc.descendants((node, pos) => {
                                     if (node.type.name === options.anchorName) {
-                                        oldAnchors.set(node.attrs.id, pos);
+                                        oldAnchors.set(node.attrs.id, node.attrs);
                                     }
                                 });
 
@@ -486,9 +489,9 @@ export const FootnoteRules = Extension.create({
                                 });
 
                                 // Find deleted anchors by comparing old and new maps
-                                for (const [id, pos] of oldAnchors) {
+                                for (const [id, attrs] of oldAnchors) {
                                     if (!newAnchors.has(id)) {
-                                        deletedAnchorIds.add(id);
+                                        deletedAnchors.set(id, attrs);
                                         referencesNeedUpdate = true;
                                     }
                                 }
@@ -496,16 +499,27 @@ export const FootnoteRules = Extension.create({
                                 // Check if any anchor positions changed
                                 if (
                                     oldAnchors.size !== newAnchors.size ||
-                                    Array.from(oldAnchors.entries()).some(([id, pos]) => newAnchors.get(id) !== pos)
+                                    Array.from(oldAnchors.keys()).some((id) => !newAnchors.has(id))
                                 ) {
                                     referencesNeedUpdate = true;
+                                } else {
+                                    // Size same and no deletions — still update if an existing anchor moved
+                                    const oldPositions = new Map();
+                                    oldDoc.descendants((node, pos) => {
+                                        if (node.type.name === options.anchorName) {
+                                            oldPositions.set(node.attrs.id, pos);
+                                        }
+                                    });
+                                    if (Array.from(oldPositions.entries()).some(([id, pos]) => newAnchors.get(id) !== pos)) {
+                                        referencesNeedUpdate = true;
+                                    }
                                 }
                             }
                         }
                     }
 
                     // Remove notes associated with deleted anchors
-                    if (deletedAnchorIds.size > 0) {
+                    if (deletedAnchors.size > 0) {
                         newState.doc.descendants((node, pos) => {
                             if (node.type.name === options.noteName) {
                                 let shouldRemove = false;
@@ -514,31 +528,18 @@ export const FootnoteRules = Extension.create({
                                     // TEI: note.target -> anchor.id
                                     const target = node.attrs.target;
                                     if (target && target.startsWith('#')) {
-                                        const anchorId = target.substring(1);
-                                        shouldRemove = deletedAnchorIds.has(anchorId);
+                                        const linkedAnchorId = target.substring(1);
+                                        shouldRemove = deletedAnchors.has(linkedAnchorId);
                                     }
                                 } else {
-                                    // JATS: anchor.rid -> note.id
+                                    // JATS: deleted anchor.rid -> note.id (look at attrs from before deletion)
                                     const noteId = node.attrs.id;
                                     if (noteId) {
-                                        // Check if any deleted anchor points to this note
-                                        for (const anchorId of deletedAnchorIds) {
-                                            let anchorPos = null;
-                                            newState.doc.descendants((n, p) => {
-                                                if (n.type.name === options.anchorName && n.attrs.id === anchorId) {
-                                                    anchorPos = p;
-                                                    return false;
-                                                }
-                                            });
-                                            if (anchorPos !== null) {
-                                                const anchor = newState.doc.nodeAt(anchorPos);
-                                                if (anchor) {
-                                                    const rid = anchor.attrs.rid || anchor.attrs.target;
-                                                    if (rid && rid.startsWith('#') && rid.substring(1) === noteId) {
-                                                        shouldRemove = true;
-                                                        break;
-                                                    }
-                                                }
+                                        for (const attrs of deletedAnchors.values()) {
+                                            const ridId = normalizeIdRef(attrs.rid || attrs.target);
+                                            if (ridId === noteId) {
+                                                shouldRemove = true;
+                                                break;
                                             }
                                         }
                                     }
@@ -562,143 +563,192 @@ export const FootnoteRules = Extension.create({
                     // Handle new anchor creation
                     if (anchorId) {
                         if (options.notesWithoutAnchor) {
-                            let foundNote = false;
+                            let orphanNote = null;
+                            let orphanNotePos = null;
                             newState.doc.descendants((node, pos) => {
                                 if (node.type.name === options.noteName) {
                                     if (options.linkDirection === 'note-to-anchor') {
                                         if (!node.attrs.target) {
-                                            foundNote = true;
+                                            orphanNote = node;
+                                            orphanNotePos = pos;
                                             return false;
                                         }
                                     } else {
-                                        // JATS: check if note has no anchor pointing to it
+                                        // JATS: note with no id, or no anchor pointing to it
                                         const noteId = node.attrs.id;
-                                        if (noteId) {
-                                            const anchor = findAnchorByNote(newState.doc, noteId, options.anchorName, options.linkDirection);
-                                            if (!anchor) {
-                                                foundNote = true;
-                                                return false;
-                                            }
+                                        if (!noteId) {
+                                            orphanNote = node;
+                                            orphanNotePos = pos;
+                                            return false;
+                                        }
+                                        const anchor = findAnchorByNote(newState.doc, noteId, options.anchorName, options.linkDirection);
+                                        if (!anchor) {
+                                            orphanNote = node;
+                                            orphanNotePos = pos;
+                                            return false;
                                         }
                                     }
                                 }
                             });
-                            if (foundNote) {
-                                return null;
-                            }
-                        }
-                        
-                        // Check if a note linked to this anchor already exists
-                        let noteExists = false;
-                        if (options.linkDirection === 'note-to-anchor') {
-                            // TEI: check if note with target pointing to this anchor exists
-                            newState.doc.descendants((node, pos) => {
-                                if (node.type.name === options.noteName && node.attrs.target === `#${anchorId}`) {
-                                    noteExists = true;
-                                    return false;
-                                }
-                            });
-                        } else {
-                            // JATS: check if anchor already has rid pointing to a note
-                            let anchorNode = null;
-                            newState.doc.descendants((node, pos) => {
-                                if (node.type.name === options.anchorName && node.attrs.id === anchorId) {
-                                    anchorNode = node;
-                                    return false;
-                                }
-                            });
-                            if (anchorNode) {
-                                const rid = anchorNode.attrs.rid || anchorNode.attrs.target;
-                                if (rid) {
-                                    // rid may have # prefix or not - handle both cases
-                                    const noteId = rid.startsWith('#') ? rid.substring(1) : rid;
-                                    newState.doc.descendants((node, pos) => {
-                                        if (node.type.name === options.noteName && node.attrs.id === noteId) {
-                                            noteExists = true;
+                            if (orphanNote) {
+                                if (options.linkDirection === 'note-to-anchor') {
+                                    // TEI: set orphan note.target → #anchor.id
+                                    newTr = newTr.setNodeMarkup(orphanNotePos, null, {
+                                        ...orphanNote.attrs,
+                                        target: `#${anchorId}`,
+                                        _timestamp: Date.now(),
+                                    });
+                                    // reorderNotes matches note.target === `#${targetNoteId}`
+                                    reconnectedNoteId = anchorId;
+                                    // Select the reconnected note and scroll to it (don't wait for reorder)
+                                    newTr = newTr.setSelection(TextSelection.create(newTr.doc, orphanNotePos + 1));
+                                    newTr.scrollIntoView();
+                                } else {
+                                    // JATS: put the orphan fn's id into the new xref's rid (bare id, no #)
+                                    let noteId = orphanNote.attrs.id;
+                                    if (!noteId) {
+                                        noteId = `fn-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                                        newTr = newTr.setNodeMarkup(orphanNotePos, null, {
+                                            ...orphanNote.attrs,
+                                            id: noteId,
+                                        });
+                                    }
+                                    newTr.doc.descendants((node, pos) => {
+                                        if (node.type.name === options.anchorName && node.attrs.id === anchorId) {
+                                            newTr = newTr.setNodeMarkup(pos, null, {
+                                                ...node.attrs,
+                                                rid: noteId,
+                                                'ref-type': 'fn',
+                                                _timestamp: Date.now(),
+                                            });
                                             return false;
                                         }
                                     });
+                                    reconnectedNoteId = noteId;
+                                }
+                                // Don't create a second note; still refresh references below
+                                anchorId = null;
+                                referencesNeedUpdate = true;
+                            }
+                        }
+
+                        // Create a new note for this anchor (skipped when we just reconnected above)
+                        if (anchorId) {
+                            // Check if a note linked to this anchor already exists
+                            let noteExists = false;
+                            if (options.linkDirection === 'note-to-anchor') {
+                                // TEI: check if note with target pointing to this anchor exists
+                                newState.doc.descendants((node, pos) => {
+                                    if (node.type.name === options.noteName && node.attrs.target === `#${anchorId}`) {
+                                        noteExists = true;
+                                        return false;
+                                    }
+                                });
+                            } else {
+                                // JATS: check if anchor already has rid pointing to a note
+                                let anchorNode = null;
+                                newState.doc.descendants((node, pos) => {
+                                    if (node.type.name === options.anchorName && node.attrs.id === anchorId) {
+                                        anchorNode = node;
+                                        return false;
+                                    }
+                                });
+                                if (anchorNode) {
+                                    const noteId = normalizeIdRef(anchorNode.attrs.rid || anchorNode.attrs.target);
+                                    if (noteId) {
+                                        newState.doc.descendants((node, pos) => {
+                                            if (node.type.name === options.noteName && node.attrs.id === noteId) {
+                                                noteExists = true;
+                                                return false;
+                                            }
+                                        });
+                                    }
                                 }
                             }
-                        }
 
-                        if (noteExists) {
-                            return null;
-                        }
-                        // Find existing listAnnotation or create one at end
-                        let listAnnotationPos = null;
-                        newState.doc.descendants((node, pos) => {
-                            if (node.type.name === options.notesWrapper) {
-                                listAnnotationPos = pos;
-                                return false;
+                            if (noteExists) {
+                                return null;
                             }
-                        });
-
-                        if (listAnnotationPos === null) {
-                            // Create listAnnotation at end of document
-                            listAnnotationPos = newState.doc.content.size;
-                            newTr = newTr.insert(listAnnotationPos, newState.schema.nodes.listAnnotation.create());
-                        }
-
-                        // Get the listAnnotation node after the transaction
-                        const listAnnotationNode = newTr.doc.nodeAt(listAnnotationPos);
-                        if (!listAnnotationNode) {
-                            return null;
-                        }
-
-                        // Generate a note ID for JATS (anchor-to-note direction)
-                        const noteId = options.linkDirection === 'anchor-to-note' 
-                            ? `fn-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-                            : undefined;
-                        
-                        // Insert a new note at the end of the listAnnotation with a reference to the anchor
-                        const noteAttrs = {
-                            _reference: '1', // Will be updated later
-                            _timestamp: Date.now(),
-                        };
-                        
-                        if (options.linkDirection === 'note-to-anchor') {
-                            // TEI: note.target -> anchor.id
-                            noteAttrs.target = `#${anchorId}`;
-                        } else {
-                            // JATS: note gets an id, anchor.rid will point to it
-                            noteAttrs.id = noteId;
-                        }
-                        
-                        const noteNode = newState.schema.nodes[options.noteName].create(
-                            noteAttrs,
-                            [newState.schema.nodes.p.create({}, [])],
-                        );
-                        
-                        // For JATS, also update the anchor to point to the note
-                        if (options.linkDirection === 'anchor-to-note') {
+                            // Find existing notes wrapper or create one at end
+                            let listAnnotationPos = null;
+                            const wrapperType = newState.schema.nodes[options.notesWrapper];
                             newState.doc.descendants((node, pos) => {
-                                if (node.type.name === options.anchorName && node.attrs.id === anchorId) {
-                                    newTr = newTr.setNodeMarkup(pos, null, {
-                                        ...node.attrs,
-                                        rid: `#${noteId}`,
-                                        'ref-type': 'fn',
-                                        _timestamp: Date.now(),
-                                    });
+                                if (node.type.name === options.notesWrapper) {
+                                    listAnnotationPos = pos;
                                     return false;
                                 }
                             });
-                        }
-                        const insertPos = listAnnotationPos + listAnnotationNode.nodeSize - 1;
 
-                        // Insert the note and create a paragraph inside it
-                        newTr = newTr.insert(insertPos, noteNode);
+                            if (listAnnotationPos === null) {
+                                if (!wrapperType) {
+                                    return null;
+                                }
+                                // Create notes wrapper at end of document
+                                listAnnotationPos = newState.doc.content.size;
+                                newTr = newTr.insert(listAnnotationPos, wrapperType.create());
+                            }
 
-                        // Get the position after the note was inserted
-                        const notePos = insertPos;
-                        const note = newTr.doc.nodeAt(notePos);
+                            // Get the notes wrapper node after the transaction
+                            const listAnnotationNode = newTr.doc.nodeAt(listAnnotationPos);
+                            if (!listAnnotationNode) {
+                                return null;
+                            }
 
-                        if (note) {
-                            // Set the selection to the start of the note
-                            newTr = newTr.setSelection(TextSelection.create(newTr.doc, notePos + 1));
+                            // Generate a note ID for JATS (anchor-to-note direction)
+                            const noteId = options.linkDirection === 'anchor-to-note'
+                                ? `fn-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+                                : undefined;
 
-                            // Add scroll to the transaction
-                            newTr.scrollIntoView();
+                            // Insert a new note at the end of the wrapper with a reference to the anchor
+                            const noteAttrs = {
+                                _reference: '1', // Will be updated later
+                                _timestamp: Date.now(),
+                            };
+
+                            if (options.linkDirection === 'note-to-anchor') {
+                                // TEI: note.target -> anchor.id
+                                noteAttrs.target = `#${anchorId}`;
+                            } else {
+                                // JATS: note gets an id, anchor.rid will point to it (bare id, no #)
+                                noteAttrs.id = noteId;
+                            }
+
+                            const noteNode = newState.schema.nodes[options.noteName].create(
+                                noteAttrs,
+                                [newState.schema.nodes.p.create({}, [])],
+                            );
+
+                            // For JATS, also update the anchor to point to the note
+                            if (options.linkDirection === 'anchor-to-note') {
+                                // Prefer positions from newTr.doc in case prior steps shifted nodes
+                                newTr.doc.descendants((node, pos) => {
+                                    if (node.type.name === options.anchorName && node.attrs.id === anchorId) {
+                                        newTr = newTr.setNodeMarkup(pos, null, {
+                                            ...node.attrs,
+                                            rid: noteId,
+                                            'ref-type': 'fn',
+                                            _timestamp: Date.now(),
+                                        });
+                                        return false;
+                                    }
+                                });
+                            }
+                            const insertPos = listAnnotationPos + listAnnotationNode.nodeSize - 1;
+
+                            // Insert the note and create a paragraph inside it
+                            newTr = newTr.insert(insertPos, noteNode);
+
+                            // Get the position after the note was inserted
+                            const notePos = insertPos;
+                            const note = newTr.doc.nodeAt(notePos);
+
+                            if (note) {
+                                // Set the selection to the start of the note
+                                newTr = newTr.setSelection(TextSelection.create(newTr.doc, notePos + 1));
+
+                                // Add scroll to the transaction
+                                newTr.scrollIntoView();
+                            }
                         }
                     }
 
@@ -714,22 +764,20 @@ export const FootnoteRules = Extension.create({
                         newTr = updateNoteReferences(newTr, newTr.doc, options.noteName, options.anchorName, options.linkDirection);
 
                         // Reorder notes
-                        const targetNoteId = options.linkDirection === 'anchor-to-note' && anchorId
-                            ? (() => {
-                                // Find note ID that the anchor points to
-                                let noteId = null;
-                                newTr.doc.descendants((node, pos) => {
-                                    if (node.type.name === options.anchorName && node.attrs.id === anchorId) {
-                                        const rid = node.attrs.rid || node.attrs.target;
-                                        if (rid && rid.startsWith('#')) {
-                                            noteId = rid.substring(1);
+                        const targetNoteId = reconnectedNoteId
+                            || (options.linkDirection === 'anchor-to-note' && anchorId
+                                ? (() => {
+                                    // Find note ID that the anchor points to
+                                    let noteId = null;
+                                    newTr.doc.descendants((node, pos) => {
+                                        if (node.type.name === options.anchorName && node.attrs.id === anchorId) {
+                                            noteId = normalizeIdRef(node.attrs.rid || node.attrs.target);
+                                            return false;
                                         }
-                                        return false;
-                                    }
-                                });
-                                return noteId;
-                            })()
-                            : anchorId;
+                                    });
+                                    return noteId;
+                                })()
+                                : anchorId);
                         newTr = reorderNotes(newTr, newTr.doc, options.notesWrapper, options.noteName, options.anchorName, options.linkDirection, targetNoteId);
                     }
 

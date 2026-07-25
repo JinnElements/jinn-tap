@@ -1,12 +1,15 @@
 /**
  * Serializes the editor's content to XML
  * @param {Editor} editor - The Tiptap editor instance
+ * @param {Object} schemaDef - Schema definition
+ * @param {Object} [options]
+ * @param {boolean} [options.mapIdToXmlId=false] - Emit @id as xml:id (TEI); leave as id for JATS
  * @returns {string} The complete XML document
  */
-export function serialize(editor, schemaDef) {
+export function serialize(editor, schemaDef, { mapIdToXmlId = false } = {}) {
     const doc = editor.state.doc;
     const json = doc.toJSON();
-    const serializer = new Serializer(editor, schemaDef);
+    const serializer = new Serializer(editor, schemaDef, { mapIdToXmlId });
     let content = [];
 
     // Serialize content
@@ -72,10 +75,11 @@ function formatXmlAttributes(attrs, { mapIdToXmlId = false } = {}) {
 }
 
 class Serializer {
-    constructor(editor, schemaDef) {
+    constructor(editor, schemaDef, { mapIdToXmlId = false } = {}) {
         this.editor = editor;
         this.openMarks = [];
         this.schemaDef = schemaDef;
+        this.mapIdToXmlId = mapIdToXmlId;
     }
 
     serialize(node, previous, next) {
@@ -146,7 +150,7 @@ class Serializer {
         let tagName = nodeDef?.tagName || resolveXmlTagName(this.schemaDef, node.type);
         // If tagName is defined (custom tag), use it as-is (no prefix in XML output)
         // The prefix is only for HTML custom elements in the editor, not for XML output
-        const attrs = formatXmlAttributes(node.attrs, { mapIdToXmlId: true });
+        const attrs = formatXmlAttributes(node.attrs, { mapIdToXmlId: this.mapIdToXmlId });
 
         let content = '';
         if (node.content) {

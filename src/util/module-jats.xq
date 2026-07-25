@@ -72,7 +72,7 @@ declare function jt:import ($nodes as node()*, $importNotes as xs:boolean) {
                 ()
             case element(fn) return
                 if ($importNotes) then
-                    (: JATS fn element: note has id, anchor.rid points to it :)
+                    (: JATS fn: note has @id, anchor.rid points to it :)
                     <jats-fn
                         n="{$node/@n}"
                         id="{
@@ -84,7 +84,7 @@ declare function jt:import ($nodes as node()*, $importNotes as xs:boolean) {
                         type="note"
                     >{ jt:import($node/node(), false()) }</jats-fn>
                 else
-                    (: This shouldn't happen for fn elements when not importing notes :)
+                    (: Inline fn without importing notes — treat as xref placeholder :)
                     <jats-xref
                         id="{
                             if ($node/@id) then
@@ -162,23 +162,23 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
                     else
                         jt:export($node/node(), $input, $meta)
                 }
-            case element(jats-xref) return
+            case element(jats-xref) | element(xref) return
                 if ($node/node()) then
-                    (: Non-fn inline xref (e.g. ref-type="bibr", "aff", "fig") — preserve all attributes and content :)
+                    (: Non-fn inline xref (e.g. ref-type="bibr", "aff", "fig") :)
                     element xref {
                         $node/@*,
                         jt:export($node/node(), $input, $meta)
                     }
                 else
-                    (: fn anchor — drop editor-internal @id, keep rid and ref-type :)
+                    (: fn anchor — drop editor-internal @id and type, keep rid :)
                     element xref {
-                        $node/@* except ($node/@id, $node/@ref-type),
+                        $node/@* except ($node/@id, $node/@ref-type, $node/@type),
                         attribute ref-type {
-                            if ($node/@ref-type) then $node/@ref-type else 'fn'
-                        },
-                        if ($node/@rid) then
-                            attribute rid { $node/@rid }
-                        else ()
+                            if ($node/@ref-type) then
+                                $node/@ref-type
+                            else
+                                'fn'
+                        }
                     }
             case element(jats-fnGroup) return
                 (: Convert jats-fnGroup back to fn-group; omit when empty :)
@@ -188,14 +188,10 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
                     }
                 else
                     ()
-            case element(jats-fn) return
-                (: Convert jats-fn back to fn :)
+            case element(jats-fn) | element(fn) return
+                (: JATS fn uses unprefixed @id :)
                 element fn {
                     $node/@* except ($node/@target, $node/@type),
-                    (: JATS fn has id attribute (not xml:id) :)
-                    if ($node/@id) then
-                        attribute id { $node/@id }
-                    else (),
                     jt:export($node/node(), $input, $meta)
                 }
             case element() return

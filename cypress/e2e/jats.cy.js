@@ -145,7 +145,7 @@ describe('JinnTap Component (JATS format)', () => {
         });
     });
 
-    it('inserts a fig with caption wrapping a paragraph', () => {
+    it('creates a footnote with bare rid pointing at fn id', () => {
         const testContent = '<jats-sec><jats-p>Hello world!</jats-p></jats-sec>';
 
         cy.get('jinn-tap').then(($component) => {
@@ -154,16 +154,70 @@ describe('JinnTap Component (JATS format)', () => {
 
         cy.get('jinn-tap').then(($component) => {
             const editor = $component[0].editor;
-            editor.chain().focus().setTextSelection({ from: 1, to: 1 }).insertFigure().run();
+            editor.chain().focus().setTextSelection({ from: 2, to: 2 }).addAnchor({ 'ref-type': 'fn' }).run();
         });
 
         cy.get('jinn-tap').should((e) => {
             const [component] = e.get();
-            expect(component.xml).to.include('<fig>');
-            expect(component.xml).to.include('<graphic');
-            expect(component.xml).to.include('<caption><p>Description</p></caption>');
+            const xml = component.xml;
+            expect(xml).to.match(/<xref[^>]*ref-type="fn"[^>]*rid="[^#"]+"/);
+            expect(xml).to.not.match(/rid="#[^"]+"/);
+            const ridMatch = xml.match(/rid="([^"]+)"/);
+            expect(xml).to.match(new RegExp(`<fn[^>]*\\sid="${ridMatch[1]}"`));
+            expect(xml).to.not.match(/<fn[^>]*xml:id=/);
+        });
+    });
+
+    it('reconnects an orphaned fn by setting xref rid to the fn id', () => {
+        // Orphaned fn (no xref pointing at it) — inserting a new xref should pick up fn.id
+        const testContent =
+            '<jats-sec><jats-p>Hello world!</jats-p></jats-sec>' +
+            '<jats-fnGroup><jats-fn id="fn-orphan"><jats-p>Orphaned note</jats-p></jats-fn></jats-fnGroup>';
+
+        cy.get('jinn-tap').then(($component) => {
+            $component[0].content = testContent;
         });
 
-        cy.get('jinn-tap .editor-area').should('not.contain.text', 'Content does not match schema');
+        cy.get('jinn-tap').then(($component) => {
+            const editor = $component[0].editor;
+            editor.chain().focus().setTextSelection({ from: 2, to: 2 }).addAnchor({ 'ref-type': 'fn' }).run();
+        });
+
+        cy.get('jinn-tap').should((e) => {
+            const [component] = e.get();
+            const xml = component.xml;
+            expect(xml).to.match(/rid="fn-orphan"/);
+            expect(xml).to.not.match(/rid="#fn-orphan"/);
+            // Still only one fn — must not have created a second note
+            const fnCount = (xml.match(/<fn[\s>]/g) || []).length;
+            expect(fnCount).to.equal(1);
+            expect(xml).to.include('Orphaned note');
+        });
+    });
+
+    it('round-trips footnotes through xml export/import without breaking rid', () => {
+        const testContent = '<jats-sec><jats-p>Hello world!</jats-p></jats-sec>';
+
+        cy.get('jinn-tap').then(($component) => {
+            $component[0].content = testContent;
+        });
+
+        cy.get('jinn-tap').then(($component) => {
+            const editor = $component[0].editor;
+            editor.chain().focus().setTextSelection({ from: 2, to: 2 }).addAnchor({ 'ref-type': 'fn' }).run();
+        });
+
+        cy.get('jinn-tap').then(($component) => {
+            const xml = $component[0].xml;
+            const rid = xml.match(/rid="([^"]+)"/)[1];
+            // Simulate IndexedDB restore
+            $component[0].xml = xml;
+            cy.wrap(null).then(() => {
+                const restored = $component[0].xml;
+                expect(restored).to.match(new RegExp(`rid="${rid}"`));
+                expect(restored).to.match(new RegExp(`<fn[^>]*\\sid="${rid}"`));
+                expect(restored).to.not.match(/<fn[^>]*xml:id=/);
+            });
+        });
     });
 });

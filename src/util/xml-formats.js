@@ -20,6 +20,7 @@
  * @property {string} noteName - Node name for note elements (e.g., 'note', 'fn')
  * @property {string} anchorName - Node name for anchor elements (e.g., 'anchor', 'xref')
  * @property {string} linkDirection - Direction of link: 'note-to-anchor' (TEI: note.target -> anchor.id) or 'anchor-to-note' (JATS: anchor.rid -> note.id)
+ * @property {boolean} mapIdToXmlId - When serializing editor content, emit @id as xml:id (TEI) or plain id (JATS)
  * @property {Function} newDocumentTemplate - Function that returns XML string for new document
  */
 
@@ -35,6 +36,7 @@ export const TEI_FORMAT = {
     noteName: 'note',
     anchorName: 'anchor',
     linkDirection: 'note-to-anchor', // note.target points to anchor.id
+    mapIdToXmlId: true,
     newDocumentTemplate: () => `<TEI xmlns="http://www.tei-c.org/ns/1.0">
         <teiHeader>
             <fileDesc>
@@ -61,6 +63,7 @@ export const JATS_FORMAT = {
     noteName: 'fn',
     anchorName: 'xref',
     linkDirection: 'anchor-to-note', // anchor.rid points to note.id
+    mapIdToXmlId: false,
     newDocumentTemplate: () => `<article article-type="research-article">
         <front>
             <article-meta>
