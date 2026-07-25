@@ -1,3 +1,10 @@
+## [1.34.1](https://github.com/JinnElements/jinn-tap/compare/v1.34.0...v1.34.1) (2026-07-25)
+
+
+### Bug Fixes
+
+* image picker should still allow entering a URL ([31f49ae](https://github.com/JinnElements/jinn-tap/commit/31f49ae908ad00f1a81c82bddabb16ff7ea490f3))
+
 # [1.34.0](https://github.com/JinnElements/jinn-tap/compare/v1.33.0...v1.34.0) (2026-07-23)
 
 
