@@ -398,6 +398,8 @@ export class AttributePanel {
 
     /**
      * Asset picker for graphic `url` / `xlink:href` when `connector.name === 'Asset'`.
+     * The URL field stays editable so relative paths and absolute `http(s):` URLs
+     * can be typed; the picker is an optional shortcut when a store is attached.
      */
     createAssetConnector(fieldset, attrName, attrDef, currentValue, nodeOrMark, pos) {
         const assets = this.host.assets;
@@ -410,18 +412,34 @@ export class AttributePanel {
         input.type = 'text';
         input.value = currentValue || '';
         input.name = attrName;
-        input.placeholder = 'myimage.png';
+        input.placeholder = 'myimage.png or https://…';
+        input.autocomplete = 'off';
         field.appendChild(label);
         field.appendChild(input);
         fieldset.appendChild(field);
 
+        const commitTypedUrl = () => {
+            const value = input.value.trim();
+            this._setSummaryText(nodeOrMark, value || nodeOrMark.type.name);
+            if (value) {
+                this.handleAttributeUpdate(nodeOrMark, pos, { [attrName]: value });
+            } else {
+                this.handleAttributeUpdate(nodeOrMark, pos);
+            }
+            this.collapseSheet();
+        };
+
+        input.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                commitTypedUrl();
+            }
+        });
+
         if (!assets) {
             // Should not be reached — callers fall back to createAttributeInput
-            input.readOnly = false;
             return;
         }
-
-        input.readOnly = true;
 
         const details = document.createElement('details');
         details.open = true;
@@ -431,6 +449,11 @@ export class AttributePanel {
 
         const picker = document.createElement('div');
         picker.className = 'asset-picker';
+
+        const note = document.createElement('p');
+        note.className = 'asset-picker__note';
+        note.textContent =
+            'Pick a stored image below, or type a relative path / absolute URL in the field above.';
 
         const dropzone = document.createElement('div');
         dropzone.className = 'asset-picker__dropzone';
@@ -444,7 +467,7 @@ export class AttributePanel {
         const status = document.createElement('p');
         status.className = 'asset-picker__status';
 
-        picker.append(dropzone, status, grid);
+        picker.append(note, dropzone, status, grid);
         details.appendChild(picker);
         fieldset.parentNode.appendChild(details);
 
@@ -778,7 +801,15 @@ export class AttributePanel {
                     text,
                 );
             } else {
-                this.createAttributeInput(fieldset, attrName, attrDef, nodeOrMark.attrs[attrName]);
+                const placeholder =
+                    attrDef.connector?.name === 'Asset' ? 'myimage.png or https://…' : '';
+                this.createAttributeInput(
+                    fieldset,
+                    attrName,
+                    attrDef,
+                    nodeOrMark.attrs[attrName],
+                    placeholder,
+                );
             }
         });
 

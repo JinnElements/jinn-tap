@@ -177,18 +177,19 @@ Click the image (or select `graphic` in the breadcrumb) to open the attribute
 panel. The image URL is stored on `url` (TEI) or `xlink:href` (JATS).
 
 In these documentation embeds an [asset store](/guide/local-storage#assets) is
-attached, so the panel shows an **image picker**:
+attached, so the panel shows an **image picker** alongside the URL field:
 
-- upload via browse or drag-and-drop (same filename overwrites),
-- pick a thumbnail to write a relative path such as `myimage.png`,
+- type a relative path (`myimage.png`) or an absolute `http(s):` URL in the
+  field, then press **Enter** or **Apply**,
+- or upload via browse / drag-and-drop and pick a thumbnail (same filename
+  overwrites),
 - delete a stored image from the picker (with confirm).
 
 ![Placeholder figure selected with the Images upload panel open]({{ '/screenshots/figure-asset-picker.png' | prefixUrl }})
-*Select the graphic, then upload or pick an image in the attribute panel.*
+*Select the graphic, then type a URL or upload/pick an image in the attribute panel.*
 
-Absolute `http(s):` URLs still work if you type them into the field and click
-**Apply**. Host apps without an asset store only get that manual URL field —
-see [Assets](/guide/local-storage#assets) for wiring `IndexedDbAssetStore` or a
+Host apps without an asset store only get the manual URL field — see
+[Assets](/guide/local-storage#assets) for wiring `IndexedDbAssetStore` or a
 publisher HTTP store.
 
 When you **download** a document that references local images, the demo offers a

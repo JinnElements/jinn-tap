@@ -68,9 +68,9 @@ raw value, the editor shows a search panel and stores the chosen entry's identif
 | `user` | Provider-specific account/user, where required (e.g. GeoNames). |
 
 **`Asset`** is a built-in connector (no `pb-components` needed). On `graphic.url` /
-`graphic` `xlink:href` it opens a thumbnail grid and upload zone when
-[`editor.assets`](/guide/local-storage#assets) is set; the attribute stores a
-relative path such as `myimage.png`.
+`graphic` `xlink:href` it keeps the URL field editable (relative path or absolute
+`http(s):` URL) and, when [`editor.assets`](/guide/local-storage#assets) is set,
+adds a thumbnail grid and upload zone for stored images.
 
 Providers such as **Airtable** take additional configuration (`base`, `api-key`,
 `table`, `fields`, `filter`, …) forwarded to the underlying `pb-authority` element.

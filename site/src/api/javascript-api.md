@@ -93,8 +93,9 @@ await attachAssetStore(el, new IndexedDbAssetStore());
 For TEI Publisher / Jinks, use `HttpAssetStore` or the convenience helper
 `attachPublisherAssetStore` (same module) against `/api/jinntap/assets`.
 
-Graphic `url` / `xlink:href` use relative paths (`myimage.png`). The attribute
-panel shows an image picker when `editor.assets` is set. See
+Graphic `url` / `xlink:href` accept relative paths (`myimage.png`) or absolute
+`http(s):` URLs (typed in the field). With a store attached, the attribute panel
+also shows an image picker when `editor.assets` is set. See
 [Local document storage → Assets](/guide/local-storage#assets).
 
 **Export helpers**: `collectReferencedAssets(xml, store)`, `downloadXml`,

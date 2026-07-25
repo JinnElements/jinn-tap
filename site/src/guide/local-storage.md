@@ -166,10 +166,12 @@ binary files (images) — see [Assets](#assets) below.
 
 ## Assets
 
-Graphic elements store a simple **relative path** in `url` (TEI) or `xlink:href`
-(JATS), e.g. `myimage.png`. Absolute `http(s):` URLs still work as before.
+Graphic elements store a path in `url` (TEI) or `xlink:href` (JATS): a
+**relative** path such as `myimage.png`, or an absolute `http(s):` / `data:` /
+`blob:` URL. You can always type either into the attribute field (Enter or
+**Apply**); an attached store only adds upload/pick UI for relative paths.
 
-To resolve and pick those paths, attach an AssetStore implementation to
+To resolve and pick local relative paths, attach an AssetStore implementation to
 the editor:
 
 ```js
@@ -181,10 +183,11 @@ await attachAssetStore(editor, new IndexedDbAssetStore());
 
 With a store attached, selecting a `graphic` opens the connector panel with:
 
+- an editable URL field (relative path or absolute URL),
 - a thumbnail grid of stored images,
 - drag-and-drop / browse upload (overwrites the same filename),
 - delete (with confirm) on each thumbnail,
-- write-back of the relative path into the attribute.
+- write-back of the chosen relative path into the attribute when you pick or upload.
 
 `IndexedDbAssetStore` shares the `jinntap` IndexedDB database with documents.
 A **HTTP** implementation for TEI Publisher is also available:
