@@ -1,3 +1,10 @@
+## [1.34.5](https://github.com/JinnElements/jinn-tap/compare/v1.34.4...v1.34.5) (2026-07-26)
+
+
+### Bug Fixes
+
+* wrong closing of inline elements, closes [#21](https://github.com/JinnElements/jinn-tap/issues/21) ([9e7362e](https://github.com/JinnElements/jinn-tap/commit/9e7362e1d9a3e405a1b5ed7e9f2d55d3394f3e06))
+
 ## [1.34.4](https://github.com/JinnElements/jinn-tap/compare/v1.34.3...v1.34.4) (2026-07-26)
 
 
