@@ -148,6 +148,8 @@ export class Toolbar {
             }
         });
 
+        this._bindDropdownDismiss();
+
         // Update active state based on current selection
         this.editor.on('selectionUpdate', this.updateButtonStates.bind(this));
 
@@ -156,6 +158,48 @@ export class Toolbar {
             document.addEventListener('fullscreenchange', this._syncFullscreenButton);
             this.syncFullscreenButton();
         }
+    }
+
+    /**
+     * Close open toolbar dropdowns when the editor is clicked, when another
+     * dropdown opens, or when the pointer lands outside an open menu.
+     */
+    _bindDropdownDismiss() {
+        this.closeAllDropdowns = () => {
+            this.selectElements.forEach((details) => {
+                details.open = false;
+            });
+        };
+
+        // Only one dropdown open at a time
+        this.selectElements.forEach((select) => {
+            select.addEventListener('toggle', () => {
+                if (!select.open) return;
+                this.selectElements.forEach((other) => {
+                    if (other !== select) other.open = false;
+                });
+            });
+        });
+
+        // Clicking into the editor closes any open menu
+        this.editor.view.dom.addEventListener('pointerdown', () => {
+            this.closeAllDropdowns();
+        });
+
+        // Clicking elsewhere (other toolbar buttons, page chrome) closes menus.
+        // Clicks inside an already-open <details> are left alone so summary
+        // toggle and menu item clicks keep working.
+        this._onPointerDownOutside = (e) => {
+            if (!this.toolbar?.isConnected) {
+                document.removeEventListener('pointerdown', this._onPointerDownOutside, true);
+                return;
+            }
+            const open = [...this.selectElements.values()].filter((d) => d.open);
+            if (!open.length) return;
+            if (open.some((d) => d.contains(e.target))) return;
+            this.closeAllDropdowns();
+        };
+        document.addEventListener('pointerdown', this._onPointerDownOutside, true);
     }
 
     /**
@@ -334,6 +378,10 @@ export class Toolbar {
 
         const summary = document.createElement('summary');
         summary.innerHTML = name;
+        const caret = document.createElement('i');
+        caret.className = 'bi bi-caret-down-fill toolbar-dropdown-caret';
+        caret.setAttribute('aria-hidden', 'true');
+        summary.appendChild(caret);
         // A <details>/<summary> dropdown can carry a tooltip (unlike a native
         // <select>), so expose the schema's `selects.<name>.tooltip` here. Match
         // the buttons' bottom placement so it drops below the toolbar.
