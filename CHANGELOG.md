@@ -1,3 +1,10 @@
+## [1.34.3](https://github.com/JinnElements/jinn-tap/compare/v1.34.2...v1.34.3) (2026-07-26)
+
+
+### Bug Fixes
+
+* auto-close toolbar dropdowns. Fixes [#18](https://github.com/JinnElements/jinn-tap/issues/18) ([78e04aa](https://github.com/JinnElements/jinn-tap/commit/78e04aaf625276516d6904c7207202ad957f6947))
+
 ## [1.34.2](https://github.com/JinnElements/jinn-tap/compare/v1.34.1...v1.34.2) (2026-07-26)
 
 
