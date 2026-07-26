@@ -69,6 +69,15 @@ editor.addEventListener('content-change', (event) => {
 });
 ```
 
+<aside class="callout"><strong>XML round-trips</strong>
+Export merges the edited body back into the original document. Processing
+instructions and comments <em>outside</em> the text body (for example Oxygen
+<code>xml-model</code> PIs, notes in the header, or siblings of
+<code>&lt;text&gt;</code> / <code>&lt;front&gt;</code>) are preserved. Those
+<em>inside</em> the editable body are not — ProseMirror has no model for them, so
+they are dropped on import.
+</aside>
+
 ## Local drafts
 
 The editor above autosaves to **IndexedDB** in your browser (nothing is sent to a

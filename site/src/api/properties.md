@@ -42,6 +42,12 @@ editor.xml = '<TEI xmlns="http://www.tei-c.org/ns/1.0">…</TEI>';
 const current = editor.xml;
 ```
 
+<aside class="callout"><strong>Comments and processing instructions</strong>
+PIs and comments outside the editable body round-trip with the document (header,
+document-level Oxygen PIs, and other non-body siblings). Those inside the body are
+not preserved — see <a href="{{ '/guide/usage/' | prefixUrl }}#reading-content-back">Usage</a>.
+</aside>
+
 ## `format`
 
 The active format (`'tei'` or `'jats'`). Set at initialization via the
