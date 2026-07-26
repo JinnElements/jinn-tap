@@ -74,7 +74,7 @@ function formatXmlAttributes(attrs, { mapIdToXmlId = false } = {}) {
         .join(' ');
 }
 
-class Serializer {
+export class Serializer {
     constructor(editor, schemaDef, { mapIdToXmlId = false } = {}) {
         this.editor = editor;
         this.openMarks = [];
@@ -164,22 +164,20 @@ class Serializer {
 
         // If content is empty, output as self-closing element
         if (!content) {
-            return `${this.closeMarks(next)}<${tagName}${attrs ? ' ' + attrs : ''}/>`;
+            return `${this.closeMarks()}<${tagName}${attrs ? ' ' + attrs : ''}/>`;
         }
 
-        return `${this.closeMarks(next)}<${tagName}${attrs ? ' ' + attrs : ''}>${content}</${tagName}>`;
+        return `${this.closeMarks()}<${tagName}${attrs ? ' ' + attrs : ''}>${content}</${tagName}>`;
     }
 
-    closeMarks(next) {
+    closeMarks() {
+        // Close innermost marks first (LIFO) so nested inlines stay well-formed.
         let text = '';
-        this.openMarks.forEach((openMark) => {
-            if (next?.isText && next.marks.some((mark) => compareMarks(mark, openMark))) {
-                return '';
-            }
-            const tagName = resolveXmlTagName(this.schemaDef, openMark.type);
-            this.openMarks = this.openMarks.filter((mark) => !compareMarks(mark, openMark));
-            text += `</${tagName}>`;
-        });
+        for (let i = this.openMarks.length - 1; i >= 0; i--) {
+            const openMark = this.openMarks[i];
+            text += `</${resolveXmlTagName(this.schemaDef, openMark.type)}>`;
+        }
+        this.openMarks = [];
         return text;
     }
 }

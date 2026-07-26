@@ -105,7 +105,7 @@ describe('JinnTap Component', () => {
 
     it('handle nested marks', () => {
         const testContent =
-            '<tei-div><tei-p><tei-persName><tei-hi rend="b">Rudi</tei-hi> <tei-hi rend="i">Rüssel</tei-hi></tei-hi></tei-persName></tei-p></tei-div>';
+            '<tei-div><tei-p><tei-persName><tei-hi rend="b">Rudi</tei-hi> <tei-hi rend="i">Rüssel</tei-hi></tei-persName></tei-p></tei-div>';
 
         // Get the component instance
         cy.get('jinn-tap').then(($component) => {
@@ -129,6 +129,28 @@ describe('JinnTap Component', () => {
                     expect(eventDetail.body).to.be.xml;
                     expect(eventDetail.body).to.equal(
                         '<div><p><persName><hi rend="b">Rudi</hi> <hi rend="i">Rüssel</hi></persName></p></div>',
+                    );
+                });
+        });
+    });
+
+    // Regression for https://github.com/JinnElements/jinn-tap/issues/21
+    it('closes nested inlines in order before a following empty element', () => {
+        const testContent =
+            '<tei-div><tei-p><tei-hi>In the outer inline<tei-term>In the inner inline</tei-term></tei-hi><tei-lb/></tei-p></tei-div>';
+
+        cy.get('jinn-tap').then(($component) => {
+            const contentChangeSpy = cy.spy().as('nestedInlineSpy');
+            $component[0].addEventListener('content-change', contentChangeSpy);
+            $component[0].content = testContent;
+
+            cy.get('@nestedInlineSpy')
+                .should('have.been.called')
+                .then((spy) => {
+                    const eventDetail = spy.getCall(0).args[0].detail;
+                    expect(eventDetail.body).to.be.xml;
+                    expect(eventDetail.body).to.equal(
+                        '<div><p><hi rend="i">In the outer inline<term>In the inner inline</term></hi><lb/></p></div>',
                     );
                 });
         });
