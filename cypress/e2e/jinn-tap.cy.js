@@ -156,6 +156,32 @@ describe('JinnTap Component', () => {
         });
     });
 
+    // Regression for https://github.com/JinnElements/jinn-tap/issues/6
+    it('orders footnotes by anchor position in the main text', () => {
+        // Notes deliberately listed as 1, 10, 2 (alphabetical order) — must become 1, 2, 10
+        const testContent =
+            '<tei-div><tei-p>' +
+            'A<tei-anchor id="n1" type="note"></tei-anchor>' +
+            'B<tei-anchor id="n2" type="note"></tei-anchor>' +
+            'C<tei-anchor id="n10" type="note"></tei-anchor>' +
+            '</tei-p></tei-div>' +
+            '<tei-listAnnotation>' +
+            '<tei-note target="#n1"><tei-p>Note 1</tei-p></tei-note>' +
+            '<tei-note target="#n10"><tei-p>Note 10</tei-p></tei-note>' +
+            '<tei-note target="#n2"><tei-p>Note 2</tei-p></tei-note>' +
+            '</tei-listAnnotation>';
+
+        cy.get('jinn-tap').then(($component) => {
+            $component[0].content = testContent;
+        });
+
+        cy.get('jinn-tap').should(($component) => {
+            const xml = $component[0].xml;
+            const noteOrder = [...xml.matchAll(/<note[^>]*\starget="([^"]+)"/g)].map((m) => m[1]);
+            expect(noteOrder).to.deep.equal(['#n1', '#n2', '#n10']);
+        });
+    });
+
     it('handle choice/abbr/expan', () => {
         const testContent =
             '<tei-div><tei-p><tei-choice><tei-abbr>WYSIWYM</tei-abbr><tei-expan>What you see is what you mean</tei-expan></tei-choice>.</tei-p></tei-div>';

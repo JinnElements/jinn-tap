@@ -219,7 +219,7 @@ function updateNoteReferences(tr, doc, noteName, anchorName, linkDirection) {
     return tr;
 }
 
-// Function to reorder notes according to their reference numbers
+// Function to reorder notes according to their anchors' order in the main text
 function reorderNotes(tr, doc, notesWrapper, noteName, anchorName, linkDirection, targetNoteId = null) {
     // Find the listAnnotation
     let listAnnotationPos = null;
@@ -235,31 +235,41 @@ function reorderNotes(tr, doc, notesWrapper, noteName, anchorName, linkDirection
     const listAnnotationNode = doc.nodeAt(listAnnotationPos);
     if (!listAnnotationNode) return tr;
 
-    // Collect all notes with their reference numbers and positions
+    // Map anchor id → document position for TEI (note-to-anchor) lookups
+    const anchorPositions = new Map();
+    doc.nodesBetween(0, doc.content.size, (node, pos) => {
+        if (node.type.name === anchorName && node.attrs.id) {
+            anchorPositions.set(node.attrs.id, pos);
+        }
+    });
+
+    // Collect all notes with their anchor positions
     const notes = [];
     let targetNoteIndex = -1;
 
     listAnnotationNode.content.forEach((node, offset) => {
         if (node.type.name === noteName) {
-            let reference = null;
+            let anchorPos = Number.POSITIVE_INFINITY; // unlinked notes go last
             const noteId = node.attrs.id || generateNoteId(node, offset);
-            
+
             if (linkDirection === 'note-to-anchor') {
                 // TEI: note.target -> anchor.id
                 const target = node.attrs.target;
                 if (target && target.startsWith('#')) {
-                    const anchorId = target.substring(1);
-                    reference = getAnchorReference(anchorId);
+                    const pos = anchorPositions.get(target.substring(1));
+                    if (pos !== undefined) {
+                        anchorPos = pos;
+                    }
                 }
             } else {
                 // JATS: anchor.rid -> note.id
                 const anchor = findAnchorByNote(doc, noteId, anchorName, linkDirection);
                 if (anchor) {
-                    reference = getAnchorReference(anchor.node.attrs.id);
+                    anchorPos = anchor.pos;
                 }
             }
-            
-            notes.push({ node, reference, originalIndex: notes.length });
+
+            notes.push({ node, anchorPos, originalIndex: notes.length });
 
             // If this is our target note, remember its index
             if (targetNoteId) {
@@ -276,12 +286,11 @@ function reorderNotes(tr, doc, notesWrapper, noteName, anchorName, linkDirection
         }
     });
 
-    // Sort notes by reference using natural string comparison
+    // Sort by anchor position in the main text (document order), not by reference label.
+    // localeCompare on "1","10","2" produced alphabetical order; users expect text order.
     notes.sort((a, b) => {
-        if (!a.reference && !b.reference) return 0;
-        if (!a.reference) return 1;
-        if (!b.reference) return -1;
-        return a.reference.localeCompare(b.reference);
+        if (a.anchorPos !== b.anchorPos) return a.anchorPos - b.anchorPos;
+        return a.originalIndex - b.originalIndex;
     });
 
     // Find where our target note ended up after sorting
@@ -372,7 +381,7 @@ export const FootnoteRules = Extension.create({
                 },
             updateNotes:
                 () =>
-                ({ commands, state }) => {
+                ({ state, dispatch }) => {
                     let tr = state.tr;
                     // Compute references based on the current transaction state
                     computeAnchorReferences(tr.doc, this.options.anchorName, this.options.noteName, this.options.linkDirection);
@@ -383,8 +392,11 @@ export const FootnoteRules = Extension.create({
                     // Update all note references
                     tr = updateNoteReferences(tr, tr.doc, this.options.noteName, this.options.anchorName, this.options.linkDirection);
 
-                    // Reorder notes
+                    // Reorder notes to match anchor order in the main text
                     tr = reorderNotes(tr, tr.doc, this.options.notesWrapper, this.options.noteName, this.options.anchorName, this.options.linkDirection);
+                    if (dispatch) {
+                        dispatch(tr);
+                    }
                     return true;
                 },
         };
