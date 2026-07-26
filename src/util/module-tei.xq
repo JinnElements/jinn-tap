@@ -108,10 +108,17 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
         case document-node() return
             jt:export($node/node(), $input, $meta)
         case element(tei:TEI) return
+            (: Walk all children in document order so comments / PIs outside
+               the edited body (Oxygen xml-model, header notes, …) survive. :)
             element {node-name($node)} {
                 $node/@*,
-                for $child in $node!(tei:teiHeader, tei:text, tei:facsimile, tei:sourceDoc)
-                return jt:export($child, $input, $meta),
+                for $child in $node/node()
+                return
+                    typeswitch ($child)
+                        case element() return
+                            jt:export($child, $input, $meta)
+                        default return
+                            $child,
                 if (not($node/tei:standOff)) then
                     (: Create standOff only when there are notes to export :)
                     let $notes := jt:export-list-annotation($input)
@@ -121,12 +128,18 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
                         else
                             ()
                 else (
-                ),
-                jt:export($node/tei:standOff, $input, $meta)
+                )
             }
         case element(tei:standOff) return
             (: TEI standOff requires model.standOffPart+ — omit when empty :)
-            let $other := $node/* except $node/tei:listAnnotation
+            let $other :=
+                for $child in $node/node()
+                return
+                    typeswitch ($child)
+                        case element(tei:listAnnotation) return
+                            ()
+                        default return
+                            $child
             let $notes := jt:export-list-annotation($input)
             return
                 if (exists($other) or exists($notes)) then
@@ -138,6 +151,7 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
                 else
                     ()
         case element(tei:body) return
+            (: Body content comes from the editor; original body comments/PIs are not kept. :)
             element {node-name($node)} {
                 $node/@*,
                 let $contents := $input/tei:body/node() except $input/tei:body/tei:listAnnotation

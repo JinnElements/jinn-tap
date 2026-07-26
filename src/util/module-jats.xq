@@ -120,13 +120,18 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
             case document-node() return
                 jt:export($node/node(), $input, $meta)
             case element(article) return
+                (: Walk all children in document order so comments / PIs outside
+                   the edited body survive (e.g. between front and body). :)
                 element {node-name($node)} {
                     $node/@*,
-                    jt:export($node/front, $input, $meta),
-                    jt:export($node/body, $input, $meta),
-                    if ($node/back) then
-                        jt:export($node/back, $input, $meta)
-                    else
+                    for $child in $node/node()
+                    return
+                        typeswitch ($child)
+                            case element() return
+                                jt:export($child, $input, $meta)
+                            default return
+                                $child,
+                    if (not($node/back)) then
                         (: Source has no back: create one only when there are footnotes :)
                         let $fn-group := jt:export-fn-group($input, $meta)
                         return
@@ -134,9 +139,18 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
                                 element back { $fn-group }
                             else
                                 ()
+                    else (
+                    )
                 }
             case element(back) return
-                let $other := $node/* except $node/fn-group
+                let $other :=
+                    for $child in $node/node()
+                    return
+                        typeswitch ($child)
+                            case element(fn-group) return
+                                ()
+                            default return
+                                $child
                 let $fn-group := jt:export-fn-group($input, $meta)
                 return
                     if (exists($other) or exists($fn-group)) then
@@ -149,6 +163,7 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
                         (: Omit empty back / empty fn-group :)
                         ()
             case element(body) return
+                (: Body content comes from the editor; original body comments/PIs are not kept. :)
                 element {node-name($node)} {
                     $node/@*,
                     let $contents := $input/body/node() except $input/body/fn-group

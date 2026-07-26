@@ -62,14 +62,19 @@ describe('JinnTap Component', () => {
 
     it('keeps all ignored metadata elements intact', () => {
         cy.get('jinn-tap').then(($component) => {
-            $component[0].xml = `<TEI xmlns="http://www.tei-c.org/ns/1.0">
+            $component[0].xml = `<?xml-model href="tei.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?oxy_custom_start type="insert" author="ed"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+<!-- root note -->
 <teiHeader>
 <!-- ... -->
 </teiHeader>
+<?oxy_comment_start author="ed"?>
 <facsimile id="firstpage">
 <graphic url="firstpage.png" />
 </facsimile>
 <text xml:lang="en">
+<!-- before body -->
 <body><p>Hello World</p></body>
 </text>
 </TEI>
@@ -80,16 +85,21 @@ describe('JinnTap Component', () => {
 
         cy.get('jinn-tap').should(($component) => {
             const jinntap = $component[0];
+            const xml = jinntap.xml;
 
-            expect(jinntap.xml).to.be.xml;
-            expect(jinntap.xml).to.equal(`<TEI xmlns="http://www.tei-c.org/ns/1.0"><teiHeader>
-<!-- ... -->
-</teiHeader><text xml:lang="en">
-<body><p>More Text!Hello World</p>
-</body>
-</text><facsimile id="firstpage">
-<graphic url="firstpage.png"/>
-</facsimile></TEI>`);
+            expect(xml).to.be.xml;
+            // Document-order children outside the edited body (incl. Oxygen PIs).
+            expect(xml).to.contain('<?xml-model href="tei.rng"');
+            expect(xml).to.contain('<?oxy_custom_start type="insert" author="ed"?>');
+            expect(xml).to.contain('<!-- root note -->');
+            expect(xml).to.contain('<!-- ... -->');
+            expect(xml).to.contain('<?oxy_comment_start author="ed"?>');
+            expect(xml).to.contain('<!-- before body -->');
+            expect(xml).to.contain('<facsimile id="firstpage">');
+            expect(xml).to.contain('<graphic url="firstpage.png"/>');
+            expect(xml).to.contain('<p>More Text!Hello World</p>');
+            // Document order preserved: facsimile stays before text.
+            expect(xml.indexOf('facsimile')).to.be.lessThan(xml.indexOf('<text'));
         });
     });
 
