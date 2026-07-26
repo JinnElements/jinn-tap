@@ -1,3 +1,10 @@
+## [1.34.6](https://github.com/JinnElements/jinn-tap/compare/v1.34.5...v1.34.6) (2026-07-26)
+
+
+### Bug Fixes
+
+* footnote ordering by anchor position rather than reference label, closes [#6](https://github.com/JinnElements/jinn-tap/issues/6) ([1080429](https://github.com/JinnElements/jinn-tap/commit/10804291bd0a3fa76e7fdcfa2e4ebc6fd7d30651))
+
 ## [1.34.5](https://github.com/JinnElements/jinn-tap/compare/v1.34.4...v1.34.5) (2026-07-26)
 
 
