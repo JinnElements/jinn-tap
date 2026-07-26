@@ -160,7 +160,8 @@ describe('JinnTap Component (JATS format)', () => {
         cy.get('jinn-tap').should((e) => {
             const [component] = e.get();
             const xml = component.xml;
-            expect(xml).to.match(/<xref[^>]*ref-type="fn"[^>]*rid="[^#"]+"/);
+            expect(xml).to.match(/<xref\b[^>]*\srid="[^#"]+"/);
+            expect(xml).to.match(/<xref\b[^>]*\sref-type="fn"/);
             expect(xml).to.not.match(/rid="#[^"]+"/);
             const ridMatch = xml.match(/rid="([^"]+)"/);
             expect(xml).to.match(new RegExp(`<fn[^>]*\\sid="${ridMatch[1]}"`));
