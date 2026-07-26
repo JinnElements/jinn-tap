@@ -1,3 +1,10 @@
+## [1.34.2](https://github.com/JinnElements/jinn-tap/compare/v1.34.1...v1.34.2) (2026-07-26)
+
+
+### Bug Fixes
+
+* align TEI and JATS footnote linking behaviour ([1f95538](https://github.com/JinnElements/jinn-tap/commit/1f9553836ce2138252a561ad5c708b9cdcee8e5b))
+
 ## [1.34.1](https://github.com/JinnElements/jinn-tap/compare/v1.34.0...v1.34.1) (2026-07-25)
 
 
