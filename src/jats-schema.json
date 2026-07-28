@@ -207,6 +207,7 @@
         "fig": {
             "type": "block",
             "selectable": true,
+            "gapCursor": true,
             "content": "(graphic|caption)*"
         },
         "caption": {

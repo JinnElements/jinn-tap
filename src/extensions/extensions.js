@@ -11,6 +11,8 @@ import { JinnTable } from './tables/table.js';
 import { JinnRow } from './tables/row.js';
 import { JinnCell } from './tables/cell.js';
 import { JinnReference } from './ref.js';
+import { Gapcursor } from '@tiptap/extensions';
+import { JinnGapCursor } from './gap-cursor.js';
 
 /**
  * Create nodes and marks from a schema definition.
@@ -23,7 +25,7 @@ import { JinnReference } from './ref.js';
  */
 export function createFromSchema(schemaDef, prefix = 'tei-', notesWrapper = 'listAnnotation', footnoteOptions = {}) {
     const JinnDocument = createDocumentExtension(notesWrapper);
-    const extensions = [JinnDocument, Text];
+    const extensions = [JinnDocument, Text, Gapcursor, JinnGapCursor];
     Object.entries(schemaDef.schema).forEach(([baseName, rawDef]) => {
         // Support an array of conditional definitions for a single XML element name.
         // Each item may have a "when" object (attr→value map) to conditionally match.
@@ -86,6 +88,7 @@ export function createFromSchema(schemaDef, prefix = 'tei-', notesWrapper = 'lis
                     NodeOrMark = JinnItem.extend({
                         name: name,
                         content: def.content || 'p block*',
+                        ...gapCursorConfig({ ...def, content: def.content || 'p block*' }),
                         addOptions() {
                             return {
                                 ...this.parent?.(),
@@ -126,6 +129,7 @@ export function createFromSchema(schemaDef, prefix = 'tei-', notesWrapper = 'lis
                         inline: def.inline,
                         content: def.content,
                         selectable: def.selectable,
+                        ...gapCursorConfig(def),
                     });
                     break;
                 case 'graphic':
@@ -213,6 +217,25 @@ export function createFromSchema(schemaDef, prefix = 'tei-', notesWrapper = 'lis
 }
 
 /**
+ * Gap cursor flags for a node (see JinnGapCursor).
+ *
+ * `gapCursor: true` in the schema marks an element the cursor cannot type its
+ * way out of (a figure). Containers that may hold a paragraph allow the cursor
+ * to actually stop next to it — ProseMirror otherwise only accepts a gap cursor
+ * where the container's default child type is a text block, which in TEI/JATS
+ * it isn't.
+ *
+ * @param {Object} def - Schema entry
+ * @returns {Object} node config additions
+ */
+function gapCursorConfig(def) {
+    return {
+        createGapCursor: def.gapCursor === true,
+        allowGapCursor: /\bblock\b/.test(def.content || '') || undefined,
+    };
+}
+
+/**
  * Create a custom document extension with dynamic content based on notesWrapper
  * @param {string} notesWrapper - The notes wrapper node name (e.g., 'listAnnotation', 'fn-group')
  * @returns {Extension} Document extension
@@ -220,5 +243,7 @@ export function createFromSchema(schemaDef, prefix = 'tei-', notesWrapper = 'lis
 export function createDocumentExtension(notesWrapper = 'listAnnotation') {
     return Document.extend({
         content: `heading* block+ ${notesWrapper}?`,
+        // a gap cursor may stop directly at the end of the document (see JinnGapCursor)
+        allowGapCursor: true,
     });
 }

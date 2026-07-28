@@ -126,13 +126,12 @@
                 "Cmd-i": {
                     "attributes": { "rend": "i" }
                 },
-				"ctrl-b": {
+                "ctrl-b": {
                     "attributes": { "rend": "b" }
                 },
                 "ctrl-i": {
                     "attributes": { "rend": "i" }
                 }
-
             },
             "toolbar": {
                 "Bold": {
@@ -196,6 +195,7 @@
         "figure": {
             "type": "block",
             "selectable": true,
+            "gapCursor": true,
             "content": "(graphic|figDesc|head)*"
         },
         "figDesc": {

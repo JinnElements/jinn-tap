@@ -68,6 +68,7 @@ To support another XML dialect, see
 | `group` | `block` | Content-model group the node belongs to (default `block`). Referenced by other elements' `content`. |
 | `defining` | `block` | Marks the node as *defining* its content (affects paste/replace behaviour). |
 | `selectable` | `block` | Whether the whole node can be selected. |
+| `gapCursor` | `block` | Always offer a [gap cursor](https://prosemirror.net/docs/ref/#gapcursor) next to the node, so the text can be continued after it even when it is the last child of its parent (set on `figure`/`fig`). |
 | `isolating`, `priority`, `inline` | `block` | Passed through to the ProseMirror node spec. |
 | `tagName` | `listItem`, synthesized | Emit a different XML tag than the entry key. |
 | `keyboard` | all | Keyboard shortcuts that create/toggle the element. See [Keyboard & input rules](/schema/keyboard-and-input-rules). |

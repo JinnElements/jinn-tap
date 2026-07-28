@@ -1164,6 +1164,34 @@ jinn-tap .ProseMirror {
     height: 100%;
 }
 
+/* Gap cursor: the caret shown between blocks that cannot be typed into,
+   e.g. after a figure at the end of a division (see JinnGapCursor) */
+jinn-tap .ProseMirror-gapcursor {
+    display: none;
+    pointer-events: none;
+    position: absolute;
+}
+
+jinn-tap .ProseMirror-gapcursor::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: -2px;
+    width: 2em;
+    border-top: 2px solid currentColor;
+    animation: jinn-tap-gapcursor-blink 1.1s steps(2, start) infinite;
+}
+
+jinn-tap .ProseMirror-focused .ProseMirror-gapcursor {
+    display: block;
+}
+
+@keyframes jinn-tap-gapcursor-blink {
+    to {
+        visibility: hidden;
+    }
+}
+
 /* Collaboration cursor styles */
 .collaboration-carets__caret {
     position: relative;
