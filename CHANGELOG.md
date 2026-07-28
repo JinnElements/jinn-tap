@@ -1,3 +1,20 @@
+# [2.0.0](https://github.com/JinnElements/jinn-tap/compare/v1.34.6...v2.0.0) (2026-07-28)
+
+
+### Bug Fixes
+
+* add gap cursor to allow moving out of a figure placed at end of text ([5b1967c](https://github.com/JinnElements/jinn-tap/commit/5b1967c15fc3391dfbe5043db78cf5a8168fa176))
+
+
+### Features
+
+* 2.0 ([19f72ae](https://github.com/JinnElements/jinn-tap/commit/19f72ae0413e0521ed4ddb4682d2ca67143decfe))
+
+
+### BREAKING CHANGES
+
+* …
+
 ## [1.34.6](https://github.com/JinnElements/jinn-tap/compare/v1.34.5...v1.34.6) (2026-07-26)
 
 
