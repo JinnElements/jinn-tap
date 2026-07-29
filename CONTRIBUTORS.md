@@ -9,3 +9,4 @@ To add yourself, follow the signing procedure at the end of [CLA.md](CLA.md#how-
 | Full name | GitHub username | Date | CLA |
 | --- | --- | --- | --- |
 | Wolfgang Meier | wolfgangmm | 2026-07-29 | ICLA v1.1 |
+| Martin Middel  | DrRataplan | 2026-07-29 | ICLA v1.1 |
