@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/JinnElements/jinn-tap/compare/v2.0.0...v2.0.1) (2026-07-29)
+
+
+### Bug Fixes
+
+* include the license text in the published package ([d4ed3c5](https://github.com/JinnElements/jinn-tap/commit/d4ed3c50cdd6c28b3f386e8258c278f48d8efe7b))
+
 # [2.0.0](https://github.com/JinnElements/jinn-tap/compare/v1.34.6...v2.0.0) (2026-07-28)
 
 Major improvements, bug fixes and better handling of unknown elements.
