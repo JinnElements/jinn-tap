@@ -8,4 +8,4 @@ To add yourself, follow the signing procedure at the end of [CLA.md](CLA.md#how-
 
 | Full name | GitHub username | Date | CLA |
 | --- | --- | --- | --- |
-| Wolfgang Meier | wolfgangmm | 2026-07-29 | ICLA v1.0 |
+| Wolfgang Meier | wolfgangmm | 2026-07-29 | ICLA v1.1 |

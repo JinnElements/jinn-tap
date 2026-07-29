@@ -1,6 +1,6 @@
 # JinnTap Corporate Contributor License Agreement
 
-**Version 1.0**
+**Version 1.1**
 
 This Agreement is entered into between **Jinntec GmbH**,
 **Kielganstraße 4a, 10783 Berlin, Germany** (the "Maintainer")
@@ -13,7 +13,7 @@ this Agreement, not the Individual CLA, is the instrument that grants them.
 
 ## 1. Incorporation of the Individual CLA
 
-Sections 1 to 11 of the [JinnTap Individual Contributor License Agreement, version 1.0](CLA.md) (the
+Sections 1 to 11 of the [JinnTap Individual Contributor License Agreement, version 1.1](CLA.md) (the
 "Individual CLA") apply to this Agreement in full, with "You" referring to the Corporation. In
 particular, the Corporation grants the copyright license (Section 2), the right to license and
 relicense (Section 3) and the patent license (Section 4) set out there, and the Maintainer gives the

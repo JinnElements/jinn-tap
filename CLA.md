@@ -1,6 +1,6 @@
 # JinnTap Individual Contributor License Agreement
 
-**Version 1.0**
+**Version 1.1**
 
 Thank you for your interest in JinnTap (the "Project"), maintained by **Jinntec GmbH**,
 **Kielganstraße 4a, 10783 Berlin, Germany** (the "Maintainer").
@@ -96,12 +96,13 @@ accept, include, or use any Contribution.
 
 ## 8. Undertaking of the Maintainer
 
-In consideration of the rights granted above, the Maintainer undertakes that every version of the
-Project that incorporates Your Contribution and is made available to the public will be made
-available, at the same time and in complete corresponding source form, under GPL-3.0-or-later or
-another license approved by the Open Source Initiative (OSI) or the Free Software Foundation (FSF).
-This undertaking does not restrict the Maintainer's right under Section 3 to additionally license
-the same code under other terms.
+In return for the rights granted above, the Maintainer will keep publishing the Project — including
+Your Contribution — as free software: in complete source form, under GPL-3.0-or-later or another
+license approved by the Open Source Initiative (OSI) or the Free Software Foundation (FSF).
+
+This promise covers what the Maintainer publishes to the general public. It does not restrict the
+Maintainer's rights under Section 3, and it does not require the Maintainer to publish any
+particular version, feature, extension or module.
 
 ## 9. Scope in Time
 
@@ -141,9 +142,14 @@ agreement between the parties concerning its subject matter.
 Sign electronically by opening a pull request that adds a line with your name, GitHub username and
 the date to `CONTRIBUTORS.md`, with the following statement in the pull request description:
 
-> I have read the JinnTap Individual Contributor License Agreement, version 1.0, and I hereby agree
+> I have read the JinnTap Individual Contributor License Agreement, version 1.1, and I hereby agree
 > to its terms for all of my past and future Contributions to JinnTap.
 
 The pull request, signed off from the e-mail address associated with your commits, is the record of
 your agreement. Contributing on behalf of a company requires the
 [Corporate CLA](CLA-CORPORATE.md) instead.
+
+## Version history
+
+- **1.1** (2026-07-29) — Section 8 reformulated to be clearer.
+- **1.0** (2026-07-29) — initial version, superseded before any third party signed it.
