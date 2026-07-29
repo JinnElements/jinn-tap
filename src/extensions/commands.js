@@ -1,5 +1,27 @@
-import { Extension, createNodeFromContent } from '@tiptap/core';
+import { Extension, createNodeFromContent, getMarkRange } from '@tiptap/core';
 import { TextSelection } from '@tiptap/pm/state';
+
+/**
+ * Determine the range clear formatting should operate on if the selection is empty:
+ * the smallest inline element (mark) enclosing the cursor, or - if the cursor is not
+ * inside any inline element - the enclosing text block.
+ *
+ * @param {import('@tiptap/pm/model').ResolvedPos} $pos
+ * @returns {{from: number, to: number} | null}
+ */
+function enclosingRange($pos) {
+    let range = null;
+    $pos.marks().forEach((mark) => {
+        const markRange = getMarkRange($pos, mark.type, mark.attrs);
+        if (markRange && (!range || markRange.to - markRange.from < range.to - range.from)) {
+            range = markRange;
+        }
+    });
+    if (range) {
+        return range;
+    }
+    return $pos.parent.isTextblock ? { from: $pos.start(), to: $pos.end() } : null;
+}
 
 export const JinnTapCommands = Extension.create({
     name: 'jinnTapCommands',
@@ -18,6 +40,37 @@ export const JinnTapCommands = Extension.create({
                     }
 
                     return view.dom.closest('jinn-tap').hasAttribute('block-typing');
+                },
+            /**
+             * Remove all marks from the selection. Unlike Tiptap's `unsetAllMarks` this also
+             * works without a selection: the operation is then applied to the innermost inline
+             * element surrounding the cursor, falling back to the enclosing text block.
+             */
+            clearFormatting:
+                () =>
+                ({ state, tr, dispatch }) => {
+                    const { selection } = state;
+                    let { from, to } = selection;
+                    if (selection.empty) {
+                        const range = enclosingRange(selection.$from);
+                        if (!range) {
+                            return false;
+                        }
+                        ({ from, to } = range);
+                    }
+                    if (from === to) {
+                        // nothing to clear, but still drop pending marks for the next input
+                        if (dispatch && state.storedMarks?.length) {
+                            tr.setStoredMarks([]);
+                            return true;
+                        }
+                        return false;
+                    }
+                    if (dispatch) {
+                        tr.removeMark(from, to);
+                        tr.setStoredMarks([]);
+                    }
+                    return true;
                 },
             moveUp:
                 () =>

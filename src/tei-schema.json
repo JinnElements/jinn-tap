@@ -14,7 +14,7 @@
             "label": "<i class='bi bi-unindent'></i>"
         },
         "Clear Formatting": {
-            "command": "unsetAllMarks",
+            "command": "clearFormatting",
             "label": "<i class='bi bi-eraser'></i>",
             "order": 5
         },

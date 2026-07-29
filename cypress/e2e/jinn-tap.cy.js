@@ -213,6 +213,32 @@ describe('JinnTap Component', () => {
         });
     });
 
+    it('clears formatting of the enclosing element if nothing is selected', () => {
+        const testContent = '<tei-p><tei-hi rend="i">Hello</tei-hi> <tei-hi rend="b">world</tei-hi>!</tei-p>';
+
+        cy.get('jinn-tap').then(($component) => {
+            $component[0].content = testContent;
+
+            // cursor inside `world`: only that inline element loses its formatting
+            $component[0].editor.chain().focus().setTextSelection({ from: 9, to: 9 }).run();
+        });
+        cy.get('jinn-tap .toolbar-button[data-tooltip="Clear Formatting"]').click();
+        cy.get('jinn-tap').should((e) => {
+            const [editor] = e.get();
+            expect(editor.xml).to.equal(wrapInTEIBoilerplate('<hi rend="i">Hello</hi> world!'));
+        });
+
+        // cursor outside any inline element: the whole paragraph is cleared
+        cy.get('jinn-tap').then(($component) => {
+            $component[0].editor.chain().focus().setTextSelection({ from: 11, to: 11 }).run();
+        });
+        cy.get('jinn-tap .toolbar-button[data-tooltip="Clear Formatting"]').click();
+        cy.get('jinn-tap').should((e) => {
+            const [editor] = e.get();
+            expect(editor.xml).to.equal(wrapInTEIBoilerplate('Hello world!'));
+        });
+    });
+
     it('should apply bold formatting to selected text', () => {
         const testContent = '<tei-div><tei-p>Hello world!</tei-p></tei-div>';
 
