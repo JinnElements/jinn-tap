@@ -157,4 +157,8 @@ editor.addEventListener('content-change', (event) => {
 
 ## License
 
-[GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[GNU General Public License v3.0 or later](https://www.gnu.org/licenses/gpl-3.0.en.html) — see
+[LICENSE](LICENSE).
+
+Copyright (C) 2025-2026 Jinntec GmbH and the JinnTap contributors. Contributions are accepted under
+the [Contributor License Agreement](CLA.md).
