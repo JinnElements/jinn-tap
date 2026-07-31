@@ -23,11 +23,11 @@ Fetch and load a TEI/JATS document from a URL.
 
 ### `format`
 
-The document format, `tei` (default) or `jats`.
+The document format, `tei` (default), `jats`, or `docbook`.
 
 `format` controls the editor end-to-end: it selects the default built-in schema
 (unless you provide a custom [`schema`](#schema)), changes the HTML custom-element
-prefix used in the editor (`tei-` / `jats-`), and switches the XML import/export
+prefix used in the editor (`tei-` / `jats-` / `db-`), and switches the XML import/export
 rules.
 
 In particular:
@@ -36,6 +36,9 @@ In particular:
   defaults for notes/anchors.
 - `jats` assumes JATS-style markup in no default XML namespace (export/import
   uses an empty namespace) and uses JATS defaults for notes/anchors.
+- `docbook` assumes DocBook 5 articles with namespace
+  `http://docbook.org/ns/docbook`, prefix `db-`, and preserves `<info>` on
+  round-trip. DocBook `note` is an admonition (not a footnote).
 
 `format` is *observed*, so changing the attribute will rebuild the editor using
 the other built-in defaults (but if you set `schema`, your custom schema remains).

@@ -103,6 +103,7 @@
                 newBtn.addEventListener('click', async (event) => {
                     event.preventDefault();
                     if (localStore) {
+                        localStore.cancelRestoreOffer();
                         const existing = await localStore.getRecord();
                         if (existing?.xml) {
                             const ok = await jinnToastConfirm(

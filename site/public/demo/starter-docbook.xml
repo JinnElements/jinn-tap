@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<article xmlns="http://docbook.org/ns/docbook"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.0" xml:lang="en">
+    <info>
+        <title>Getting started with DocBook</title>
+        <author>
+            <orgname>JinnTap</orgname>
+        </author>
+        <abstract>
+            <para>A short sample article for the DocBook editor.</para>
+        </abstract>
+    </info>
+    <section xml:id="intro">
+        <title>Getting started</title>
+        <para>This is a paragraph. Select a word and try a toolbar button —
+            <emphasis>emphasis</emphasis>,
+            <emphasis role="bold">bold</emphasis>, or a
+            <link xlink:href="https://docbook.org/">link</link>.</para>
+        <note>
+            <para>DocBook <tag>note</tag> elements are admonitions (callouts), not footnotes.</para>
+        </note>
+        <itemizedlist>
+            <listitem>
+                <para>A top-level list item</para>
+            </listitem>
+            <listitem>
+                <para>Press <emphasis role="bold">Tab</emphasis> to nest — and
+                    <emphasis role="bold">Shift-Tab</emphasis> to move back out</para>
+            </listitem>
+        </itemizedlist>
+        <para>Configure paths in <filename>config.json</filename> using the
+            <code>data</code> property. Open the <guilabel>Profiles</guilabel> tab and click
+            <guibutton>Apply</guibutton>.</para>
+        <figure>
+            <title>A sample figure</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="https://placehold.co/320x200" />
+                </imageobject>
+            </mediaobject>
+        </figure>
+        <programlisting language="json" xml:space="preserve"><![CDATA[
+  "defaults": {
+    "data": "data"
+  }
+]]></programlisting>
+        <section xml:id="nested">
+            <title>A nested section</title>
+            <para>A new section becomes a child of the section you are in. Use
+                <productname>JinnTap</productname> breadcrumbs and <emphasis role="bold">Move Up</emphasis>
+                to restructure.</para>
+            <variablelist>
+                <varlistentry>
+                    <term><code>data</code></term>
+                    <listitem>
+                        <para>Location of the data collection.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term><code>data-default</code></term>
+                    <listitem>
+                        <para>Entry-point subcollection for browsing.</para>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+            <informaltable>
+                <thead>
+                    <tr>
+                        <td>Task</td>
+                        <td>Description</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Edit</td>
+                        <td>
+                            <link linkend="intro">Jump to the introduction</link>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Export</td>
+                        <td>Read <code>.xml</code> for a round-tripped DocBook article</td>
+                    </tr>
+                </tbody>
+            </informaltable>
+        </section>
+    </section>
+</article>

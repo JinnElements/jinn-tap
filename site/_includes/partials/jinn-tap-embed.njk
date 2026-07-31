@@ -1,6 +1,8 @@
 <div class="jinn-tap-embed"{% if height %} style="--jinn-tap-embed-height: {{ height }}"{% endif %}>{%- set fmt = format or 'tei' -%}
 {%- if fmt == 'jats' and not documentUrl -%}
   {%- set docUrl = '/demo/starter-jats.xml' -%}
+{%- elif fmt == 'docbook' and not documentUrl -%}
+  {%- set docUrl = '/demo/starter-docbook.xml' -%}
 {%- elif documentUrl -%}
   {%- set docUrl = documentUrl -%}
 {%- else -%}

@@ -1,0 +1,343 @@
+/* DocBook Editor Styles — db-* custom elements */
+
+db-section,
+db-para,
+db-listitem,
+db-title,
+db-subtitle,
+db-note,
+db-important,
+db-programlisting,
+db-synopsis,
+db-epigraph,
+db-figure,
+db-variablelist,
+db-varlistentry,
+db-term,
+db-procedure,
+db-step,
+db-itemizedlist,
+db-orderedlist {
+    display: block;
+}
+
+db-title {
+    font-weight: 700;
+    line-height: 1.125;
+}
+
+db-section > db-title {
+    margin-top: 3rem;
+    font-size: 2.25rem;
+}
+
+.tiptap > db-section:first-child > db-title:first-child {
+    margin-top: 0;
+}
+
+db-section > db-section > db-title {
+    font-style: italic;
+    font-size: 1.75rem;
+    line-height: 1.15;
+    margin-top: 2.625rem;
+}
+
+db-section > db-section > db-section > db-title {
+    font-size: 1.5rem;
+    line-height: 1.175;
+    margin-top: 2.25rem;
+}
+
+db-section > db-section > db-section > db-section > db-title {
+    font-size: 1.25rem;
+    line-height: 1.2;
+    margin-top: 1.874rem;
+}
+
+db-subtitle {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #555;
+    margin-top: 0.25rem;
+}
+
+db-section {
+    border-right: 2px solid var(--tei-div-color-0);
+    margin-right: 2px;
+    padding-right: 4px;
+}
+
+db-section > db-section {
+    border-right: 2px solid var(--tei-div-color-1);
+}
+
+db-section > db-section > db-section {
+    border-right: 2px solid var(--tei-div-color-2);
+}
+
+db-section > db-section > db-section > db-section {
+    border-right: 2px solid var(--tei-div-color-3);
+}
+
+db-para {
+    margin: 0.5em 0;
+    position: relative;
+}
+
+db-emphasis {
+    font-style: italic;
+}
+
+db-emphasis[role='bold'] {
+    font-style: normal;
+    font-weight: bold;
+}
+
+db-code,
+db-filename,
+db-tag,
+db-parameter,
+db-option,
+db-command,
+db-function,
+db-varname,
+db-envar {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.9em;
+}
+
+db-code,
+db-tag,
+db-filename {
+    background: #f0f0f0;
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+}
+
+db-guilabel,
+db-guibutton,
+db-guimenuitem {
+    font-weight: 600;
+}
+
+db-guibutton::before {
+    content: '[';
+}
+
+db-guibutton::after {
+    content: ']';
+}
+
+db-productname {
+    font-weight: 600;
+}
+
+db-note,
+db-important {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid #047878;
+    background: #f4fafa;
+}
+
+db-important {
+    border-left-color: #c45c26;
+    background: #fdf6f0;
+}
+
+db-note:not(:has(> db-title))::before {
+    content: 'Note';
+    display: block;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+    color: #047878;
+}
+
+db-important:not(:has(> db-title))::before {
+    content: 'Important';
+    display: block;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+    color: #c45c26;
+}
+
+db-note > db-title,
+db-important > db-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0 0 0.35rem;
+    line-height: 1.25;
+}
+
+db-note > db-title {
+    color: #047878;
+}
+
+db-important > db-title {
+    color: #c45c26;
+}
+
+db-programlisting {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+db-synopsis {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    white-space: pre-wrap;
+    margin: 0.5rem 0;
+}
+
+db-epigraph {
+    margin: 1rem 2rem;
+    font-style: italic;
+    color: #555;
+}
+
+db-figure {
+    display: block;
+    margin: 1rem 0;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+db-figure > img {
+    display: block;
+    margin: 0 auto;
+    cursor: pointer;
+    max-width: 100%;
+}
+
+db-figure > db-title {
+    display: block;
+    text-align: right;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+}
+
+db-itemizedlist {
+    list-style-type: disc;
+    margin: 1em 0;
+    padding-left: 2em;
+}
+
+db-orderedlist {
+    list-style-type: decimal;
+    margin: 1em 0;
+    padding-left: 2em;
+}
+
+db-listitem {
+    display: list-item;
+    list-style-position: outside;
+    margin: 0.5em 0;
+}
+
+db-variablelist {
+    margin: 1em 0;
+}
+
+db-varlistentry {
+    margin: 0.75em 0;
+}
+
+db-term {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+db-varlistentry > db-listitem {
+    display: block;
+    list-style: none;
+    margin-left: 1.5rem;
+}
+
+db-procedure {
+    margin: 1em 0;
+    padding-left: 1.5em;
+    counter-reset: db-step;
+}
+
+db-step {
+    counter-increment: db-step;
+    margin: 0.75em 0;
+    position: relative;
+}
+
+db-step::before {
+    content: counter(db-step) '.';
+    position: absolute;
+    left: -1.5em;
+    font-weight: 700;
+}
+
+db-para.is-empty::before {
+    color: #adb5bd;
+    content: attr(data-placeholder);
+    position: absolute;
+    height: 0;
+    pointer-events: none;
+}
+
+a.reference::after {
+    content: '↗';
+    margin-left: 4px;
+    font-size: 0.75rem;
+    vertical-align: super;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-block;
+    pointer-events: auto;
+    position: relative;
+    z-index: 1;
+}
+
+a.reference:hover::after {
+    color: #004499;
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.ProseMirror-selectednode {
+    outline: 2px solid var(--pico-primary, var(--accent, #047878));
+}
+
+.table-menu {
+    .divider::before {
+        content: '';
+        height: 2rem;
+        border-left: 4px solid var(--pico-table-border-color);
+        border-radius: 2px;
+        display: block;
+    }
+}
+
+.selectedCell {
+    background-color: var(--pico-form-element-selected-background-color);
+}
+
+.debug *::after {
+    display: inline-block;
+    max-width: 7ch;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    border-radius: 4px;
+    margin-left: 2px;
+    padding: 2px 6px;
+    font-size: 0.65rem;
+    font-weight: normal;
+    color: white;
+    vertical-align: middle;
+}

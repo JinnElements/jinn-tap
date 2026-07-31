@@ -81,11 +81,38 @@ export const JATS_FORMAT = {
 };
 
 /**
+ * DocBook 5 Format Configuration
+ * DocBook articles as used by TEI Publisher documentation
+ */
+export const DOCBOOK_FORMAT = {
+    namespace: 'http://docbook.org/ns/docbook',
+    rootElement: 'article',
+    bodyWrapper: 'article',
+    prefix: 'db-',
+    notesWrapper: null, // no end-of-document footnote bag; note is an admonition
+    noteName: null,
+    anchorName: null,
+    linkDirection: 'anchor-to-note',
+    mapIdToXmlId: true,
+    newDocumentTemplate: () => `<article xmlns="http://docbook.org/ns/docbook"
+        xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+        <info>
+            <title>Untitled</title>
+        </info>
+        <section>
+            <title>Section</title>
+            <para/>
+        </section>
+    </article>`,
+};
+
+/**
  * Format registry - maps format identifiers to format configurations
  */
 export const FORMATS = {
     tei: TEI_FORMAT,
     jats: JATS_FORMAT,
+    docbook: DOCBOOK_FORMAT,
 };
 
 /**

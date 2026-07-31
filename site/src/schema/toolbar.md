@@ -75,3 +75,5 @@ JATS defines only <code>Blocks</code>.
 </ul>
 
 JATS global buttons: {% for name in jatsSchema.globalToolbar %}<code>{{ name }}</code>{% if not loop.last %}, {% endif %}{% endfor %}.
+
+DocBook global buttons: {% for name in docbookSchema.globalToolbar %}<code>{{ name }}</code>{% if not loop.last %}, {% endif %}{% endfor %}.

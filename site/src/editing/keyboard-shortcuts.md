@@ -8,7 +8,7 @@ permalink: /editing/keyboard-shortcuts/index.html
 # Keyboard shortcuts
 
 Element shortcuts are **defined in the schema**, so they depend on the active
-format (`tei` or `jats`) and any custom [`schema`](/api/attributes#schema). The tables
+format (`tei`, `jats`, or `docbook`) and any custom [`schema`](/api/attributes#schema). The tables
 below list the defaults from each of the two built-in schemas. `Mod` is <kbd>⌘</kbd> on
 macOS and <kbd>Ctrl</kbd> elsewhere.
 

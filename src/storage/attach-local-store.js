@@ -28,6 +28,7 @@ import { deduceDocumentName, isGenericTitle, isProvisionalTitle } from './docume
  * @property {(name: string) => Promise<StoredDocument>} rename
  * @property {(xml: string, opts?: { filename?: string }) => Promise<StoredDocument>} loadDocument
  * @property {() => Promise<void>} clear
+ * @property {() => void} cancelRestoreOffer
  * @property {() => Promise<StoredDocument|undefined>} getRecord
  * @property {() => Promise<StoredDocument>} saveNow
  */
@@ -58,8 +59,24 @@ export async function attachLocalStore(editor, options = {}) {
     let detached = false;
     let restored = false;
     let suppressingSave = false;
+    /** Incremented to invalidate an in-flight restore prompt (upload, edit, clear, …). */
+    let restoreOfferId = 0;
     /** @type {StoredDocument|undefined} */
     let pendingDraft;
+
+    const dismissRestorePrompt = () => {
+        document.dispatchEvent(new CustomEvent('jinn-toast-dismiss'));
+    };
+
+    /**
+     * Drop a pending restore offer without deleting whatever is now in the store
+     * (e.g. a freshly uploaded document). Also closes any open confirm toast.
+     */
+    const supersedeRestoreOffer = () => {
+        restoreOfferId += 1;
+        pendingDraft = undefined;
+        dismissRestorePrompt();
+    };
 
     const emitName = (name) => {
         currentName = name;
@@ -113,6 +130,12 @@ export async function attachLocalStore(editor, options = {}) {
     };
 
     const onContentChange = (event) => {
+        // Editing (or any content replace) while the restore toast is open means
+        // the user chose the current document — cancel the prompt without wiping
+        // a newer save.
+        if (pendingDraft && !suppressingSave) {
+            supersedeRestoreOffer();
+        }
         scheduleSave(event.detail?.xml);
     };
 
@@ -148,7 +171,11 @@ export async function attachLocalStore(editor, options = {}) {
     };
 
     const offerRestore = async () => {
+        const offerId = ++restoreOfferId;
         const existing = await store.get(documentId);
+        if (offerId !== restoreOfferId) {
+            return false;
+        }
         if (!existing?.xml) {
             return false;
         }
@@ -157,12 +184,18 @@ export async function attachLocalStore(editor, options = {}) {
         let shouldRestore = autoRestore;
         if (!autoRestore && onDraftAvailable) {
             shouldRestore = Boolean(await onDraftAvailable(existing));
+            // Upload / edit / clear may have superseded this offer while the toast was open
+            if (offerId !== restoreOfferId) {
+                return false;
+            }
             if (!shouldRestore) {
                 // User declined — drop the draft so we do not prompt again on reload
                 await store.delete(documentId);
                 pendingDraft = undefined;
                 return false;
             }
+        } else if (offerId !== restoreOfferId) {
+            return false;
         }
 
         if (shouldRestore) {
@@ -187,9 +220,10 @@ export async function attachLocalStore(editor, options = {}) {
         });
 
     await waitUntilReady();
-    await offerRestore();
-
+    // Listen before offering restore so toolbar actions (upload, etc.) work while
+    // the confirm toast is open — do not block attach on the user's answer.
     editor.addEventListener('content-change', onContentChange);
+    void offerRestore().catch((err) => console.error('jinntap local store restore failed', err));
 
     return {
         store,
@@ -203,6 +237,7 @@ export async function attachLocalStore(editor, options = {}) {
         detach() {
             detached = true;
             clearTimeout(timer);
+            supersedeRestoreOffer();
             editor.removeEventListener('content-change', onContentChange);
         },
         async restore(record) {
@@ -241,6 +276,7 @@ export async function attachLocalStore(editor, options = {}) {
             if (!xml) {
                 throw new Error('Document XML must not be empty');
             }
+            supersedeRestoreOffer();
             nameLocked = false;
             suppressingSave = true;
             try {
@@ -276,10 +312,15 @@ export async function attachLocalStore(editor, options = {}) {
             }
         },
         async clear() {
+            supersedeRestoreOffer();
             clearTimeout(timer);
             await store.delete(documentId);
             nameLocked = false;
             emitName('Untitled Document');
+        },
+        /** Cancel an open restore prompt without deleting the current store record. */
+        cancelRestoreOffer() {
+            supersedeRestoreOffer();
         },
         async getRecord() {
             return store.get(documentId);

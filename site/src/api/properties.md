@@ -50,7 +50,7 @@ not preserved — see <a href="{{ '/guide/usage/' | prefixUrl }}#reading-content
 
 ## `format`
 
-The active format (`'tei'` or `'jats'`). Set at initialization via the
+The active format (`'tei'`, `'jats'`, or `'docbook'`). Set at initialization via the
 [`format`](/api/attributes#format) attribute.
 
 ```js

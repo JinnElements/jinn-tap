@@ -128,14 +128,29 @@ export const JinnTapCommands = Extension.create({
             insertFigure:
                 () =>
                 ({ state, commands }) => {
+                    const placeholder = 'https://placehold.co/320x200';
+
+                    // DocBook: figure → title + imagedata@fileref
+                    if (state.schema.nodes.imagedata) {
+                        commands.insertContent({
+                            type: 'figure',
+                            attrs: {},
+                            content: [
+                                { type: 'title', content: [{ type: 'text', text: 'Description' }] },
+                                { type: 'imagedata', attrs: { fileref: placeholder } },
+                            ],
+                        });
+                        return true;
+                    }
+
                     // Use 'fig' and 'caption' for JATS, 'figure' and 'head' for TEI
                     const figNodeType = state.schema.nodes.fig;
                     const captionNodeType = state.schema.nodes.caption;
 
                     const containerNodeType = figNodeType ? 'fig' : 'figure';
                     const descriptionNodeType = captionNodeType ? 'caption' : 'head';
-                    const placeholder = 'https://placehold.co/320x200';
                     const graphicAttrs = figNodeType ? { 'xlink:href': placeholder } : { url: placeholder };
+                    const graphicType = state.schema.nodes.graphic ? 'graphic' : 'imagedata';
 
                     // JATS caption is `p+`; TEI head/figDesc are `inline*`
                     const descSpec = state.schema.nodes[descriptionNodeType]?.spec?.content || 'inline*';
@@ -148,7 +163,7 @@ export const JinnTapCommands = Extension.create({
                         type: containerNodeType,
                         attrs: {},
                         content: [
-                            { type: 'graphic', attrs: graphicAttrs },
+                            { type: graphicType, attrs: graphicAttrs },
                             { type: descriptionNodeType, content: descriptionContent },
                         ],
                     });

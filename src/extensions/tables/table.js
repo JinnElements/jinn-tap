@@ -100,11 +100,14 @@ export const JinnTable = Node.create({
         /**
          * @type {import('@tiptap/core/dist/types').Attributes}
          */
+        const prefix = this.options.prefix || 'tei-';
+        const rowTag = `${prefix}row`;
+        const cellTag = `${prefix}cell`;
         const attributes = {};
         attributes.rows = {
             default: null,
             parseHTML: (element) => {
-                return Array.from(element.children).filter((child) => child.localName === 'tei-row').length;
+                return Array.from(element.children).filter((child) => child.localName === rowTag).length;
             },
             renderHTML: (attrs) => {
                 return attrs.rows;
@@ -113,13 +116,13 @@ export const JinnTable = Node.create({
         attributes.cols = {
             default: null,
             parseHTML: (element) => {
-                const firstRow = [...element.children].find((child) => child.localName === 'tei-row');
+                const firstRow = [...element.children].find((child) => child.localName === rowTag);
 
                 if (!firstRow) {
                     return null;
                 }
 
-                const cells = [...firstRow.children].filter((child) => child.localName === 'tei-cell');
+                const cells = [...firstRow.children].filter((child) => child.localName === cellTag);
                 // Note colspanning cells. They take more room. We take the
                 // first row so there are no rowspanning cells 'coming from
                 // above'

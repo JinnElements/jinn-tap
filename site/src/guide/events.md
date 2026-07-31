@@ -35,9 +35,21 @@ editor.addEventListener('ready', () => {
 });
 ```
 
+## `content-error`
+
+Fired when imported markup does not fit the schema and elements are dropped
+(including known tags in an invalid place, which ProseMirror strips silently).
+See [Events API → content-error](/api/events#content-error).
+
+```js
+editor.addEventListener('content-error', (event) => {
+  console.warn(event.detail.message);
+});
+```
+
 ## Toast notifications
 
-Informational and error messages (e.g. "some markup may be lost", authority
+Informational and error messages (e.g. "some markup was dropped", authority
 notices) are surfaced through a `jinn-toast` custom event on `document`, rendered by
 the `<jinn-toast>` element. Include one in your page to display them:
 

@@ -61,6 +61,15 @@ schema.
   {% for row in jatsSchema.typeCountsList %}<li><code>{{ row.type }}</code> — {{ row.count }} element(s)</li>{% endfor %}
 </ul>
 
-<p><em>{{ jatsSchema.elementCount }} elements total. Full catalogs:
+<p><em>{{ jatsSchema.elementCount }} elements total.</em></p>
+
+### DocBook (`src/docbook-schema.json`)
+
+<ul>
+  {% for row in docbookSchema.typeCountsList %}<li><code>{{ row.type }}</code> — {{ row.count }} element(s)</li>{% endfor %}
+</ul>
+
+<p><em>{{ docbookSchema.elementCount }} elements total. Full catalogs:
 <a href="{{ '/schema/elements/' | prefixUrl }}#tei-catalog">TEI</a> ·
-<a href="{{ '/schema/elements/' | prefixUrl }}#jats-catalog">JATS</a>.</em></p>
+<a href="{{ '/schema/elements/' | prefixUrl }}#jats-catalog">JATS</a> ·
+<a href="{{ '/schema/elements/' | prefixUrl }}#docbook-catalog">DocBook</a>.</em></p>

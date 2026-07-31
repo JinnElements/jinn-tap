@@ -18,7 +18,7 @@ function getAssetStore(editor) {
  * @returns {string}
  */
 function graphicHref(node) {
-    return node.attrs['xlink:href'] || node.attrs.url || '';
+    return node.attrs['xlink:href'] || node.attrs.url || node.attrs.fileref || '';
 }
 
 /**

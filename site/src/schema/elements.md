@@ -12,7 +12,7 @@ documents every property an entry may carry, then lists the catalogs from both b
 schemas.
 
 <aside class="callout callout-info">
-JinnTap ships two schemas, selected by the
+JinnTap ships three schemas, selected by the
 <a href="{{ '/api/attributes/' | prefixUrl }}#format"><code>format</code></a> attribute:
 
 <ul>
@@ -22,6 +22,9 @@ JinnTap ships two schemas, selected by the
   <li><strong>JATS</strong> (<code>format="jats"</code>) —
     <a href="https://github.com/JinnElements/jinn-tap/blob/main/src/jats-schema.json"><code>src/jats-schema.json</code></a>
     — {{ jatsSchema.elementCount }} elements</li>
+  <li><strong>DocBook</strong> (<code>format="docbook"</code>) —
+    <a href="https://github.com/JinnElements/jinn-tap/blob/main/src/docbook-schema.json"><code>src/docbook-schema.json</code></a>
+    — {{ docbookSchema.elementCount }} elements</li>
 </ul>
 
 Switching `format` also switches the editor’s XML handling:
@@ -33,6 +36,9 @@ Switching `format` also switches the editor’s XML handling:
 - **JATS** (`format="jats"`): assumes no default XML namespace, emits/reads
   editor custom elements prefixed with `jats-` (e.g. `<jats-sec>`), and uses
   JATS defaults for notes/anchors (`fn` + `xref` with `anchor.rid → note.id`).
+- **DocBook** (`format="docbook"`): uses the DocBook 5 namespace
+  `http://docbook.org/ns/docbook`, prefix `db-`, preserves `<info>` on
+  round-trip, and treats `note` as an admonition (no footnote plumbing).
 
 Supply a custom file with the
 <a href="{{ '/api/attributes/' | prefixUrl }}#schema"><code>schema</code></a> attribute to
@@ -103,6 +109,13 @@ Default when `format` is omitted or set to `tei`. **{{ schema.elementCount }} el
 Used when `format="jats"`. **{{ jatsSchema.elementCount }} elements**.
 
 {% set catalog = jatsSchema %}
+{% include "partials/schema-element-table.njk" %}
+
+<h3 id="docbook-catalog">DocBook — <code>src/docbook-schema.json</code></h3>
+
+Used when `format="docbook"`. **{{ docbookSchema.elementCount }} elements**.
+
+{% set catalog = docbookSchema %}
 {% include "partials/schema-element-table.njk" %}
 
 <p><small><strong>Flags:</strong> D = defining, S = selectable, C = <a href="{{ '/schema/conditional-types/' | prefixUrl }}">conditional</a>, T = has a toolbar button, 🔌 = has an authority <a href="{{ '/schema/attributes/' | prefixUrl }}#connectors">connector</a>.</small></p>

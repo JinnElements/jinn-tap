@@ -17,7 +17,8 @@ export const JinnReference = JinnInline.extend({
             });
 
             // Set up the anchor element (TEI: target, JATS: xlink:href)
-            const targetUrl = mark.attrs.target || mark.attrs['xlink:href'] || '#';
+            const targetUrl =
+                mark.attrs.target || mark.attrs['xlink:href'] || (mark.attrs.linkend ? `#${mark.attrs.linkend}` : '#');
             dom.href = targetUrl;
             dom.title = targetUrl;
             dom.target = '_blank';

@@ -8,7 +8,7 @@
 <main class="home">
   <section class="hero">
     <div class="hero__copy">
-      <p class="eyebrow">Any XML schema, starting with TEI &amp; JATS</p>
+      <p class="eyebrow">Any XML schema, starting with TEI, JATS &amp; DocBook</p>
       <h1>Rich text editing, directly on your XML</h1>
       <p class="lede">
         A rich-text editor web component where the content in the editor maps directly onto the
@@ -112,6 +112,12 @@
         <h3 class="try-it__label">JATS</h3>
         <p>Same content as above, but in <a href="https://www.niso.org/publications/z3996-2024-jats">JATS</a> format:</p>
         {% set format = "jats" %}
+        {% include "partials/jinn-tap-embed.njk" %}
+      </div>
+      <div class="try-it__demo">
+        <h3 class="try-it__label">DocBook</h3>
+        <p>A DocBook&nbsp;5 article — the vocabulary used by TEI Publisher’s own documentation:</p>
+        {% set format = "docbook" %}
         {% include "partials/jinn-tap-embed.njk" %}
       </div>
       <jinn-toast></jinn-toast>

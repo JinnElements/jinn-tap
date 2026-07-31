@@ -6,6 +6,7 @@ import CollaborationCaret from '@tiptap/extension-collaboration-caret';
 import { HocuspocusProvider } from '@hocuspocus/provider';
 import { serialize } from './util/serialize.js';
 import { synthesizeUnknownEntries } from './util/unknown-elements.js';
+import { findSchemaViolations, formatSchemaViolationsMessage } from './util/content-loss.js';
 import { createFromSchema } from './extensions/extensions.js';
 import { FootnoteRules } from './extensions/footnote.js';
 import { InputRules } from './extensions/input-rules.js';
@@ -21,8 +22,15 @@ import { generateUsername } from 'unique-username-generator';
 import xmlFormat from 'xml-formatter';
 import schema from './tei-schema.json';
 import jatsSchema from './jats-schema.json';
+import docbookSchema from './docbook-schema.json';
 import './jinn-tap.css';
 import { TableMenu } from './extensions/tables/TableMenu.js';
+
+const DEFAULT_SCHEMAS = {
+    tei: schema,
+    jats: jatsSchema,
+    docbook: docbookSchema,
+};
 
 /**
  * JinnTap - A TEI XML Editor Web Component
@@ -158,7 +166,7 @@ export class JinnTap extends HTMLElement {
      * @returns {Object} Schema object
      */
     getDefaultSchema() {
-        return this._format === 'jats' ? jatsSchema : schema;
+        return DEFAULT_SCHEMAS[this._format] || schema;
     }
 
     /**
@@ -170,7 +178,7 @@ export class JinnTap extends HTMLElement {
         const format = formatId || this._format;
         // Only update if schema wasn't explicitly set via attribute
         if (!this.hasAttribute('schema')) {
-            this._schema = format === 'jats' ? jatsSchema : schema;
+            this._schema = DEFAULT_SCHEMAS[format] || schema;
             this._schemaUrl = null;
             // If editor is already initialized, recreate it with new schema
             if (recreateEditor && this.editor && this._initialized) {
@@ -319,7 +327,7 @@ export class JinnTap extends HTMLElement {
                         'Format must be set before loading XML content. Use the format attribute when creating the editor.',
                     );
                 }
-                const parsed = importXml(xml, this._format);
+                const parsed = importXml(xml, this._format, this._schema);
                 content = parsed.content;
                 this.document = parsed.doc;
             } else if (contentType?.includes('text/html')) {
@@ -332,7 +340,7 @@ export class JinnTap extends HTMLElement {
                 this.content = content;
                 // Update footnote references after content is loaded
                 setTimeout(() => {
-                    if (this.editor) {
+                    if (this.editor?.commands?.updateNotes) {
                         this.editor.commands.updateNotes();
                     }
                 }, 0);
@@ -447,7 +455,7 @@ export class JinnTap extends HTMLElement {
         this._applySchemaStylesheet();
 
         // Generate CSS for schema colors
-        const colorCss = colorCssFromSchema(this._schema);
+        const colorCss = colorCssFromSchema(this._schema, getFormat(this._format).prefix);
         let style = document.getElementById('jinn-tap-color-css');
         if (!style) {
             style = document.createElement('style');
@@ -633,11 +641,14 @@ export class JinnTap extends HTMLElement {
 
         this._applyUnknownElements(initialContent, format.prefix);
 
-        const extensions = createFromSchema(this._schema, format.prefix, format.notesWrapper || 'listAnnotation', {
-            noteName: format.noteName || 'note',
-            anchorName: format.anchorName || 'anchor',
-            linkDirection: format.linkDirection || 'note-to-anchor',
-        });
+        const footnoteOptions = format.noteName
+            ? {
+                  noteName: format.noteName,
+                  anchorName: format.anchorName || 'anchor',
+                  linkDirection: format.linkDirection || 'note-to-anchor',
+              }
+            : {};
+        const extensions = createFromSchema(this._schema, format.prefix, format.notesWrapper, footnoteOptions);
 
         if (this.collaboration) {
             // configure Y.js document and provider if collaboration is enabled
@@ -670,34 +681,43 @@ export class JinnTap extends HTMLElement {
                 // }
             });
         }
-        const editorConfig = {
-            element: this.querySelector('.editor-area'),
-            parseOptions,
-            extensions: [
-                ...extensions,
-                InputRules,
-                JinnTapCommands,
+        const editorExtensions = [...extensions, InputRules, JinnTapCommands];
+        if (format.noteName && format.notesWrapper) {
+            editorExtensions.push(
                 FootnoteRules.configure({
-                    notesWrapper: format.notesWrapper || 'listAnnotation',
+                    notesWrapper: format.notesWrapper,
                     notesWithoutAnchor: this.notes !== 'connected',
-                    noteName: format.noteName || 'note',
+                    noteName: format.noteName,
                     anchorName: format.anchorName || 'anchor',
                     linkDirection: format.linkDirection || 'note-to-anchor',
                 }),
-                Placeholder.configure({
-                    placeholder: 'Write something...',
-                    includeChildren: true,
-                }),
-            ],
+            );
+        }
+        editorExtensions.push(
+            Placeholder.configure({
+                placeholder: 'Write something...',
+                includeChildren: true,
+            }),
+        );
+
+        const editorConfig = {
+            element: this.querySelector('.editor-area'),
+            parseOptions,
+            extensions: editorExtensions,
             autofocus: false,
             onCreate: () => {
                 this._initialized = true;
                 // Trigger footnote reference update on initial load
                 setTimeout(() => {
-                    if (this.editor) {
+                    if (this.editor?.commands?.updateNotes) {
                         this.editor.commands.updateNotes();
                     }
                 }, 0);
+                // TipTap only errors on *unknown* tags; known tags in the wrong
+                // place are stripped silently — surface that after first paint.
+                if (typeof initialContent === 'string' && initialContent) {
+                    this._warnIfContentLost(initialContent);
+                }
                 this.dispatchEvent(new CustomEvent('ready'));
             },
             onTransaction: ({ editor, transaction }) => {
@@ -706,24 +726,11 @@ export class JinnTap extends HTMLElement {
                 }
             },
             enableContentCheck: true,
-            onContentError({ editor, error, disableCollaboration }) {
-                const errorMessage = error.cause ? error.cause.message : error.message;
-                let toastMessage;
-                if (this.collaboration) {
-                    toastMessage = `Content does not match schema. Switching to read-only mode. ${errorMessage}`;
-                } else {
-                    toastMessage = `Content does not match schema. Some markup may be lost on save. ${errorMessage}`;
-                }
-                document.dispatchEvent(
-                    new CustomEvent('jinn-toast', {
-                        detail: {
-                            message: toastMessage,
-                            type: 'error',
-                            nohtml: true,
-                            sticky: true,
-                        },
-                    }),
-                );
+            onContentError: ({ editor, error, disableCollaboration }) => {
+                this._reportContentError(error.cause ? error.cause.message : error.message, {
+                    error,
+                    disableCollaboration,
+                });
                 if (this.collaboration) {
                     disableCollaboration();
                     editor.setEditable(false, false);
@@ -821,14 +828,65 @@ export class JinnTap extends HTMLElement {
             // collapse. Not 'full', which would also import insignificant indentation
             // between block elements as stray text nodes.
             this.editor.chain().focus().setContent(value, { parseOptions: { preserveWhitespace: true } }).setTextSelection(0).run();
+            this._warnIfContentLost(value);
         }
-        // Update footnote references after content is set
+        // Update footnote references after content is set (formats with footnotes only)
         setTimeout(() => {
-            if (this.editor) {
+            if (this.editor?.commands?.updateNotes) {
                 this.editor.commands.updateNotes();
             }
         }, 0);
         this.dispatchContentChange();
+    }
+
+    /**
+     * Warn when imported HTML nests known schema elements where the content
+     * expression forbids them (ProseMirror will lift/wrap/drop silently).
+     * @param {string} inputHtml
+     */
+    _warnIfContentLost(inputHtml) {
+        if (!this.editor || !inputHtml || typeof inputHtml !== 'string') {
+            return;
+        }
+        const format = getFormat(this._format);
+        const violations = findSchemaViolations(
+            inputHtml,
+            this.editor.schema,
+            this._schema,
+            format.prefix,
+        );
+        if (!violations.length) {
+            return;
+        }
+        this._reportContentError(formatSchemaViolationsMessage(violations), { violations });
+    }
+
+    /**
+     * Toast + `content-error` event for schema / parse problems.
+     * @param {string} message
+     * @param {Object} [detail]
+     */
+    _reportContentError(message, detail = {}) {
+        const fullMessage = this.collaboration
+            ? `Content does not match schema. Switching to read-only mode. ${message}`
+            : message;
+        console.warn('[jinn-tap]', fullMessage, detail);
+        document.dispatchEvent(
+            new CustomEvent('jinn-toast', {
+                detail: {
+                    message: fullMessage,
+                    type: 'error',
+                    nohtml: true,
+                    sticky: true,
+                },
+            }),
+        );
+        this.dispatchEvent(
+            new CustomEvent('content-error', {
+                detail: { message: fullMessage, ...detail },
+                bubbles: true,
+            }),
+        );
     }
 
     // Getter for the full XML content
@@ -855,7 +913,7 @@ export class JinnTap extends HTMLElement {
         if (!this._format) {
             throw new Error('Format must be set before setting XML content. Use the format attribute when creating the editor.');
         }
-        const { doc, content } = importXml(value, this._format);
+        const { doc, content } = importXml(value, this._format, this._schema);
         // Set the document before the content: loading content synthesizes schema
         // entries for unknown elements and recovers their original-case names from
         // this.document, so it must already point at the new source document.

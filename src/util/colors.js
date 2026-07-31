@@ -46,7 +46,11 @@ const hslToHex = (h, s, l) => {
     return `#${f(0)}${f(8)}${f(4)}`;
 };
 
-export function colorCssFromSchema(schema) {
+/**
+ * @param {Object} schema - Schema definition
+ * @param {string} [prefix='tei-'] - HTML custom-element prefix for the active format
+ */
+export function colorCssFromSchema(schema, prefix = 'tei-') {
     // Generate CSS variables for schema elements that need colors
     const baseColor = '#E48500';
     const colorVariables = {};
@@ -57,7 +61,6 @@ export function colorCssFromSchema(schema) {
 
     // Generate colors with different hues
     // Generate colors for nested divs (up to 5 levels)
-    const divColors = [];
     for (let i = 0; i < 5; i++) {
         const hue = (baseH + i * 40) % 360;
         const color = hslToHex(hue, baseS, baseL);
@@ -71,9 +74,9 @@ export function colorCssFromSchema(schema) {
 
         // rawDef may be an array of conditional definitions; check if any item is inline/empty
         const defs = Array.isArray(rawDef) ? rawDef : [rawDef];
-        if (defs.some(def => def.type === 'inline' || def.type === 'empty')) {
+        if (defs.some((def) => def.type === 'inline' || def.type === 'empty')) {
             cssStyles.push(`
-                .debug tei-${name}::after {
+                .debug ${prefix}${name}::after {
                     background-color: var(--tei-${name}-color);
                     content: "${name}";
                 }

@@ -7,16 +7,16 @@ permalink: /schema/adding-a-format/index.html
 
 # Adding a format
 
-JinnTap ships with two dialects — TEI and JATS — selected by the
+JinnTap ships with three dialects — TEI, JATS, and DocBook — selected by the
 [`format`](/api/attributes#format) attribute. Supporting another XML dialect means
 teaching the editor three things: how to wrap and prefix the document, which
 [schema JSON](/schema/) to load by default, and how to convert between that dialect’s
 XML and the editor’s HTML custom elements.
 
-Use TEI (`src/util/module-tei.xq`, `src/tei-schema.json`) and JATS
-(`src/util/module-jats.xq`, `src/jats-schema.json`) as templates. The checklist below
-walks through adding **DocBook** as a third format (`format="docbook"`). DocBook is
-not built in today — the snippets are illustrative only.
+Use TEI (`src/util/module-tei.xq`, `src/tei-schema.json`), JATS
+(`src/util/module-jats.xq`, `src/jats-schema.json`), and DocBook
+(`src/util/module-docbook.xq`, `src/docbook-schema.json`) as templates. The checklist
+below walks through the steps using a hypothetical fourth format.
 
 ## 1. Register the format config
 
@@ -25,28 +25,26 @@ Add an entry in
 and register it in `FORMATS`:
 
 ```js
-export const DOCBOOK_FORMAT = {
-  namespace: 'http://docbook.org/ns/docbook',
-  rootElement: 'article',
-  bodyWrapper: 'article',                 // fragment wrapper used on export
-  prefix: 'db-',                          // HTML custom elements: <db-sect1>, …
-  notesWrapper: 'bibliography',           // or a dedicated notes container in your schema
-  noteName: 'footnote',
-  anchorName: 'xref',
-  linkDirection: 'anchor-to-note',        // xref points at footnote (cf. JATS)
-  newDocumentTemplate: () => `<article xmlns="http://docbook.org/ns/docbook" version="5.0">
-    <title>Untitled</title>
-    <section>
-      <title>Section</title>
-      <para/>
-    </section>
-  </article>`,
+export const MY_FORMAT = {
+  namespace: 'http://example.org/ns',
+  rootElement: 'doc',
+  bodyWrapper: 'body',                 // fragment wrapper used on export
+  prefix: 'my-',                       // HTML custom elements: <my-sec>, …
+  notesWrapper: 'notes',               // or null if the dialect has no footnote bag
+  noteName: 'note',                    // or null
+  anchorName: 'ref',                   // or null
+  linkDirection: 'anchor-to-note',     // or 'note-to-anchor'
+  mapIdToXmlId: true,
+  newDocumentTemplate: () => `<doc xmlns="http://example.org/ns">
+    <body><sec><p/></sec></body>
+  </doc>`,
 };
 
 export const FORMATS = {
   tei: TEI_FORMAT,
   jats: JATS_FORMAT,
   docbook: DOCBOOK_FORMAT,
+  myformat: MY_FORMAT,
 };
 ```
 
@@ -55,24 +53,21 @@ export const FORMATS = {
 | `namespace` | Written onto the body wrapper on export when non-empty |
 | `prefix` | Prefix for editor custom elements (`tei-`, `jats-`, `db-`, …) |
 | `bodyWrapper` | Element that wraps the editable fragment during export |
-| `notesWrapper` / `noteName` / `anchorName` | Footnote plumbing passed into the editor extensions |
+| `notesWrapper` / `noteName` / `anchorName` | Footnote plumbing; set to `null` when the dialect has no footnotes (as DocBook does) |
 | `linkDirection` | `note-to-anchor` (note points at anchor) or `anchor-to-note` (anchor points at note) |
+| `mapIdToXmlId` | Emit editor `@id` as `xml:id` on serialize (TEI, DocBook) or plain `id` (JATS) |
 | `newDocumentTemplate` | Skeleton used when creating an empty document |
 
 `getFormat(formatId)` must return your config; unknown ids currently fall back to TEI.
-Exact note/xref wiring depends on how your dialect links footnotes — tune
-`noteName`, `anchorName`, and `linkDirection` to match.
 
 ## 2. Add a built-in schema
 
-1. Create `src/docbook-schema.json` — same top-level shape as
+1. Create `src/my-schema.json` — same top-level shape as
    [`src/tei-schema.json`](https://github.com/JinnElements/jinn-tap/blob/main/src/tei-schema.json)
-   (`css`, `attributes`, `toolbar`, `selects`, `schema`). Element keys are DocBook **local
-   names** (`section`, `para`, `emphasis`, `footnote`, …).
+   (`css`, `attributes`, `toolbar`, `selects`, `schema`).
 2. Import it in
    [`src/jinn-tap.js`](https://github.com/JinnElements/jinn-tap/blob/main/src/jinn-tap.js)
-   and extend `getDefaultSchema()` / `updateSchemaForFormat()` so
-   `format="docbook"` selects it (today those methods only special-case `jats`).
+   and add it to the `DEFAULT_SCHEMAS` map so your format selects it.
 
 Hosts can still override the built-in with the
 [`schema`](/api/attributes#schema) attribute; the format still controls prefix and
@@ -84,71 +79,36 @@ XML round-tripping is done by fontoxpath modules registered in
 [`src/util/xml.js`](https://github.com/JinnElements/jinn-tap/blob/main/src/util/xml.js).
 Each format needs its own module namespace URI so the correct transform is selected.
 
-1. Create `src/util/module-docbook.xq` with:
+1. Create `src/util/module-my.xq` with `jt:new-document`, `jt:import`, and `jt:export`
+   under a unique module namespace (see `module-docbook.xq` for a recent example).
+2. In `xml.js`: import/register the module and extend `MODULE_NAMESPACES`.
 
-   ```xquery
-   module namespace jt = 'http://jinntec.de/jinntap/docbook';
-
-   declare namespace db = 'http://docbook.org/ns/docbook';
-
-   declare function jt:new-document() as node() { … };
-   declare function jt:import($doc as node()) as node()* { … };
-   declare function jt:export($nodes as node()*, $input as document-node(), $meta as map(*)) as node()* { … };
-   ```
-
-2. In `xml.js`:
-   - `import docbookModule from './module-docbook.xq?raw'`
-   - `registerXQueryModule(docbookModule)`
-   - extend `getModuleNamespace('docbook')` to return that URI (and a distinct XQuery
-     prefix for `moduleImports`)
-
-**Import** must turn DocBook XML into HTML custom elements using your `prefix`
-(e.g. `<section>` → `<db-section>`, `<para>` → `<db-para>`), strip or relocate
-non-editable chrome (`info`, metadata), and place footnotes where the editor expects
-them.
+**Import** must turn dialect XML into HTML custom elements using your `prefix`,
+strip or relocate non-editable chrome (headers, `info`, …), and place footnotes
+where the editor expects them (if any).
 
 **Export** receives the serialized editor fragment (unprefixed XML local names),
-merges it back into the original document (`$input`), and restores the DocBook
+merges it back into the original document (`$input`), and restores the dialect
 namespace / wrappers.
 
 ## 4. Stylesheet via schema `css`
 
-Point the schema at a stylesheet with a top-level `css` property. Paths are
-resolved relative to the schema file (or against the library module for built-ins):
-
-```json
-{
-  "css": "./docbook-editor-styles.css",
-  "attributes": { },
-  "schema": { }
-}
-```
-
-Built-in examples:
+Point the schema at a stylesheet with a top-level `css` property. Built-in examples:
 
 - [`src/tei-editor-styles.css`](https://github.com/JinnElements/jinn-tap/blob/main/src/tei-editor-styles.css) — `tei-*`
 - [`src/jats-editor-styles.css`](https://github.com/JinnElements/jinn-tap/blob/main/src/jats-editor-styles.css) — `jats-*`
+- [`src/docbook-editor-styles.css`](https://github.com/JinnElements/jinn-tap/blob/main/src/docbook-editor-styles.css) — `db-*`
 
-`<jinn-tap>` injects the resolved URL as a `<link rel="stylesheet">`. Add e.g.
-`src/docbook-editor-styles.css` targeting `db-*`, set `"css": "./docbook-editor-styles.css"`
-in the schema, and ship the CSS next to the schema (the docs site copies package
-CSS via `scripts/copy-site-assets.js`).
-
-<aside class="callout callout-warning">
-<strong>Debug colours</strong>
-<code>src/util/colors.js</code> currently hard-codes the <code>tei-</code> prefix in
-generated debug CSS. Other formats need a small change there if you rely on debug
-mode for non-TEI markup.
-</aside>
+Ship the CSS via `scripts/copy-assets.js` and `scripts/copy-site-assets.js`.
 
 ## 5. Smoke-test the pipeline
 
-1. `<jinn-tap format="docbook"></jinn-tap>` — empty document from `jt:new-document()`.
-2. Load a real DocBook sample with `url` or `.xml = …` — import must produce `db-*`
+1. `<jinn-tap format="myformat"></jinn-tap>` — empty document from `jt:new-document()`.
+2. Load a real sample with `url` or `.xml = …` — import must produce prefixed
    elements that match your schema.
-3. Edit, then read `.xml` — export must restore a valid DocBook document.
-4. Optional: footnotes — verify `notesWrapper` / `linkDirection` against DocBook’s
-   `footnote` / `xref` model.
+3. Edit, then read `.xml` — export must restore a valid document.
+4. Optional: footnotes — verify `notesWrapper` / `linkDirection` (or confirm
+   `noteName: null` skips footnote plumbing, as DocBook does).
 
 ## What you do *not* need to change
 

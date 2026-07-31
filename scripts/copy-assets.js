@@ -4,6 +4,7 @@ import { dirname } from 'path';
 const FILES_TO_COPY = [
     { source: 'src/tei-editor-styles.css', dest: 'dist/tei-editor-styles.css' },
     { source: 'src/jats-editor-styles.css', dest: 'dist/jats-editor-styles.css' },
+    { source: 'src/docbook-editor-styles.css', dest: 'dist/docbook-editor-styles.css' },
     { source: 'src/jinn-tap.css', dest: 'dist/jinn-tap.css' },
     { source: 'site/public/jinntap-logo.png', dest: 'dist/jinntap-logo.png' },
     { source: 'site/public/jinntap-logo-128.png', dest: 'dist/jinntap-logo-128.png' },

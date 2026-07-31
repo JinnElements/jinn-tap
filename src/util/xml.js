@@ -2,30 +2,45 @@ import { parseXml } from './util';
 import { registerXQueryModule, evaluateXPathToNodes, evaluateXPath, evaluateXPathToFirstNode } from 'fontoxpath';
 import teiModule from './module-tei.xq?raw';
 import jatsModule from './module-jats.xq?raw';
+import docbookModule from './module-docbook.xq?raw';
 import { getFormat } from './xml-formats.js';
 
-// Register both modules at initialization - they use different namespace URIs
+// Register format modules at initialization — each uses a distinct namespace URI
 registerXQueryModule(teiModule); // namespace: http://jinntec.de/jinntap
 registerXQueryModule(jatsModule); // namespace: http://jinntec.de/jinntap/jats
+registerXQueryModule(docbookModule); // namespace: http://jinntec.de/jinntap/docbook
+
+const MODULE_NAMESPACES = {
+    tei: { namespace: 'http://jinntec.de/jinntap', prefix: 'jt' },
+    jats: { namespace: 'http://jinntec.de/jinntap/jats', prefix: 'jt-jats' },
+    docbook: { namespace: 'http://jinntec.de/jinntap/docbook', prefix: 'jt-docbook' },
+};
 
 /**
  * Get the module namespace URI and prefix based on format
- * @param {string} formatId - Format identifier ('tei', 'jats', etc.)
+ * @param {string} formatId - Format identifier ('tei', 'jats', 'docbook', etc.)
  * @returns {{namespace: string, prefix: string}}
  */
 function getModuleNamespace(formatId) {
-    if (formatId === 'jats') {
-        return {
-            namespace: 'http://jinntec.de/jinntap/jats',
-            prefix: 'jt-jats',
-        };
-    } else {
-        // Default to TEI
-        return {
-            namespace: 'http://jinntec.de/jinntap',
-            prefix: 'jt',
-        };
-    }
+    return MODULE_NAMESPACES[formatId?.toLowerCase()] || MODULE_NAMESPACES.tei;
+}
+
+/**
+ * Node factory for building editor HTML custom elements.
+ * HTML documents reject createCDATASection; map CDATA to text so imports of
+ * DocBook/TEI programlistings that use <![CDATA[…]]> still work.
+ * @param {Document} [doc=document]
+ */
+function htmlNodesFactory(doc = document) {
+    return {
+        createAttributeNS: (ns, name) => doc.createAttributeNS(ns, name),
+        createCDATASection: (data) => doc.createTextNode(data),
+        createComment: (data) => doc.createComment(data),
+        createDocument: () => doc.implementation.createDocument(null, null, null),
+        createElementNS: (ns, name) => doc.createElementNS(ns, name),
+        createProcessingInstruction: (target, data) => doc.createProcessingInstruction(target, data),
+        createTextNode: (data) => doc.createTextNode(data),
+    };
 }
 
 /**
@@ -44,20 +59,50 @@ function hasXmlSpacePreserve(el) {
 }
 
 /**
+ * Local element names (no format prefix) whose schema entries set preserveSpace.
+ * @param {Object|null|undefined} schemaDef
+ * @returns {Set<string>}
+ */
+function preserveSpaceLocalNames(schemaDef) {
+    const names = new Set();
+    if (!schemaDef?.schema) return names;
+    for (const [name, raw] of Object.entries(schemaDef.schema)) {
+        const defs = Array.isArray(raw) ? raw : [raw];
+        for (const def of defs) {
+            if (def?.preserveSpace) {
+                names.add(def.tagName || name);
+            }
+        }
+    }
+    return names;
+}
+
+/**
+ * Strip editor custom-element prefix (tei-/jats-/db-) for schema lookup.
+ * @param {Element} el
+ * @returns {string}
+ */
+function unprefixedLocalName(el) {
+    return (el.localName || '').replace(/^(tei|jats|db)-/, '');
+}
+
+/**
  * Collapse pretty-print whitespace from imported XML so indentation and
  * newlines between tags do not show up as editable text. Significant leading /
  * trailing spaces in mixed content are kept as a single space. Honours
- * `xml:space="preserve"`.
+ * `xml:space="preserve"` and schema `preserveSpace` element names.
  *
  * @param {Node} node
  * @param {boolean} [preserve=false]
+ * @param {Set<string>|null} [preserveLocals=null]
  */
-function normalizeImportWhitespace(node, preserve = false) {
+function normalizeImportWhitespace(node, preserve = false, preserveLocals = null) {
     if (node.nodeType === Node.ELEMENT_NODE) {
-        const preserveHere = preserve || hasXmlSpacePreserve(node);
+        const preserveHere =
+            preserve || hasXmlSpacePreserve(node) || Boolean(preserveLocals?.has(unprefixedLocalName(node)));
         // Copy first — we may remove children while iterating.
         for (const child of Array.from(node.childNodes)) {
-            normalizeImportWhitespace(child, preserveHere);
+            normalizeImportWhitespace(child, preserveHere, preserveLocals);
         }
         return;
     }
@@ -76,13 +121,52 @@ function normalizeImportWhitespace(node, preserve = false) {
 }
 
 /**
+ * If the XML string uses xlink:* attributes but never declares xmlns:xlink,
+ * inject the declaration on the root element so DOMParser succeeds.
+ * Recovers DocBook (and similar) documents saved before the export fix.
+ * @param {string} xml
+ * @returns {string}
+ */
+function ensureXlinkNamespace(xml) {
+    if (typeof xml !== 'string' || !/\bxlink:/.test(xml) || /xmlns:xlink\s*=/.test(xml)) {
+        return xml;
+    }
+    return xml.replace(/<([A-Za-z_][\w.-]*)(\s[^>]*)?>/, (match, name, attrs = '') => {
+        if (/\/\s*$/.test(attrs) || attrs.includes('xmlns:xlink')) {
+            return match;
+        }
+        return `<${name}${attrs} xmlns:xlink="http://www.w3.org/1999/xlink">`;
+    });
+}
+
+const XLINK_NS = 'http://www.w3.org/1999/xlink';
+
+/**
+ * DocBook: keep a single xmlns:xlink on &lt;article&gt;. XMLSerializer often
+ * re-declares it on every &lt;link&gt; and then drops the unused root binding.
+ * @param {string} xml
+ * @returns {string}
+ */
+function hoistDocbookXlinkNamespace(xml) {
+    if (typeof xml !== 'string' || !/<article\b/.test(xml)) {
+        return xml;
+    }
+    const stripped = xml.replace(/\sxmlns:xlink="[^"]*"/g, '');
+    return stripped.replace(/<article\b/, `<article xmlns:xlink="${XLINK_NS}"`);
+}
+
+/**
  * @param content {string|Node} - The content to transform to the internal XML
  * @param formatId {string} - Format identifier ('tei', 'jats', etc.). Required - format is not auto-detected.
+ * @param {Object} [schemaDef] - Editor schema; used so preserveSpace elements keep newlines
  * @returns {{content: string, doc: Node, format: string}}
  */
-export function importXml(content, formatId) {
-    const xmlDoc = typeof content === 'string' ? parseXml(content) : content;
-    if (!xmlDoc) return '';
+export function importXml(content, formatId, schemaDef) {
+    const xmlDoc =
+        typeof content === 'string' ? parseXml(ensureXlinkNamespace(content)) : content;
+    if (!xmlDoc) {
+        throw new Error('Failed to parse XML for import');
+    }
 
     if (!formatId) {
         throw new Error('formatId is required - format autodetection is disabled');
@@ -102,16 +186,17 @@ export function importXml(content, formatId) {
         null,
         {
             language: evaluateXPath.XQUERY_3_1_LANGUAGE,
-            // we want to create HTML, not XML nodes
-            nodesFactory: document,
+            // we want to create HTML, not XML nodes (CDATA → text; see htmlNodesFactory)
+            nodesFactory: htmlNodesFactory(),
             moduleImports: {
                 jt: moduleNs.namespace,
             },
         },
     );
+    const preserveLocals = preserveSpaceLocalNames(schemaDef);
     const xmlText = [];
     output.forEach((node) => {
-        normalizeImportWhitespace(node);
+        normalizeImportWhitespace(node, false, preserveLocals);
         xmlText.push(node.outerHTML);
     });
     return {
@@ -142,13 +227,20 @@ export function exportXml(content, xmlDoc, metadata = {}, formatId) {
     // Get the correct module namespace based on format
     const moduleNs = getModuleNamespace(finalFormat);
 
-    // Build body wrapper with or without namespace
-    const bodyWrapperXml =
-        format.namespace && format.namespace !== ''
-            ? `<${format.bodyWrapper} xmlns="${format.namespace}">${content}</${format.bodyWrapper}>`
-            : `<${format.bodyWrapper} xmlns:xlink="http://www.w3.org/1999/xlink">${content}</${format.bodyWrapper}>`;
+    // Build body wrapper. Always declare xlink so editor content with xlink:href
+    // (DocBook link, JATS ext-link, …) parses as XML before export.
+    const nsAttrs = [
+        format.namespace && format.namespace !== '' ? `xmlns="${format.namespace}"` : null,
+        'xmlns:xlink="http://www.w3.org/1999/xlink"',
+    ]
+        .filter(Boolean)
+        .join(' ');
+    const bodyWrapperXml = `<${format.bodyWrapper} ${nsAttrs}>${content}</${format.bodyWrapper}>`;
 
     const nodes = parseXml(bodyWrapperXml);
+    if (!nodes) {
+        throw new Error('Failed to parse editor content for export (invalid XML fragment)');
+    }
     const output = evaluateXPathToNodes(
         `
             jt:export($document, ., $meta)
@@ -167,7 +259,8 @@ export function exportXml(content, xmlDoc, metadata = {}, formatId) {
         },
     );
     const serializer = new XMLSerializer();
-    return output.map((node) => serializer.serializeToString(node)).join('');
+    const exported = output.map((node) => serializer.serializeToString(node)).join('');
+    return finalFormat === 'docbook' ? hoistDocbookXlinkNamespace(exported) : exported;
 }
 
 /**

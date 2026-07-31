@@ -34,6 +34,29 @@ editor.addEventListener('ready', () => {
 });
 ```
 
+<h2 id="content-error"><code>content-error</code></h2>
+
+Fired when loaded content does not fit the active schema and markup is dropped.
+TipTap only rejects *unknown* element names; known elements in an invalid place
+(e.g. a block nested inside a paragraph) are stripped by ProseMirror — JinnTap
+detects that loss and warns.
+
+Also mirrored as a sticky `jinn-toast` error (when a `<jinn-toast>` is present).
+
+**`event.detail`**
+
+| Field | Description |
+| --- | --- |
+| `message` | Human-readable summary |
+| `violations` | Optional list of `{ parent, child }` for illegal nesting |
+| `error` | Optional underlying Error (unknown-tag / TipTap path) |
+
+```js
+editor.addEventListener('content-error', (event) => {
+  console.warn(event.detail.message, event.detail.lost);
+});
+```
+
 ## `jinn-toast`
 
 Not dispatched on the element but on `document`: a request to display a toast

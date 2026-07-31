@@ -129,6 +129,8 @@ export function createFromSchema(schemaDef, prefix = 'tei-', notesWrapper = 'lis
                         inline: def.inline,
                         content: def.content,
                         selectable: def.selectable,
+                        // preserveSpace → keep newlines/indentation (programlisting, etc.)
+                        ...(def.preserveSpace ? { whitespace: 'pre', code: true } : {}),
                         ...gapCursorConfig(def),
                     });
                     break;
@@ -237,12 +239,14 @@ function gapCursorConfig(def) {
 
 /**
  * Create a custom document extension with dynamic content based on notesWrapper
- * @param {string} notesWrapper - The notes wrapper node name (e.g., 'listAnnotation', 'fn-group')
+ * @param {string|null} notesWrapper - The notes wrapper node name (e.g., 'listAnnotation', 'fn-group'),
+ *   or null/empty when the format has no footnote bag (e.g. DocBook)
  * @returns {Extension} Document extension
  */
 export function createDocumentExtension(notesWrapper = 'listAnnotation') {
+    const content = notesWrapper ? `heading* block+ ${notesWrapper}?` : 'heading* block+';
     return Document.extend({
-        content: `heading* block+ ${notesWrapper}?`,
+        content,
         // a gap cursor may stop directly at the end of the document (see JinnGapCursor)
         allowGapCursor: true,
     });

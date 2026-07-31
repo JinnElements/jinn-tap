@@ -1,0 +1,423 @@
+{
+    "css": "./docbook-editor-styles.css",
+    "attributes": {
+        "id": {
+            "type": "string"
+        }
+    },
+    "toolbar": {
+        "Move Up": {
+            "command": "moveUp",
+            "label": "<i class='bi bi-unindent'></i>"
+        },
+        "Clear Formatting": {
+            "command": "clearFormatting",
+            "label": "<i class='bi bi-eraser'></i>",
+            "order": 5
+        },
+        "Table": {
+            "select": "Blocks",
+            "command": "insertSnippet",
+            "args": [
+                "<db-table><db-row><db-cell>A</db-cell><db-cell>B</db-cell></db-row><db-row><db-cell>C</db-cell><db-cell>D</db-cell></db-row></db-table>"
+            ],
+            "label": "<i class='bi bi-table'></i>"
+        },
+        "Figure": {
+            "command": "insertFigure",
+            "label": "<i class='bi bi-images'></i>",
+            "select": "Blocks"
+        },
+        "Show/Hide Code": {
+            "command": "toggleSource",
+            "label": "<i class='bi bi-filetype-xml'></i>",
+            "order": 20
+        },
+        "Fullscreen": {
+            "command": "toggleFullscreen",
+            "label": "<i class='bi bi-fullscreen'></i>",
+            "order": 21,
+            "requiresAttribute": "fullscreen"
+        }
+    },
+    "selects": {
+        "Blocks": {
+            "label": "<i class='bi bi-text-paragraph'></i>",
+            "order": 0,
+            "tooltip": "Block elements"
+        },
+        "Inline": {
+            "label": "<i class='bi bi-type'></i>",
+            "order": 1,
+            "tooltip": "Inline elements"
+        }
+    },
+    "schema": {
+        "section": {
+            "type": "block",
+            "defining": true,
+            "content": "title? subtitle? (block | table)*",
+            "selectable": true,
+            "attributes": {
+                "id": {
+                    "type": "string"
+                }
+            },
+            "keyboard": {
+                "Mod-Shift-e": {
+                    "attributes": {},
+                    "command": "wrapSection"
+                }
+            },
+            "toolbar": {
+                "Section": {
+                    "select": "Blocks",
+                    "attributes": {},
+                    "command": "wrapSection",
+                    "label": "<i class='bi bi-body-text'></i>"
+                }
+            },
+            "inputRules": [
+                {
+                    "find": "^>>",
+                    "type": "wrapping"
+                }
+            ]
+        },
+        "title": {
+            "type": "block",
+            "group": "heading",
+            "content": "inline*",
+            "attributes": {
+                "id": {
+                    "type": "string"
+                }
+            },
+            "keyboard": {
+                "Shift-Mod-1": {
+                    "attributes": {}
+                }
+            },
+            "toolbar": {
+                "Section Title": {
+                    "select": "Blocks",
+                    "attributes": {},
+                    "label": "<i class='bi bi-type-h1'></i>"
+                }
+            },
+            "inputRules": [
+                {
+                    "find": "^##",
+                    "type": "textblock"
+                }
+            ]
+        },
+        "subtitle": {
+            "type": "block",
+            "group": "heading",
+            "content": "inline*",
+            "priority": 99
+        },
+        "para": {
+            "type": "block",
+            "priority": 100,
+            "toolbar": {
+                "Paragraph": {
+                    "select": "Blocks",
+                    "attributes": {},
+                    "label": "<i class='bi bi-paragraph'></i>"
+                }
+            }
+        },
+        "note": {
+            "type": "block",
+            "content": "title? (block | table)+",
+            "selectable": true,
+            "priority": 99,
+            "toolbar": {
+                "Note": {
+                    "select": "Blocks",
+                    "label": "<i class='bi bi-sticky'></i>"
+                }
+            }
+        },
+        "important": {
+            "type": "block",
+            "content": "title? (block | table)+",
+            "selectable": true,
+            "priority": 99
+        },
+        "programlisting": {
+            "type": "block",
+            "content": "inline*",
+            "preserveSpace": true,
+            "attributes": {
+                "language": {
+                    "type": "string"
+                }
+            },
+            "toolbar": {
+                "Program listing": {
+                    "select": "Blocks",
+                    "label": "<i class='bi bi-code-square'></i>"
+                }
+            }
+        },
+        "synopsis": {
+            "type": "block",
+            "content": "inline*",
+            "preserveSpace": true,
+            "priority": 99,
+            "attributes": {
+                "language": {
+                    "type": "string"
+                }
+            }
+        },
+        "epigraph": {
+            "type": "block",
+            "content": "block+",
+            "selectable": true
+        },
+        "quote": {
+            "type": "inline"
+        },
+        "figure": {
+            "type": "block",
+            "selectable": true,
+            "gapCursor": true,
+            "content": "(title|imagedata)*"
+        },
+        "imagedata": {
+            "type": "graphic",
+            "attributes": {
+                "fileref": {
+                    "type": "string",
+                    "default": "https://placehold.co/320x200",
+                    "connector": {
+                        "name": "Asset",
+                        "type": "image"
+                    }
+                },
+                "width": {
+                    "type": "string"
+                }
+            },
+            "toolbar": {
+                "Image": {
+                    "label": "<i class='bi bi-image'></i>",
+                    "select": "Blocks"
+                }
+            }
+        },
+        "emphasis": {
+            "type": "inline",
+            "attributes": {
+                "role": {
+                    "type": "string",
+                    "enum": ["bold", "italic"],
+                    "open": true
+                }
+            },
+            "keyboard": {
+                "Cmd-i": {
+                    "attributes": {}
+                },
+                "Cmd-b": {
+                    "attributes": {
+                        "role": "bold"
+                    }
+                }
+            },
+            "toolbar": {
+                "Emphasis": {
+                    "label": "<i class='bi bi-type-italic'></i>",
+                    "order": 5
+                },
+                "Bold": {
+                    "attributes": {
+                        "role": "bold"
+                    },
+                    "label": "<i class='bi bi-type-bold'></i>",
+                    "order": 5
+                }
+            }
+        },
+        "link": {
+            "type": "ref",
+            "attributes": {
+                "xlink:href": {
+                    "type": "string"
+                },
+                "linkend": {
+                    "type": "string"
+                },
+                "xlink:show": {
+                    "type": "string",
+                    "enum": ["new", "replace", "embed", "other", "none"],
+                    "open": true
+                }
+            },
+            "keyboard": {
+                "Alt-Shift-r": {
+                    "attributes": {}
+                }
+            },
+            "toolbar": {
+                "Link": {
+                    "attributes": {},
+                    "label": "<i class='bi bi-link'></i>",
+                    "order": 2
+                }
+            }
+        },
+        "code": {
+            "type": "inline",
+            "toolbar": {
+                "Code": {
+                    "select": "Inline",
+                    "label": "<i class='bi bi-code'></i>",
+                    "order": 10
+                }
+            }
+        },
+        "filename": {
+            "type": "inline",
+            "toolbar": {
+                "Filename": {
+                    "select": "Inline",
+                    "label": "<i class='bi bi-file-earmark'></i>",
+                    "order": 10
+                }
+            }
+        },
+        "tag": {
+            "type": "inline"
+        },
+        "guilabel": {
+            "type": "inline"
+        },
+        "guibutton": {
+            "type": "inline"
+        },
+        "guimenuitem": {
+            "type": "inline"
+        },
+        "productname": {
+            "type": "inline"
+        },
+        "parameter": {
+            "type": "inline"
+        },
+        "option": {
+            "type": "inline"
+        },
+        "command": {
+            "type": "inline"
+        },
+        "function": {
+            "type": "inline"
+        },
+        "varname": {
+            "type": "inline"
+        },
+        "envar": {
+            "type": "inline"
+        },
+        "listitem": {
+            "type": "listItem",
+            "content": "(block | table)+",
+            "selectable": true
+        },
+        "itemizedlist": {
+            "type": "list",
+            "content": "listitem+",
+            "selectable": true,
+            "keyboard": {
+                "Mod-Shift-l": {
+                    "attributes": {}
+                }
+            },
+            "toolbar": {
+                "Bullet list": {
+                    "select": "Blocks",
+                    "label": "<i class='bi bi-list-ul'></i>"
+                }
+            },
+            "inputRules": [
+                {
+                    "find": "^\\s*([-+*])\\s$",
+                    "type": "wrapping"
+                }
+            ]
+        },
+        "orderedlist": {
+            "type": "list",
+            "content": "listitem+",
+            "selectable": true,
+            "keyboard": {
+                "Mod-Shift-o": {
+                    "attributes": {}
+                }
+            },
+            "toolbar": {
+                "Numbered list": {
+                    "select": "Blocks",
+                    "label": "<i class='bi bi-list-ol'></i>"
+                }
+            },
+            "inputRules": [
+                {
+                    "find": "^\\s*(\\d+)\\.\\s$",
+                    "type": "wrapping"
+                }
+            ]
+        },
+        "variablelist": {
+            "type": "block",
+            "content": "varlistentry+",
+            "selectable": true,
+            "toolbar": {
+                "Variable list": {
+                    "select": "Blocks",
+                    "label": "<i class='bi bi-list-columns'></i>"
+                }
+            }
+        },
+        "varlistentry": {
+            "type": "block",
+            "content": "term listitem",
+            "selectable": true
+        },
+        "term": {
+            "type": "block",
+            "content": "inline*",
+            "priority": 99
+        },
+        "procedure": {
+            "type": "block",
+            "content": "step+",
+            "selectable": true,
+            "toolbar": {
+                "Procedure": {
+                    "select": "Blocks",
+                    "label": "<i class='bi bi-list-ol'></i>"
+                }
+            }
+        },
+        "step": {
+            "type": "block",
+            "content": "title? (block | table)+",
+            "selectable": true
+        },
+        "cell": {
+            "type": "cell"
+        },
+        "row": {
+            "type": "row"
+        },
+        "table": {
+            "type": "table"
+        }
+    }
+}

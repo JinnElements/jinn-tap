@@ -7,6 +7,7 @@ const LIBRARY_ASSETS = [
     { source: 'dist/jinn-tap.css', dest: 'site/public/assets/jinn-tap.css' },
     { source: 'dist/tei-editor-styles.css', dest: 'site/public/assets/tei-editor-styles.css' },
     { source: 'dist/jats-editor-styles.css', dest: 'site/public/assets/jats-editor-styles.css' },
+    { source: 'dist/docbook-editor-styles.css', dest: 'site/public/assets/docbook-editor-styles.css' },
 ];
 
 await mkdir('site/public/assets', { recursive: true });

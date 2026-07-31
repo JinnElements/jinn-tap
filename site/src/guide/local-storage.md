@@ -112,7 +112,7 @@ Each document is stored in IndexedDB database `jinntap`, object store `documents
 | --- | --- |
 | `id` | Same as `documentId` (key path) |
 | `name` | Human-readable display title |
-| `format` | `tei` or `jats` |
+| `format` | `tei`, `jats`, or `docbook` |
 | `xml` | Full document XML (header + body) |
 | `updatedAt` | Last save time (epoch ms) |
 | `nameLocked` | When `true`, autosave will not overwrite `name` |

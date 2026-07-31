@@ -47,7 +47,8 @@ export const JinnEmptyElement = JinnBlock.extend({
 
     addNodeView() {
         return ({ node }) => {
-            const dom = document.createElement(`tei-${this.name}`);
+            const prefix = this.options.prefix || 'tei-';
+            const dom = document.createElement(`${prefix}${this.name}`);
             dom.classList.add('empty-element');
             if (this.options.unknown) {
                 dom.classList.add('jinn-tap-unknown-empty');

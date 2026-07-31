@@ -57,6 +57,14 @@ function resolveSchemaEntry(schemaDef, typeName) {
     return undefined;
 }
 
+/** Escape a value for use inside a double-quoted XML attribute. */
+function escapeXmlAttr(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/"/g, '&quot;');
+}
+
 /** Format attribute entries for a start tag, including `_xmlns` → `xmlns="…"`. */
 function formatXmlAttributes(attrs, { mapIdToXmlId = false } = {}) {
     if (!attrs) return '';
@@ -64,12 +72,12 @@ function formatXmlAttributes(attrs, { mapIdToXmlId = false } = {}) {
         .filter(([key, value]) => value !== null && (key === '_xmlns' || !key.startsWith('_')))
         .map(([key, value]) => {
             if (key === '_xmlns') {
-                return `xmlns="${value}"`;
+                return `xmlns="${escapeXmlAttr(value)}"`;
             }
             if (mapIdToXmlId && key === 'id') {
-                return `xml:id="${value}"`;
+                return `xml:id="${escapeXmlAttr(value)}"`;
             }
-            return `${key}="${value}"`;
+            return `${key}="${escapeXmlAttr(value)}"`;
         })
         .join(' ');
 }
@@ -84,10 +92,6 @@ export class Serializer {
 
     serialize(node, previous, next) {
         if (node.type === 'text') {
-            // Note that these text nodes are not always directly valid in XML. For example, a text node like `I <3 the &
-            // character` contains characters that can not be included directly.  Roundtrip through XMLSerializer to
-            // circumvent this
-            // @TODO: also clean up attribute contents. Or better: construct an XML DOM instead of a string
             const rawNodeText = node.text;
             const textNode = document.createTextNode(rawNodeText);
             const cleanNodeText = new XMLSerializer().serializeToString(textNode);
@@ -150,7 +154,10 @@ export class Serializer {
         let tagName = nodeDef?.tagName || resolveXmlTagName(this.schemaDef, node.type);
         // If tagName is defined (custom tag), use it as-is (no prefix in XML output)
         // The prefix is only for HTML custom elements in the editor, not for XML output
-        const attrs = formatXmlAttributes(node.attrs, { mapIdToXmlId: this.mapIdToXmlId });
+        let attrs = formatXmlAttributes(node.attrs, { mapIdToXmlId: this.mapIdToXmlId });
+        if (nodeDef?.preserveSpace && !/\bxml:space=/.test(attrs)) {
+            attrs = attrs ? `${attrs} xml:space="preserve"` : 'xml:space="preserve"';
+        }
 
         let content = '';
         if (node.content) {

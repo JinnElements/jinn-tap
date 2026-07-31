@@ -7,7 +7,7 @@
  * @param {string} [options.cancelLabel='Cancel']
  * @param {string} [options.type='info']
  * @param {boolean} [options.nohtml=false]
- * @returns {Promise<boolean>} Resolves to `true` on confirm, `false` on cancel/close
+ * @returns {Promise<boolean>} Resolves to `true` on confirm, `false` on cancel/close/dismiss
  */
 export function jinnToastConfirm(message, options = {}) {
     const { confirmLabel = 'OK', cancelLabel = 'Cancel', type = 'info', nohtml = false } = options;
@@ -30,6 +30,13 @@ export function jinnToastConfirm(message, options = {}) {
             }),
         );
     });
+}
+
+/**
+ * Dismiss open confirm toasts as cancelled (e.g. when the editor loads other content).
+ */
+export function jinnToastDismiss() {
+    document.dispatchEvent(new CustomEvent('jinn-toast-dismiss'));
 }
 
 export class JinnToast extends HTMLElement {
@@ -186,6 +193,18 @@ export class JinnToast extends HTMLElement {
                 this.showToast(message, type || 'info', nohtml || false, sticky || false);
             }
         });
+        document.addEventListener('jinn-toast-dismiss', () => {
+            this.dismissConfirmToasts();
+        });
+    }
+
+    /**
+     * Settle every open confirm toast as cancelled and remove it.
+     */
+    dismissConfirmToasts() {
+        for (const toast of this.querySelectorAll('.jinn-toast.confirm')) {
+            toast._jinnToastCancel?.();
+        }
     }
 
     /**
@@ -240,13 +259,24 @@ export class JinnToast extends HTMLElement {
     showConfirmToast(message, type, nohtml, confirm) {
         const toast = document.createElement('div');
         toast.className = `jinn-toast confirm ${type}`;
+        const container = this.querySelector('.jinn-toast-container');
 
         let settled = false;
+        const closeToast = () => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                if (toast.parentNode === container) {
+                    container.removeChild(toast);
+                }
+            }, 300);
+        };
+
         const settle = (confirmed) => {
             if (settled) {
                 return;
             }
             settled = true;
+            delete toast._jinnToastCancel;
             if (confirmed) {
                 confirm.onConfirm?.();
             } else {
@@ -255,12 +285,7 @@ export class JinnToast extends HTMLElement {
             closeToast();
         };
 
-        const closeToast = () => {
-            toast.classList.remove('show');
-            setTimeout(() => {
-                container.removeChild(toast);
-            }, 300);
-        };
+        toast._jinnToastCancel = () => settle(false);
 
         const body = document.createElement('div');
         body.className = 'jinn-toast-body';
@@ -296,7 +321,6 @@ export class JinnToast extends HTMLElement {
         closeButton.addEventListener('click', () => settle(false));
         toast.appendChild(closeButton);
 
-        const container = this.querySelector('.jinn-toast-container');
         container.appendChild(toast);
 
         toast.offsetHeight;

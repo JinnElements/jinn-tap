@@ -1,5 +1,5 @@
 export { JinnTap } from './jinn-tap.js';
-export { JinnToast, jinnToastConfirm } from './components/jinn-toast.js';
+export { JinnToast, jinnToastConfirm, jinnToastDismiss } from './components/jinn-toast.js';
 export {
     DocumentStore,
     attachLocalStore,
