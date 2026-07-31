@@ -443,9 +443,107 @@ jinn-tap > .jinn-tap-aside {
 }
 
 /* Table bubble menu is appended to document.body (see Table extension) so it
-   isn't trapped under the attribute dock or auto-placed in the jinn-tap grid. */
+   isn't trapped under the attribute dock or auto-placed in the jinn-tap grid.
+   Must be unscoped — jinn-tap .toolbar selectors do not reach it there. */
 .table-menu {
+    /* Same tokens as .jinn-tap-toolbar: this node lives outside <jinn-tap>. */
+    --jinn-tap-toolbar-bg: #f4f4f4;
+    --jinn-tap-toolbar-fg: #1a1a1a;
+    --jinn-tap-toolbar-separator: rgba(0, 0, 0, 0.14);
+    --jinn-tap-toolbar-hover: rgba(0, 0, 0, 0.06);
+    --jinn-tap-toolbar-active: rgba(0, 0, 0, 0.1);
+    --jinn-tap-toolbar-btn-size: 2rem;
+    --jinn-tap-toolbar-dropdown-bg: #fff;
+    --jinn-tap-toolbar-dropdown-border: rgba(0, 0, 0, 0.16);
+    --jinn-tap-toolbar-dropdown-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    --jinn-tap-toolbar-focus-ring: rgba(0, 90, 180, 0.45);
+
     z-index: 40;
+    display: flex;
+    align-items: center;
+    background: var(--jinn-tap-toolbar-dropdown-bg);
+    border: 1px solid var(--jinn-tap-toolbar-dropdown-border);
+    border-radius: 0.5rem;
+    box-shadow: var(--jinn-tap-toolbar-dropdown-shadow);
+    padding: 0.2rem;
+    color: var(--jinn-tap-toolbar-fg);
+}
+
+.table-menu .toolbar {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.15rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.table-menu .toolbar > li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.table-menu .toolbar a,
+.table-menu .toolbar-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--jinn-tap-toolbar-btn-size);
+    height: var(--jinn-tap-toolbar-btn-size);
+    min-width: var(--jinn-tap-toolbar-btn-size);
+    min-height: var(--jinn-tap-toolbar-btn-size);
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--jinn-tap-toolbar-fg);
+    font-size: inherit;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+    box-shadow: none;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+.table-menu .toolbar a:hover,
+.table-menu .toolbar-button:hover {
+    background: var(--jinn-tap-toolbar-hover);
+    color: var(--jinn-tap-toolbar-fg);
+    border: none;
+}
+
+.table-menu .toolbar a:active,
+.table-menu .toolbar-button:active {
+    background: var(--jinn-tap-toolbar-active);
+}
+
+.table-menu .toolbar a:focus-visible,
+.table-menu .toolbar-button:focus-visible {
+    outline: 2px solid var(--jinn-tap-toolbar-focus-ring);
+    outline-offset: 1px;
+}
+
+.table-menu .toolbar-button i {
+    font-size: 1.05rem;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.table-menu .divider::before {
+    content: '';
+    display: block;
+    height: 1.5rem;
+    margin-inline: 0.2rem;
+    border-left: 1px solid var(--jinn-tap-toolbar-separator);
+    border-radius: 2px;
 }
 
 jinn-tap > .jinn-tap-aside .user-info {

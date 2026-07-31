@@ -370,16 +370,6 @@ tei-quote{
     outline: 2px solid var(--pico-primary, var(--accent, #047878));
 }
 
-.table-menu {
-    .divider::before {
-        content: '';
-        height: 2rem;
-        border-left: 4px solid var(--pico-table-border-color);
-        border-radius: 2px;
-        display: block;
-    }
-}
-
 .selectedCell {
     background-color: var(--pico-form-element-selected-background-color);
 }
