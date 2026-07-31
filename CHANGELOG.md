@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/JinnElements/jinn-tap/compare/v2.1.0...v2.1.1) (2026-07-31)
+
+
+### Bug Fixes
+
+* table menu styling ([076e1ad](https://github.com/JinnElements/jinn-tap/commit/076e1ad24d62b91e776f2324eb93ad3335fb1e85))
+
 # [2.1.0](https://github.com/JinnElements/jinn-tap/compare/v2.0.1...v2.1.0) (2026-07-31)
 
 
