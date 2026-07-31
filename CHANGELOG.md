@@ -1,3 +1,16 @@
+# [2.1.0](https://github.com/JinnElements/jinn-tap/compare/v2.0.1...v2.1.0) (2026-07-31)
+
+
+### Bug Fixes
+
+* "clear formatting" operation did nothing unless some text was selected. Now it selects the parent element the cursor is in. ([e96f869](https://github.com/JinnElements/jinn-tap/commit/e96f869fcdc120bb9c17bda17866052a1cd55e7c))
+
+
+### Features
+
+* docbook 5 support ([a17d787](https://github.com/JinnElements/jinn-tap/commit/a17d7872a9a9e3b6d1c17a0383baea10705e0d9b))
+* **docbook:** footnote support ([8c8681b](https://github.com/JinnElements/jinn-tap/commit/8c8681ba6c5de5b5436749b1a1eb90f845c662df))
+
 ## [2.0.1](https://github.com/JinnElements/jinn-tap/compare/v2.0.0...v2.0.1) (2026-07-29)
 
 
