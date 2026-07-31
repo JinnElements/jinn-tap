@@ -38,7 +38,7 @@ In particular:
   uses an empty namespace) and uses JATS defaults for notes/anchors.
 - `docbook` assumes DocBook 5 articles with namespace
   `http://docbook.org/ns/docbook`, prefix `db-`, and preserves `<info>` on
-  round-trip. DocBook `note` is an admonition (not a footnote).
+  round-trip. DocBook `note` is an admonition; footnotes use `footnote` / `footnoteref`.
 
 `format` is *observed*, so changing the attribute will rebuild the editor using
 the other built-in defaults (but if you set `schema`, your custom schema remains).

@@ -646,6 +646,7 @@ export class JinnTap extends HTMLElement {
                   noteName: format.noteName,
                   anchorName: format.anchorName || 'anchor',
                   linkDirection: format.linkDirection || 'note-to-anchor',
+                  anchorNoteAttr: format.anchorNoteAttr || 'rid',
               }
             : {};
         const extensions = createFromSchema(this._schema, format.prefix, format.notesWrapper, footnoteOptions);
@@ -690,6 +691,7 @@ export class JinnTap extends HTMLElement {
                     noteName: format.noteName,
                     anchorName: format.anchorName || 'anchor',
                     linkDirection: format.linkDirection || 'note-to-anchor',
+                    anchorNoteAttr: format.anchorNoteAttr || 'rid',
                 }),
             );
         }

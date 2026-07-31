@@ -271,6 +271,49 @@
                 }
             }
         },
+        "footnoteref": {
+            "type": "anchor",
+            "attributes": {
+                "linkend": {
+                    "type": "string"
+                }
+            },
+            "toolbar": {
+                "Footnote": {
+                    "attributes": {
+                        "_reference": "*"
+                    },
+                    "label": "<i class='bi bi-123'></i>",
+                    "order": 2
+                }
+            }
+        },
+        "footnotes": {
+            "type": "list",
+            "group": "",
+            "defining": true,
+            "content": "footnote*",
+            "keyboard": {
+                "Mod-Shift-u": {
+                    "attributes": {}
+                }
+            }
+        },
+        "footnote": {
+            "type": "block",
+            "group": "note",
+            "content": "para+",
+            "selectable": true,
+            "priority": 99,
+            "attributes": {
+                "id": {
+                    "type": "string"
+                },
+                "_reference": {
+                    "type": "string"
+                }
+            }
+        },
         "code": {
             "type": "inline",
             "toolbar": {

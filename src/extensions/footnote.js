@@ -23,11 +23,21 @@ function getNoteLink(note, linkDirection) {
 
 function getAnchorLink(anchor, linkDirection) {
     if (linkDirection === 'anchor-to-note') {
-        return anchor.attrs.rid || anchor.attrs.target;
+        // JATS: rid; DocBook: linkend; some hosts also use target
+        return anchor.attrs.rid || anchor.attrs.linkend || anchor.attrs.target;
     } else {
         // note-to-anchor: link is stored on note, not anchor
         return null;
     }
+}
+
+/** Attribute on the anchor that points at the note (JATS `rid`, DocBook `linkend`). */
+function anchorNoteAttrName(options) {
+    return options?.anchorNoteAttr || 'rid';
+}
+
+function defaultNoteParagraphType(schema) {
+    return schema.nodes.p || schema.nodes.para || schema.nodes.paragraph;
 }
 
 function findNoteByAnchor(doc, anchorId, noteName, linkDirection) {
@@ -57,8 +67,8 @@ function findAnchorByNote(doc, noteId, anchorName, linkDirection) {
     doc.nodesBetween(0, doc.content.size, (node, pos) => {
         if (node.type.name === anchorName) {
             if (linkDirection === 'anchor-to-note') {
-                // JATS: anchor.rid points to note.id (bare id, no #)
-                const ridId = normalizeIdRef(node.attrs.rid || node.attrs.target);
+            // JATS / DocBook: anchor.rid or anchor.linkend points to note.id (bare id, no #)
+            const ridId = normalizeIdRef(node.attrs.rid || node.attrs.linkend || node.attrs.target);
                 if (ridId === noteId) {
                     foundAnchor = { node, pos };
                     return false;
@@ -359,7 +369,8 @@ export const FootnoteRules = Extension.create({
             notesWithoutAnchor: false,
             noteName: 'note',
             anchorName: 'anchor',
-            linkDirection: 'note-to-anchor', // 'note-to-anchor' (TEI) or 'anchor-to-note' (JATS)
+            linkDirection: 'note-to-anchor', // 'note-to-anchor' (TEI) or 'anchor-to-note' (JATS / DocBook)
+            anchorNoteAttr: 'rid', // JATS: rid; DocBook: linkend
         };
     },
     addCommands() {
@@ -367,6 +378,7 @@ export const FootnoteRules = Extension.create({
             addNote:
                 () =>
                 ({ commands, state }) => {
+                    const paraName = defaultNoteParagraphType(state.schema)?.name || 'p';
                     return commands.insertContent({
                         type: this.options.noteName,
                         attrs: {
@@ -374,7 +386,7 @@ export const FootnoteRules = Extension.create({
                         },
                         content: [
                             {
-                                type: 'p',
+                                type: paraName,
                             },
                         ],
                     });
@@ -461,7 +473,7 @@ export const FootnoteRules = Extension.create({
                                                     });
                                                 } else {
                                                     // JATS: check if anchor has rid pointing to a note
-                                                    const noteId = normalizeIdRef(node.attrs.rid || node.attrs.target);
+                                                    const noteId = normalizeIdRef(node.attrs.rid || node.attrs.linkend || node.attrs.target);
                                                     if (noteId) {
                                                         newState.doc.descendants((n, p) => {
                                                             if (n.type.name === options.noteName && n.attrs.id === noteId) {
@@ -548,7 +560,7 @@ export const FootnoteRules = Extension.create({
                                     const noteId = node.attrs.id;
                                     if (noteId) {
                                         for (const attrs of deletedAnchors.values()) {
-                                            const ridId = normalizeIdRef(attrs.rid || attrs.target);
+                                            const ridId = normalizeIdRef(attrs.rid || attrs.linkend || attrs.target);
                                             if (ridId === noteId) {
                                                 shouldRemove = true;
                                                 break;
@@ -616,7 +628,7 @@ export const FootnoteRules = Extension.create({
                                     newTr = newTr.setSelection(TextSelection.create(newTr.doc, orphanNotePos + 1));
                                     newTr.scrollIntoView();
                                 } else {
-                                    // JATS: put the orphan fn's id into the new xref's rid (bare id, no #)
+                                    // JATS / DocBook: put the orphan note's id into the new anchor's link attr
                                     let noteId = orphanNote.attrs.id;
                                     if (!noteId) {
                                         noteId = `fn-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -625,12 +637,13 @@ export const FootnoteRules = Extension.create({
                                             id: noteId,
                                         });
                                     }
+                                    const linkAttr = anchorNoteAttrName(options);
                                     newTr.doc.descendants((node, pos) => {
                                         if (node.type.name === options.anchorName && node.attrs.id === anchorId) {
                                             newTr = newTr.setNodeMarkup(pos, null, {
                                                 ...node.attrs,
-                                                rid: noteId,
-                                                'ref-type': 'fn',
+                                                [linkAttr]: noteId,
+                                                ...(linkAttr === 'rid' ? { 'ref-type': 'fn' } : {}),
                                                 _timestamp: Date.now(),
                                             });
                                             return false;
@@ -666,7 +679,7 @@ export const FootnoteRules = Extension.create({
                                     }
                                 });
                                 if (anchorNode) {
-                                    const noteId = normalizeIdRef(anchorNode.attrs.rid || anchorNode.attrs.target);
+                                    const noteId = normalizeIdRef(anchorNode.attrs.rid || anchorNode.attrs.linkend || anchorNode.attrs.target);
                                     if (noteId) {
                                         newState.doc.descendants((node, pos) => {
                                             if (node.type.name === options.noteName && node.attrs.id === noteId) {
@@ -721,24 +734,30 @@ export const FootnoteRules = Extension.create({
                                 // TEI: note.target -> anchor.id
                                 noteAttrs.target = `#${anchorId}`;
                             } else {
-                                // JATS: note gets an id, anchor.rid will point to it (bare id, no #)
+                                // JATS / DocBook: note gets an id; anchor link attr points to it
                                 noteAttrs.id = noteId;
+                            }
+
+                            const paraType = defaultNoteParagraphType(newState.schema);
+                            if (!paraType) {
+                                return null;
                             }
 
                             const noteNode = newState.schema.nodes[options.noteName].create(
                                 noteAttrs,
-                                [newState.schema.nodes.p.create({}, [])],
+                                [paraType.create({}, [])],
                             );
 
-                            // For JATS, also update the anchor to point to the note
+                            // Point the anchor at the new note
                             if (options.linkDirection === 'anchor-to-note') {
+                                const linkAttr = anchorNoteAttrName(options);
                                 // Prefer positions from newTr.doc in case prior steps shifted nodes
                                 newTr.doc.descendants((node, pos) => {
                                     if (node.type.name === options.anchorName && node.attrs.id === anchorId) {
                                         newTr = newTr.setNodeMarkup(pos, null, {
                                             ...node.attrs,
-                                            rid: noteId,
-                                            'ref-type': 'fn',
+                                            [linkAttr]: noteId,
+                                            ...(linkAttr === 'rid' ? { 'ref-type': 'fn' } : {}),
                                             _timestamp: Date.now(),
                                         });
                                         return false;
@@ -783,7 +802,7 @@ export const FootnoteRules = Extension.create({
                                     let noteId = null;
                                     newTr.doc.descendants((node, pos) => {
                                         if (node.type.name === options.anchorName && node.attrs.id === anchorId) {
-                                            noteId = normalizeIdRef(node.attrs.rid || node.attrs.target);
+                                            noteId = normalizeIdRef(node.attrs.rid || node.attrs.linkend || node.attrs.target);
                                             return false;
                                         }
                                     });

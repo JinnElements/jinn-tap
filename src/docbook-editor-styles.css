@@ -179,6 +179,57 @@ db-important > db-title {
     color: #c45c26;
 }
 
+db-footnotes {
+    display: block;
+    list-style-type: none;
+    margin: 2rem 0 1rem;
+    padding: 1rem 0 0;
+    border-top: 1px solid #ccc;
+}
+
+db-footnotes:empty::before {
+    display: none;
+}
+
+db-footnotes::before {
+    content: 'Footnotes';
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+db-footnote {
+    display: list-item;
+    list-style-position: outside;
+    margin: 0.5em 0;
+    list-style-type: none;
+}
+
+db-footnote[_reference]::before {
+    content: attr(_reference) '.';
+    margin-right: 0.5rem;
+    font-weight: 600;
+}
+
+db-footnote:not([_reference]) {
+    color: #9e9e9e;
+}
+
+db-footnoteref {
+    font-size: 0.85rem;
+    vertical-align: super;
+    cursor: pointer;
+    line-height: 1;
+}
+
+db-footnoteref::before {
+    content: attr(_reference);
+}
+
+db-footnoteref::after {
+    content: '\200B';
+}
+
 db-programlisting {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 0.875rem;

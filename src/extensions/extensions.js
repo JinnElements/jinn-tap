@@ -211,6 +211,9 @@ export function createFromSchema(schemaDef, prefix = 'tei-', notesWrapper = 'lis
                 if (footnoteOptions.linkDirection) {
                     config.linkDirection = footnoteOptions.linkDirection;
                 }
+                if (footnoteOptions.anchorNoteAttr) {
+                    config.anchorNoteAttr = footnoteOptions.anchorNoteAttr;
+                }
             }
             extensions.push(NodeOrMark.configure(config));
         });

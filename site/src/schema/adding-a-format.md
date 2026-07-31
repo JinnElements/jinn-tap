@@ -53,7 +53,7 @@ export const FORMATS = {
 | `namespace` | Written onto the body wrapper on export when non-empty |
 | `prefix` | Prefix for editor custom elements (`tei-`, `jats-`, `db-`, …) |
 | `bodyWrapper` | Element that wraps the editable fragment during export |
-| `notesWrapper` / `noteName` / `anchorName` | Footnote plumbing; set to `null` when the dialect has no footnotes (as DocBook does) |
+| `notesWrapper` / `noteName` / `anchorName` | Footnote plumbing; DocBook uses `footnotes` / `footnote` / `footnoteref` (inline in XML, standoff in the editor) |
 | `linkDirection` | `note-to-anchor` (note points at anchor) or `anchor-to-note` (anchor points at note) |
 | `mapIdToXmlId` | Emit editor `@id` as `xml:id` on serialize (TEI, DocBook) or plain `id` (JATS) |
 | `newDocumentTemplate` | Skeleton used when creating an empty document |
@@ -108,7 +108,7 @@ Ship the CSS via `scripts/copy-assets.js` and `scripts/copy-site-assets.js`.
    elements that match your schema.
 3. Edit, then read `.xml` — export must restore a valid document.
 4. Optional: footnotes — verify `notesWrapper` / `linkDirection` (or confirm
-   `noteName: null` skips footnote plumbing, as DocBook does).
+   `noteName: null` skips footnote plumbing when the dialect has none).
 
 ## What you do *not* need to change
 

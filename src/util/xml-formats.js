@@ -19,7 +19,8 @@
  * @property {string} notesWrapper - Element name to use as wrapper for notes (e.g., 'listAnnotation')
  * @property {string} noteName - Node name for note elements (e.g., 'note', 'fn')
  * @property {string} anchorName - Node name for anchor elements (e.g., 'anchor', 'xref')
- * @property {string} linkDirection - Direction of link: 'note-to-anchor' (TEI: note.target -> anchor.id) or 'anchor-to-note' (JATS: anchor.rid -> note.id)
+ * @property {string} linkDirection - Direction of link: 'note-to-anchor' (TEI: note.target -> anchor.id) or 'anchor-to-note' (JATS: anchor.rid -> note.id; DocBook: footnoteref.linkend -> footnote.id)
+ * @property {string} [anchorNoteAttr='rid'] - Attribute on the anchor that stores the note id when linkDirection is anchor-to-note
  * @property {boolean} mapIdToXmlId - When serializing editor content, emit @id as xml:id (TEI) or plain id (JATS)
  * @property {Function} newDocumentTemplate - Function that returns XML string for new document
  */
@@ -89,10 +90,13 @@ export const DOCBOOK_FORMAT = {
     rootElement: 'article',
     bodyWrapper: 'article',
     prefix: 'db-',
-    notesWrapper: null, // no end-of-document footnote bag; note is an admonition
-    noteName: null,
-    anchorName: null,
-    linkDirection: 'anchor-to-note',
+    // Footnotes are inline in DocBook XML; the editor uses a standoff bag + footnoteref
+    // markers (like JATS), then module-docbook.xq reinlines on export.
+    notesWrapper: 'footnotes',
+    noteName: 'footnote',
+    anchorName: 'footnoteref',
+    linkDirection: 'anchor-to-note', // footnoteref.linkend → footnote.id
+    anchorNoteAttr: 'linkend',
     mapIdToXmlId: true,
     newDocumentTemplate: () => `<article xmlns="http://docbook.org/ns/docbook"
         xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">

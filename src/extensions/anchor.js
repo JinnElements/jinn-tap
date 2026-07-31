@@ -85,7 +85,7 @@ export const JinnAnchor = JinnEmptyElement.extend({
                                 let hasAnchor = false;
                                 editor.state.doc.descendants((anchorNode) => {
                                     if (anchorNode.type.name !== anchorName) return;
-                                    const rid = anchorNode.attrs.rid || anchorNode.attrs.target;
+                                    const rid = anchorNode.attrs.rid || anchorNode.attrs.linkend || anchorNode.attrs.target;
                                     if (rid) {
                                         const ridId = rid.startsWith('#') ? rid.substring(1) : rid;
                                         if (ridId === noteId) {
@@ -126,7 +126,7 @@ export const JinnAnchor = JinnEmptyElement.extend({
                                     let rid = null;
                                     state.doc.descendants((anchorNode) => {
                                         if (anchorNode.type.name === anchorName && anchorNode.attrs.id === id) {
-                                            rid = anchorNode.attrs.rid || anchorNode.attrs.target;
+                                            rid = anchorNode.attrs.rid || anchorNode.attrs.linkend || anchorNode.attrs.target;
                                             return false;
                                         }
                                     });
@@ -198,7 +198,7 @@ export const JinnAnchor = JinnEmptyElement.extend({
                         let noteId = null;
                         editor.view.state.doc.descendants((node) => {
                             if (node.type.name === anchorName && node.attrs.id === id) {
-                                const rid = node.attrs.rid || node.attrs.target;
+                                const rid = node.attrs.rid || node.attrs.linkend || node.attrs.target;
                                 if (rid) {
                                     noteId = rid.startsWith('#') ? rid.substring(1) : rid;
                                 }

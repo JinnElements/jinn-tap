@@ -38,7 +38,8 @@ Switching `format` also switches the editor’s XML handling:
   JATS defaults for notes/anchors (`fn` + `xref` with `anchor.rid → note.id`).
 - **DocBook** (`format="docbook"`): uses the DocBook 5 namespace
   `http://docbook.org/ns/docbook`, prefix `db-`, preserves `<info>` on
-  round-trip, and treats `note` as an admonition (no footnote plumbing).
+  round-trip, treats `note` as an admonition, and maps inline `footnote` ↔
+  editor `footnoteref` + `footnotes` bag.
 
 Supply a custom file with the
 <a href="{{ '/api/attributes/' | prefixUrl }}#schema"><code>schema</code></a> attribute to

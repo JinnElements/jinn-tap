@@ -34,6 +34,25 @@ declare %private function jt:import-attrs ($node as element()) as attribute()* {
     )
 };
 
+(: Footnote body id for the editor bag (xml:id / id / generated). :)
+declare %private function jt:footnote-id ($node as element()) as xs:string {
+    if ($node/@xml:id) then
+        string($node/@xml:id)
+    else if ($node/@id) then
+        string($node/@id)
+    else
+        'fn-' || generate-id($node)
+};
+
+(: Collect footnote bodies into the editor-only footnotes bag. :)
+declare %private function jt:collect-footnotes ($nodes as node()*) as element()* {
+    for $fn in $nodes//(db:footnote | footnote)
+    return
+        <db-footnote id="{jt:footnote-id($fn)}">
+            { jt:import-nodes($fn/node()) }
+        </db-footnote>
+};
+
 declare function jt:import ($doc as node()) {
     let $article :=
         if ($doc instance of document-node()) then
@@ -42,8 +61,11 @@ declare function jt:import ($doc as node()) {
             $doc
         else
             $doc/(db:article | article)
-    return
-        jt:import-nodes($article/(* except (db:info | info)))
+    let $body := $article/(* except (db:info | info))
+    return (
+        jt:import-nodes($body),
+        <db-footnotes>{ jt:collect-footnotes($body) }</db-footnotes>
+    )
 };
 
 declare %private function jt:transform-to-same-node ($node as element()) as element() {
@@ -105,6 +127,16 @@ declare %private function jt:import-nodes ($nodes as node()*) {
             case element(db:thead) | element(thead)
             | element(db:tbody) | element(tbody) return
                 ()
+            case element(db:footnotes) | element(footnotes) return
+                (: Editor-only bag — never present in source DocBook. :)
+                ()
+            case element(db:footnote) | element(footnote) return
+                (: Inline footnote → footnoteref marker; body collected into db-footnotes. :)
+                let $id := jt:footnote-id($node)
+                return
+                    <db-footnoteref id="{'ref-' || generate-id($node)}" linkend="{$id}" />
+            case element(db:footnoteref) | element(footnoteref) return
+                jt:transform-to-same-node($node)
             case element() return
                 jt:transform-to-same-node($node)
             default return
@@ -166,6 +198,35 @@ declare %private function jt:export-table ($node as element(), $input as documen
     }
 };
 
+(: Look up a footnote body in the editor fragment by id / xml:id. :)
+declare %private function jt:find-footnote ($input as document-node(), $id as xs:string) as element()? {
+    (
+        $input//(db:footnote | footnote)[@id = $id or @xml:id = $id]
+    )[1]
+};
+
+(: Expand footnoteref → inline footnote (DocBook native form). :)
+declare %private function jt:export-footnoteref ($node as element(), $input as document-node(), $meta as map(*)) as element()? {
+    let $linkend := string(($node/@linkend, $node/@rid)[1])
+    let $note :=
+        if ($linkend != '') then
+            jt:find-footnote($input, $linkend)
+        else
+            ()
+    return
+        if (exists($note)) then
+            element {QName('http://docbook.org/ns/docbook', 'footnote')} {
+                if ($linkend != '') then
+                    attribute {QName('http://www.w3.org/XML/1998/namespace', 'id')} { $linkend }
+                else (
+                ),
+                jt:export($note/node(), $input, $meta)
+            }
+        else
+            (: Orphan marker — keep as footnoteref so content is not silently dropped. :)
+            jt:db-element('footnoteref', $node, $input, $meta)
+};
+
 (:
   jt:export($nodes, $input, $meta)
   $nodes  — original document (walked)
@@ -189,7 +250,7 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
                     { $node/(db:info | info) }
                     {
                         let $editor := ($input/(db:article | article), $input/*[1])[1]
-                        let $body := $editor/(* except (db:info | info))
+                        let $body := $editor/(* except (db:info | info | db:footnotes | footnotes))
                         return
                             jt:export($body, $input, $meta)
                     }
@@ -197,6 +258,14 @@ declare function jt:export ($nodes as node()*, $input as document-node(), $meta 
             case element(db:info) | element(info) return
                 (: Only reached if info appears in editor fragment — skip. :)
                 ()
+            case element(db:footnotes) | element(footnotes) return
+                (: Editor-only bag — footnotes are reinlined at footnoteref sites. :)
+                ()
+            case element(db:footnote) | element(footnote) return
+                (: Bodies live only in the bag; skip if encountered in body walk. :)
+                ()
+            case element(db:footnoteref) | element(footnoteref) return
+                jt:export-footnoteref($node, $input, $meta)
             case element(db:figure) | element(figure) return
                 jt:export-figure($node, $input, $meta)
             case element(db:table) | element(table) return

@@ -95,6 +95,55 @@ describe('JinnTap Component (DocBook format)', () => {
         cy.get('jinn-tap db-note').should('exist');
     });
 
+    it('round-trips inline footnotes via footnoteref markers', () => {
+        const doc = `<?xml version="1.0"?>
+<article xmlns="http://docbook.org/ns/docbook" version="5.0">
+  <info><title>FN</title></info>
+  <section>
+    <title>S</title>
+    <para>See here<footnote xml:id="fn1"><para>A note</para></footnote> for details.</para>
+  </section>
+</article>`;
+
+        cy.get('jinn-tap').then(($component) => {
+            $component[0].xml = doc;
+        });
+
+        cy.get('jinn-tap db-footnoteref').should('exist');
+        cy.get('jinn-tap db-footnote').should('contain.text', 'A note');
+        cy.get('jinn-tap db-footnotes').should('exist');
+
+        cy.get('jinn-tap').should((e) => {
+            const [editor] = e.get();
+            // Export reinlines the footnote at the marker site
+            expect(editor.xml).to.match(/<footnote[^>]*xml:id="fn1"/);
+            expect(editor.xml).to.include('<para>A note</para>');
+            expect(editor.xml).to.not.include('<footnotes');
+            expect(editor.xml).to.not.include('<footnoteref');
+            expect(editor.xml).to.match(/See here<footnote[\s\S]*?<\/footnote> for details/);
+        });
+    });
+
+    it('inserts a footnote from the toolbar', () => {
+        const testContent = '<db-section><db-para>Hello world</db-para></db-section>';
+
+        cy.get('jinn-tap').then(($component) => {
+            $component[0].content = testContent;
+            $component[0].editor.chain().focus().setTextSelection(8).run();
+        });
+
+        cy.get('jinn-tap .toolbar-button[data-tooltip="Footnote"]').click();
+
+        cy.get('jinn-tap db-footnoteref').should('exist');
+        cy.get('jinn-tap db-footnote').should('exist');
+
+        cy.get('jinn-tap').should((e) => {
+            const [editor] = e.get();
+            expect(editor.xml).to.include('<footnote');
+            expect(editor.xml).to.match(/Hello[\s\S]*<footnote/);
+        });
+    });
+
     it('round-trips xml:id and preserves info metadata', () => {
         const doc = `<?xml version="1.0"?>
 <article xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
