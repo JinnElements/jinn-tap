@@ -103,6 +103,45 @@ describe('JinnTap Component', () => {
         });
     });
 
+    it('keeps the space alone between two inline elements, and drops indentation', () => {
+        cy.get('jinn-tap').then(($component) => {
+            $component[0].xml = `<TEI xmlns="http://www.tei-c.org/ns/1.0">
+    <teiHeader/>
+    <text>
+        <body>
+            <div>
+                <p>Advisor <persName>DAS</persName> <persName>Everett Briggs</persName>,
+                    and <hi rend="i">Nancy</hi>
+                    <hi rend="b">Dyke</hi>.</p>
+                <p>Second</p>
+            </div>
+        </body>
+    </text>
+</TEI>`;
+        });
+
+        cy.get('jinn-tap').should(($component) => {
+            const jinntap = $component[0];
+            const text = jinntap.editor.state.doc.textContent;
+            expect(text).to.contain('DAS Everett Briggs');
+            // a newline alone between two inline elements is a space too
+            expect(text).to.contain('Nancy Dyke');
+            const xml = jinntap.xml;
+            expect(xml).to.contain('<persName>DAS</persName> <persName>Everett Briggs</persName>');
+            // the indentation between the blocks did not become text
+            expect(xml).to.match(/<\/p><p>Second<\/p>/);
+        });
+
+        // the names unmarked: the space stays
+        cy.get('jinn-tap').then(($component) => {
+            const { editor } = $component[0];
+            editor.chain().selectAll().unsetMark('persName').run();
+        });
+        cy.get('jinn-tap').should(($component) => {
+            expect($component[0].editor.state.doc.textContent).to.contain('Advisor DAS Everett Briggs,');
+        });
+    });
+
     it('handle nested marks', () => {
         const testContent =
             '<tei-div><tei-p><tei-persName><tei-hi rend="b">Rudi</tei-hi> <tei-hi rend="i">Rüssel</tei-hi></tei-persName></tei-p></tei-div>';
