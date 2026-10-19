@@ -89,7 +89,10 @@ function unprefixedLocalName(el) {
 /**
  * Collapse pretty-print whitespace from imported XML so indentation and
  * newlines between tags do not show up as editable text. Significant leading /
- * trailing spaces in mixed content are kept as a single space. Honours
+ * trailing spaces in mixed content are kept as a single space, and so is
+ * whitespace alone between two siblings: in `<persName>A</persName> <persName>B</persName>`
+ * it is the only space between the names. Between block elements ProseMirror's
+ * parser drops it, as it drops any whitespace where no text can go. Honours
  * `xml:space="preserve"` and schema `preserveSpace` element names.
  *
  * @param {Node} node
@@ -111,8 +114,15 @@ function normalizeImportWhitespace(node, preserve = false, preserveLocals = null
     }
     const raw = node.nodeValue ?? '';
     if (!/\S/.test(raw)) {
-        // Insignificant whitespace between elements (pretty-printed XML).
-        node.parentNode?.removeChild(node);
+        if (node.previousSibling && node.nextSibling) {
+            // Between two siblings: a space, which may be the only one between two
+            // inline elements.
+            node.nodeValue = ' ';
+        } else {
+            // An element's indentation, before its first child or after its last
+            // (pretty-printed XML).
+            node.parentNode?.removeChild(node);
+        }
         return;
     }
     const leading = /^\s/.test(raw);
